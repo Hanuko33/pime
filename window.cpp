@@ -6,7 +6,7 @@ SDL_Window *main_window;
 int  init_window()
 {
 	Uint32 flags;
-    flags = SDL_WINDOW_HIDDEN;
+    flags = SDL_WINDOW_RESIZABLE;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) { fprintf(stderr, "\nUnable to initialize SDL:  %s\n", SDL_GetError()); }
 
@@ -15,11 +15,10 @@ int  init_window()
         return 1;
 	}
     SDL_SetWindowTitle(main_window, "game_window");
-    SDL_SetWindowSize(main_window, WINDOW_WIDTH, WINDOW_HEIGHT);
 //    app_surface = SDL_GetWindowSurface(main_window);
     SDL_SetWindowPosition(main_window, 0,0);
+    SDL_SetWindowSize(main_window, 600, 600);
 
-    SDL_ShowWindow(main_window);
 	return 0;
 }
 
