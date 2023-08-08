@@ -19,6 +19,14 @@ int  init_window()
     SDL_SetWindowPosition(main_window, 0,0);
     SDL_SetWindowSize(main_window, 600, 600);
 
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) 
+    {
+        printf("\nUnable to initialize sdl_image:  %s\n", IMG_GetError());
+        return 1;
+    }
+
+
 	return 0;
 }
 
