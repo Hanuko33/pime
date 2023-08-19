@@ -6,20 +6,15 @@
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL2_framerate.h>
-#include <SDL2/SDL_image.h>
-#include <string>
-#define SIZE 32 
+#include "dungeon.h"
+#include "texture.h"
+#define SIZE 16 
 
 using namespace std;
 
-enum terrain
-{
-    STONE,
-    DIRT,
-    TREE
-};
-
-terrain terrain_list[SIZE][SIZE];
+game_tiles screen_list[SIZE][SIZE];
+game_tiles terrain_list[SIZE][SIZE];
+Dungeon dungeon;
 
 class Player
 {
@@ -29,20 +24,40 @@ public:
     int y = 0;
     int x = 0;
     bool running = false;
-    void interact(char key);
-    bool going_right;
+    void interact(char key, Dungeon& dungeon);
+    bool going_right = false;
+    bool in_dungeon = false;
 };
 
 void generator()
 {
+    int random = 0;
     int type_int = 0;
+    bool chunk_contains_dung_entrance = false;
     printf("running generator...\n");
     for (int i=0; i<=SIZE; i++)
     {
         for (int j=0; j<=SIZE; j++)
         {
             type_int = rand() % 3+0;
-            terrain_list[i][j] = (terrain)type_int;
+            switch (type_int)
+            {
+                case 0:
+                    terrain_list[i][j] = game_tiles::STONE;
+                    break;
+                case 1:
+                    terrain_list[i][j] = game_tiles::DIRT;
+                    break;
+                case 2:
+                    random = rand() % 1000+0;
+                    if (random == 51 && !(chunk_contains_dung_entrance))
+                    {
+                        terrain_list[i][j] = game_tiles::DUNG_ENTRANCE;
+                        chunk_contains_dung_entrance = true;
+                    }
+                    else terrain_list[i][j] = game_tiles::TREE;
+                    break;
+            }
         }
     }
 }
@@ -51,31 +66,46 @@ void save(bool with_player, Player* player)
 {
     if (with_player)
     {
+        int temp;
         FILE *file;
         char player_path[11];
         sprintf(player_path, "player.txt");
         file = fopen(player_path, "w");
-        char to_write[9];
-        sprintf(to_write, "%d\n%d\n%d\n%d\n", player->map_y, player->map_x, player->y, player->x);
+        char to_write[13];
+        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n", player->map_y, player->map_x, player->y, player->x, (int)player->in_dungeon);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
     }
-    char filename[10];
-    sprintf(filename, "%4d-%4d", player->map_x, player->map_y);
-    FILE *chunk = fopen(filename, "w");
-    fwrite(terrain_list, sizeof(terrain_list), 1, chunk);
-    fclose(chunk);
+    if (player->in_dungeon)
+    {
+        char filename[25];
+        sprintf(filename, "%9d-%9ddung", player->map_x, player->map_y);
+        FILE *chunk = fopen(filename, "w");
+        fwrite(dungeon.dungeon_terrain_list, sizeof(dungeon.dungeon_terrain_list), 1, chunk);
+        fclose(chunk);
+    }
+    else
+    {
+        char filename[20];
+        sprintf(filename, "%9d-%9d", player->map_x, player->map_y);
+        FILE *chunk = fopen(filename, "w");
+        fwrite(terrain_list, sizeof(terrain_list), 1, chunk);
+        fclose(chunk);
+    }
+    
 }
 void load(bool with_player, Player* player)
 {
     if (with_player)
     {
+        int temp;
         FILE *file;
         char player_path[11];
         sprintf(player_path, "player.txt");
         if ((file = fopen(player_path, "r")))
         {
-            fscanf(file, "%d%d%d%d", &player->map_y, &player->map_x, &player->y, &player->x);
+            fscanf(file, "%d%d%d%d%d", &player->map_y, &player->map_x, &player->y, &player->x, &temp);
+            player->in_dungeon=temp;
         }
         else 
         {
@@ -83,67 +113,133 @@ void load(bool with_player, Player* player)
         }
         fclose(file);
     }
-    char filename[10];
-    sprintf(filename, "%4d-%4d", player->map_x, player->map_y);
-    FILE* chunk;
-    if ((chunk = fopen(filename, "r")))
+    if (player->in_dungeon)
     {
-        chunk = fopen(filename, "r");
-        fread(terrain_list, sizeof(terrain_list), 1, chunk);
-        fclose(chunk);
+        char filename[25];
+        sprintf(filename, "%9d-%9ddung", player->map_x, player->map_y);
+        printf("%s\n", filename);
+        FILE* chunk;
+        if ((chunk = fopen(filename, "r")))
+        {
+            chunk = fopen(filename, "r");
+            fread(dungeon.dungeon_terrain_list, sizeof(dungeon.dungeon_terrain_list), 1, chunk);
+            fclose(chunk);
+        }
+        else
+        {
+            dungeon.generator();
+        }
     }
     else
     {
-        generator();
+        char filename[20];
+        sprintf(filename, "%9d-%9d", player->map_x, player->map_y);
+        FILE* chunk;
+        if ((chunk = fopen(filename, "r")))
+        {
+            chunk = fopen(filename, "r");
+            fread(terrain_list, sizeof(terrain_list), 1, chunk);
+            fclose(chunk);
+        }
+        else
+        {
+            generator();
+        }
     }
 }
-void Player::interact(char key)
+
+
+void Player::interact(char key, Dungeon &dungeon)
 {
     switch (key)
     {
         case 's':
         {
-            if (running)
+            if (in_dungeon)
             {
-                if (y < SIZE) y++;
+                if (running)
+                {
+                    if (y < SIZE-1 && !(dungeon.dungeon_terrain_list[x][y+1] == game_tiles::DUNG_WALL)) y++;
+                }
+                if (y < SIZE-1 && !(dungeon.dungeon_terrain_list[x][y+1] == game_tiles::DUNG_WALL)) y++;
+            }
+            else
+            {
+                if (running)
+                {
+                    if (y < SIZE-1) y++;
+                    else {y=0; save(false, this); map_y++; load(false,this);}
+                }
+                if (y < SIZE-1) y++;
                 else {y=0; save(false, this); map_y++; load(false,this);}
             }
-            if (y < SIZE) y++;
-            else {y=0; save(false, this); map_y++; load(false,this);}
             break;
         }
         case 'w':
         {
-            if (running)
+            if (in_dungeon)
             {
-                if (y > 0) y--;
-                else {y=SIZE; save(false, this); map_y--;load(false,this);}
+                if (running)
+                {
+                    if (y > 0 && !(dungeon.dungeon_terrain_list[x][y-1] == game_tiles::DUNG_WALL)) y--;
+                }
+                if (y > 0 && !(dungeon.dungeon_terrain_list[x][y-1] == game_tiles::DUNG_WALL)) y--;
             }
-            if (y > 0) y--;
-            else {y=SIZE; save(false, this); map_y--;load(false,this);}
+            else
+            {
+                if (running)
+                {
+                    if (y > 0) y--;
+                    else {y=SIZE-1; save(false, this); map_y--;load(false,this);}
+                }
+                if (y > 0) y--;
+                else {y=SIZE-1; save(false, this); map_y--;load(false,this);}
+            }
             break;
         }
         case 'd':
         {
-            if (running)
+            if (in_dungeon)
             {
-                if (x < SIZE-1) x++;
-                else {x=0; save(false, this); map_x++;load(false,this);}
+                if (running)
+                {
+                    if (x < SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
+                }
+                if (x < SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
             }
-            if (x < SIZE-1) x++;
-            else {x=0; save(false, this); map_x++;load(false,this);}
+            else
+            {
+                if (running)
+                {
+                    if (x < SIZE-1) x++;
+                    else if (!in_dungeon) {x=0; save(false, this); map_x++;load(false,this);}
+                }
+                if (x < SIZE-1) x++;
+                else if (!in_dungeon) {x=0; save(false, this); map_x++;load(false,this);}
+            }
             going_right = true;
             break;
         }
         case 'a':
         {
-            if (running)
+            if (in_dungeon)
             {
-                if (x > 0) x--;
-                else {x=SIZE-1; save(false, this); map_x--;load(false,this);}
+                if (running)
+                {
+                    if (x > 0 && !(dungeon.dungeon_terrain_list[x-1][y] == game_tiles::DUNG_WALL)) x--;
+                }
+                if (x > 0 && !(dungeon.dungeon_terrain_list[x-1][y] == game_tiles::DUNG_WALL)) x--;
             }
-            if (x > 0) x--;
-            else {x=SIZE-1; save(false, this); map_x--;load(false,this);}
+            else
+            {
+                if (running)
+                {
+                    if (x > 0) x--;
+                    else if (!in_dungeon) {x=SIZE-1; save(false, this); map_x--;load(false,this);}
+                }
+                if (x > 0) x--;
+                else if (!in_dungeon) {x=SIZE-1; save(false, this); map_x--;load(false,this);}
+            }
             going_right = false;
             break;
         }
@@ -172,35 +268,69 @@ void Player::interact(char key)
         case 'e':
         {
             string name_of_terrain;
-            switch (terrain_list[x][y])
+            switch (screen_list[x][y])
             {
-                case STONE:
+                case game_tiles::STONE:
                     name_of_terrain = "stone";
                     break;
-                case DIRT:
+                case game_tiles::DIRT:
                     name_of_terrain = "dirt";
                     break;
-                case TREE:
+                case game_tiles::TREE:
                     name_of_terrain = "tree";
                     break;
+                case game_tiles::DUNG_ENTRANCE:
+                    name_of_terrain = "dungeon entrance";
+                    break;
+                case game_tiles::DUNG_EXIT:
+                    name_of_terrain = "dungeon exit";
+                    break;
+                case game_tiles::DUNG_FLOOR:
+                    name_of_terrain = "dungeon floor";
+                    break;
+                case game_tiles::DUNG_WALL:
+                    name_of_terrain = "dungeon wall";
+                    break;
+            }
+            if (name_of_terrain == "dungeon exit")
+            {
+                in_dungeon = false;
+            }
+            if (name_of_terrain == "dungeon entrance")
+            {
+                dungeon.generator();
+                in_dungeon = true;
             }
             break;
         }
     }
 }
 
-class textures
+void update_screen_list(Player player, Dungeon& dungeon)
 {
-    public:
-        SDL_Texture* playerr;
-        SDL_Texture* playerl;
-        SDL_Texture* stone;
-        SDL_Texture* dirt;
-        SDL_Texture* tree;
-        void load_textures();
-        SDL_Texture* load_texture(string texture_name);
-};
-void draw(Player player, textures texts)
+    if (player.in_dungeon)
+    {
+        for (int i=0; i < SIZE; i++)
+        {
+            for (int j=0; j < SIZE; j++)
+            {
+                screen_list[i][j] = dungeon.dungeon_terrain_list[i][j];
+            }
+        } 
+    }
+    else
+    {
+        for (int i=0; i < SIZE; i++)
+        {
+            for (int j=0; j < SIZE; j++)
+            {
+                screen_list[i][j] = terrain_list[i][j];
+            }
+        }
+    }
+}
+
+void draw(Player player, textures texts, Dungeon& dungeon)
 {
     int WINDOW_WIDTH;
     int WINDOW_HEIGHT;
@@ -224,24 +354,35 @@ void draw(Player player, textures texts)
     }
     for (int i=0; i<(SIZE); i++)
     {
-        for (int j=0; j<=SIZE; j++)
+        for (int j=0; j<SIZE; j++)
         {
             int x = i*TILE_SIZE;
             int y = j*TILE_SIZE;
             SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
             SDL_Rect img_rect = {x, y, TILE_SIZE, TILE_SIZE};
-            switch (terrain_list[i][j])
+            switch (screen_list[i][j])
             {
-                case STONE:    
+                case game_tiles::STONE:    
                     SDL_RenderCopy(renderer, texts.stone, &screen_rect, &img_rect);
                     break;
-                case DIRT:    
+                case game_tiles::DIRT:    
                     SDL_RenderCopy(renderer, texts.dirt, &screen_rect, &img_rect);
                     break;
-                case TREE:    
+                case game_tiles::TREE:    
                     SDL_RenderCopy(renderer, texts.tree, &screen_rect, &img_rect);
                     break;
-            } 
+                case game_tiles::DUNG_ENTRANCE:
+                    SDL_RenderCopy(renderer, texts.dung_entrance, &screen_rect, &img_rect);
+                    break;
+                case game_tiles::DUNG_EXIT:
+                    SDL_RenderCopy(renderer, texts.dung_exit, &screen_rect, &img_rect);
+                    break;
+                case game_tiles::DUNG_WALL:
+                    SDL_RenderCopy(renderer, texts.dung_wall, &screen_rect, &img_rect);
+                    break;
+                case game_tiles::DUNG_FLOOR:
+                    SDL_RenderCopy(renderer, texts.dung_floor, &screen_rect, &img_rect);
+            }
         }
     }  
     int px = player.x*(TILE_SIZE);
@@ -252,62 +393,11 @@ void draw(Player player, textures texts)
     else SDL_RenderCopy(renderer, texts.playerl, &screen_rect, &img_rect);
 }
 
-SDL_Texture* textures::load_texture(string texture_name)
-{
-    SDL_Texture* texture = NULL;
-    SDL_Surface* loadedSurface = IMG_Load(texture_name.c_str()); 
-    if (loadedSurface == NULL)
-    {
-        printf("Unable to load texture: %s error: %s\n", texture_name.c_str(), SDL_GetError()); 
-    }
-    else 
-    {    
-        texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-
-        if (texture == NULL)
-        {
-            printf("Unable to create texture: %s error: %s\n", texture_name.c_str(), SDL_GetError());
-        }
-        SDL_FreeSurface(loadedSurface);
-    }
-
-    return texture;
-}
-
-void textures::load_textures()
-{
-    stone = load_texture("stone.png");
-    dirt = load_texture("dirt.png");
-    tree = load_texture("tree.png");
-    playerr = load_texture("playerr.png");
-    playerl = load_texture("playerl.png");
-
-    if (playerl == NULL)
-    {
-        printf("Failed to load image: playerl.png error: %s\n", SDL_GetError());
-    }
-    if (playerr == NULL)
-    {
-        printf("Failed to load image: playerr.png error: %s\n", SDL_GetError());
-    }
-    if (stone == NULL)
-    {
-        printf("Failed to load image: stone.png error: %s\n", SDL_GetError());
-    }
-    if (dirt == NULL)
-    {
-        printf("Failed to load image: dirt.png error: %s\n", SDL_GetError());
-    }
-    if (tree == NULL)
-    {
-        printf("Failed to load image: tree.png error: %s\n", SDL_GetError());
-    }
-}
-
 int main()
 {
     srand (time(NULL));
     Player player;
+    player.in_dungeon = false;
     load(true, &player);
     save(true, &player);
     char key;
@@ -318,7 +408,8 @@ int main()
     for (;;)
     {   
         clear_window();
-        draw(player, Texture);
+        update_screen_list(player, dungeon);
+        draw(player, Texture, dungeon);
         while (SDL_PollEvent(&event))
         {
             if (event.type==SDL_QUIT) {SDL_Quit(); return 0;};
@@ -334,7 +425,7 @@ int main()
                     case SDLK_l:
                     case SDLK_r:
                         key = event.key.keysym.sym;
-                        player.interact(key);
+                        player.interact(key, dungeon);
                         break;
                 }
             }
@@ -345,7 +436,7 @@ int main()
             
         }
         // DEBUG x, y, map_x, map_y, running
-        printf("x: %d y: %d\n map_x: %d map_y: %d running: %d\n", player.x, player.y, player.map_x, player.map_y, player.running);                   
+        //printf("x: %d y: %d\n map_x: %d map_y: %d running: %d\n", player.x, player.y, player.map_x, player.map_y, player.running);                   
 
         SDL_RenderPresent(renderer);
         SDL_Delay(10);   

@@ -8,7 +8,7 @@ pkg_check_modules(SDL2_GFX SDL2_gfx)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(game_new window.cpp main.cpp)
+add_executable(game_new window.cpp texture.cpp dungeon.cpp main.cpp)
 
 target_link_libraries(game_new
      SDL2 SDL2_gfx SDL2_image
