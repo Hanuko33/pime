@@ -8,6 +8,7 @@
 #include <SDL2/SDL2_framerate.h>
 #include "dungeon.h"
 #include "texture.h"
+#include "text.h"
 #define SIZE 16 
 
 using namespace std;
@@ -15,6 +16,7 @@ using namespace std;
 game_tiles screen_list[SIZE][SIZE];
 game_tiles terrain_list[SIZE][SIZE];
 Dungeon dungeon;
+Text text;
 
 class Player
 {
@@ -27,6 +29,7 @@ public:
     void interact(char key, Dungeon& dungeon);
     bool going_right = false;
     bool in_dungeon = false;
+    int energy = 400;
 };
 
 void generator()
@@ -71,8 +74,8 @@ void save(bool with_player, Player* player)
         char player_path[11];
         sprintf(player_path, "player.txt");
         file = fopen(player_path, "w");
-        char to_write[13];
-        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n", player->map_y, player->map_x, player->y, player->x, (int)player->in_dungeon);
+        char to_write[14];
+        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n", player->map_y, player->map_x, player->y, player->x, (int)player->in_dungeon, player->energy);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
     }
@@ -92,7 +95,6 @@ void save(bool with_player, Player* player)
         fwrite(terrain_list, sizeof(terrain_list), 1, chunk);
         fclose(chunk);
     }
-    
 }
 void load(bool with_player, Player* player)
 {
@@ -104,7 +106,7 @@ void load(bool with_player, Player* player)
         sprintf(player_path, "player.txt");
         if ((file = fopen(player_path, "r")))
         {
-            fscanf(file, "%d%d%d%d%d", &player->map_y, &player->map_x, &player->y, &player->x, &temp);
+            fscanf(file, "%d%d%d%d%d%d", &player->map_y, &player->map_x, &player->y, &player->x, &temp, &player->energy);
             player->in_dungeon=temp;
         }
         else 
@@ -173,6 +175,8 @@ void Player::interact(char key, Dungeon &dungeon)
                 if (y < SIZE-1) y++;
                 else {y=0; save(false, this); map_y++; load(false,this);}
             }
+            energy--;
+            if (running) energy--;
             break;
         }
         case 'w':
@@ -195,6 +199,8 @@ void Player::interact(char key, Dungeon &dungeon)
                 if (y > 0) y--;
                 else {y=SIZE-1; save(false, this); map_y--;load(false,this);}
             }
+            energy--;
+            if (running) energy--;
             break;
         }
         case 'd':
@@ -217,6 +223,8 @@ void Player::interact(char key, Dungeon &dungeon)
                 if (x < SIZE-1) x++;
                 else if (!in_dungeon) {x=0; save(false, this); map_x++;load(false,this);}
             }
+            energy--;
+            if (running) energy--;
             going_right = true;
             break;
         }
@@ -240,12 +248,19 @@ void Player::interact(char key, Dungeon &dungeon)
                 if (x > 0) x--;
                 else if (!in_dungeon) {x=SIZE-1; save(false, this); map_x--;load(false,this);}
             }
+            energy--;
+            if (running) energy--;
             going_right = false;
             break;
         }
         case 'k':
         {
             save(true, this);
+            break;
+        }
+        case 'p':
+        {
+            energy = 400;
             break;
         }
         case 'l':
@@ -391,6 +406,17 @@ void draw(Player player, textures texts, Dungeon& dungeon)
     SDL_Rect img_rect = {px, py, TILE_SIZE, TILE_SIZE};
     if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, &screen_rect, &img_rect);
     else SDL_RenderCopy(renderer, texts.playerl, &screen_rect, &img_rect);
+
+    SDL_Texture* text_energy_sdl;
+    char text_energy[20];
+    sprintf(text_energy, "Energy: %d", player.energy);
+    if (player.energy > 100) text_energy_sdl = text.create_font(text_energy, false);
+    else if (player.energy <= 100) text_energy_sdl = text.create_font(text_energy, true);
+    
+    SDL_Rect energy_text_rect = {10, 10, 200, 40};
+
+    SDL_RenderCopy(renderer, text_energy_sdl, NULL, &energy_text_rect);
+    SDL_DestroyTexture(text_energy_sdl);
 }
 
 int main()
@@ -403,13 +429,16 @@ int main()
     char key;
     SDL_Event event;
     if (init_window()) return 1;
+    if (text.load_font()) {printf("failed to load font");return 1;};
     textures Texture;
     Texture.load_textures();
     for (;;)
     {   
         clear_window();
         update_screen_list(player, dungeon);
+
         draw(player, Texture, dungeon);
+
         while (SDL_PollEvent(&event))
         {
             if (event.type==SDL_QUIT) {SDL_Quit(); return 0;};
@@ -422,6 +451,7 @@ int main()
                     case SDLK_d:
                     case SDLK_e:
                     case SDLK_k:
+                    case SDLK_p:
                     case SDLK_l:
                     case SDLK_r:
                         key = event.key.keysym.sym;
@@ -434,6 +464,14 @@ int main()
                 key = 0;
             }
             
+        }
+        if (player.energy <= 0)
+        {
+            printf("You ran out of energy (death)\n");
+            printf("This is still in early alpha, the world isn't lost, just run the game and press 'p' to set energy to 400\n");
+            printf("Thank you for playing =)\n");
+            SDL_Quit();
+            return 0;
         }
         // DEBUG x, y, map_x, map_y, running
         //printf("x: %d y: %d\n map_x: %d map_y: %d running: %d\n", player.x, player.y, player.map_x, player.map_y, player.running);                   
