@@ -24,15 +24,15 @@ SDL_Texture* textures::load_texture(string texture_name)
 }
 void textures::load_textures()
 {
-    dung_floor = load_texture("dung_floor.png");
-    dung_wall = load_texture("dung_wall.png");
-    dung_exit = load_texture("dung_exit.png");
-    dung_entrance = load_texture("dung_entrance.png");
-    stone = load_texture("stone.png");
-    dirt = load_texture("dirt.png");
-    tree = load_texture("tree.png");
-    playerr = load_texture("playerr.png");
-    playerl = load_texture("playerl.png");
+    dung_floor = load_texture("textures/dung_floor.png");
+    dung_wall = load_texture("textures/dung_wall.png");
+    dung_exit = load_texture("textures/dung_exit.png");
+    dung_entrance = load_texture("textures/dung_entrance.png");
+    stone = load_texture("textures/stone.png");
+    dirt = load_texture("textures/dirt.png");
+    tree = load_texture("textures/tree.png");
+    playerr = load_texture("textures/playerr.png");
+    playerl = load_texture("textures/playerl.png");
 
     if (playerl == NULL)
     {
