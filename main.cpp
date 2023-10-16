@@ -21,6 +21,50 @@ Text text;
 menu_types in_menu = menu_types::CLOSED;
 
 Player player;
+
+int get_intiger_lenght(int intiger)
+{
+    int lenght;
+
+    if ((intiger/1000000000)>=1 || (intiger/100000000)<=-1)
+    {
+        return 10;
+    }
+    if ((intiger/100000000)>=1 || (intiger/10000000)<=-1)
+    {
+        return 9;
+    }
+    if ((intiger/10000000)>=1 || (intiger/1000000)<=-1)
+    {
+        return 8;
+    }
+    if ((intiger/1000000)>=1 || (intiger/100000)<=-1)
+    {
+        return 7;
+    }
+    if ((intiger/100000)>=1 || (intiger/10000)<=-1)
+    {
+        return 6;
+    }
+    if ((intiger/10000)>=1 || (intiger/1000)<=-1)
+    {
+        return 5;
+    }
+    if ((intiger/1000)>=1 || (intiger/100)<=-1)
+    {
+        return 4;
+    }
+    if ((intiger/100)>=1 || (intiger/10)<=-1)
+    {
+        return 3;
+    }
+    if ((intiger/10)>=1 || (intiger/1)<=-1)
+    {
+        return 2;
+    }
+    return 1;
+}
+
 void generator()
 {
     int random = 0;
@@ -446,47 +490,43 @@ void draw(textures texts, Dungeon& dungeon)
     SDL_Rect img_rect = {px, py, TILE_SIZE, TILE_SIZE};
     if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, &screen_rect, &img_rect);
     else SDL_RenderCopy(renderer, texts.playerl, &screen_rect, &img_rect);
-
-    if (player.energy > 1000) player.energy = 1000;
     
+    if (player.energy > 1000) player.energy = 1000;   
+
     SDL_Texture* text_energy_sdl;
     char text_energy[20];
     sprintf(text_energy, "Energy: %d", player.energy);
     if (player.energy > 100) text_energy_sdl = text.create_font(text_energy, false);
     else if (player.energy <= 100) text_energy_sdl = text.create_font(text_energy, true);
 
-
-    int energy_number_lenght;
     
-    if ((player.energy/1000)<1)
-    {
-        if ((player.energy/100)<1)
-        {
-            if ((player.energy/10)<1)
-            {
-                energy_number_lenght = 1;
-            }
-            else
-            {
-                energy_number_lenght = 2;
-            }
-        }
-        else
-        {
-            energy_number_lenght = 3;
-        }
-    }
-    else
-    {
-        energy_number_lenght = 4;
-    }
-
+    SDL_Texture* text_x_sdl;
+    SDL_Texture* text_y_sdl;
+    char text_y[20];
+    char text_x[20];
+    sprintf(text_y, "Y: %d", player.y+(player.map_y*SIZE));
+    sprintf(text_x, "X: %d", player.x+(player.map_x*SIZE));
+    text_y_sdl = text.create_font(text_y, false);
+    text_x_sdl = text.create_font(text_x, false);
     int single_letter_size = game_size/25;
 
-    SDL_Rect energy_text_rect = {10, 10, (energy_number_lenght+8)*single_letter_size, game_size/10};
+    int energy_number_lenght = get_intiger_lenght(player.energy);
+    int x_lenght = get_intiger_lenght(player.x+(player.map_x*SIZE));
+    int y_lenght = get_intiger_lenght(player.y+(player.map_y*SIZE));
+    printf("%d, %d, %d\n", player.x+(player.map_x*SIZE), get_intiger_lenght(player.x+(player.map_x*SIZE)), x_lenght);
+    fflush(stdout);
 
+    SDL_Rect energy_text_rect = {10, 10, (energy_number_lenght+8)*single_letter_size, game_size/10};
+    SDL_Rect energy_y_rect = {10, game_size/10, (y_lenght+3)*single_letter_size, game_size/10};
+    SDL_Rect energy_x_rect = {10, game_size/10*2, (x_lenght+3)*single_letter_size, game_size/10};
+
+    SDL_RenderCopy(renderer, text_x_sdl, NULL, &energy_x_rect);
+    SDL_RenderCopy(renderer, text_y_sdl, NULL, &energy_y_rect);
     SDL_RenderCopy(renderer, text_energy_sdl, NULL, &energy_text_rect);
+    
     SDL_DestroyTexture(text_energy_sdl);
+    SDL_DestroyTexture(text_y_sdl);
+    SDL_DestroyTexture(text_x_sdl);
     switch(in_menu)
     {
         case menu_types::CLOSED:
@@ -500,7 +540,7 @@ void draw(textures texts, Dungeon& dungeon)
     }
 }
 
-int main()
+int main(int argi, char** agrs)
 {
     srand (time(NULL));
     player.in_dungeon = false;

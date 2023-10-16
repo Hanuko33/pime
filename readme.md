@@ -9,7 +9,7 @@ it has (almost) infinite worlds, with 3 types of terrain, stone ground, dirt gro
 
 This is still early stage (alpha/beta)
 
-also, I'm not trying to make this game windows, or mac compatible (focusing on linux, and the game itself for now)
+Windows compatibility =)
 
 screenshots / art:
 ![](screenshots/1.png)
