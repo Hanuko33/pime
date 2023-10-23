@@ -16,6 +16,10 @@ Windows compatibility =)
 
 * [Installation under Ubuntu](install.md)
 
+## Build
+
+* [Build instruction](build.md)
+
 ## screenshots / art
 ![](screenshots/1.png)
 ![](screenshots/2.png)
