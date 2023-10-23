@@ -10,6 +10,10 @@
 #include "texture.h"
 #include "text.h"
 #include "player.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #define SIZE 16 
 
 using namespace std;
@@ -542,6 +546,16 @@ void draw(textures texts, Dungeon& dungeon)
 
 int main(int argi, char** agrs)
 {
+    struct stat statbuf;
+    int ret = stat("textures", &statbuf);
+    if (ret) {
+        chdir("..");
+        ret = stat("textures", &statbuf);
+        if (ret) {
+            printf("missing directory with textures\n");
+            return 2;
+        }
+    }
     srand (time(NULL));
     player.in_dungeon = false;
     load(true);

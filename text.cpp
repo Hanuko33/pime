@@ -1,13 +1,27 @@
 #include "text.h"
 #include "window.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <errno.h>
 
 void load(bool with_player);
 void save(bool with_player);
 
+#define FONT_NAME "nerdfont.ttf"
+    
 int Text::load_font()
 {
-    font = TTF_OpenFont("nerdfont.ttf", 500);
+     struct stat statbuf;
+    int ret;
+    ret = stat(FONT_NAME, &statbuf);
+    if (ret) 
+    {
+        printf("load_font(%s): %s\n", FONT_NAME, strerror(errno));
+        return 1;
+    }
+    font = TTF_OpenFont(FONT_NAME, 500);
     if (!(font)) return 1;
     else return 0;
 }
