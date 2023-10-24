@@ -22,7 +22,6 @@ game_tiles screen_list[SIZE][SIZE];
 game_tiles terrain_list[SIZE][SIZE];
 Dungeon dungeon;
 Text text;
-menu_types in_menu = menu_types::CLOSED;
 
 Player player;
 
@@ -108,8 +107,8 @@ void save(bool with_player)
     {
         int temp;
         FILE *file;
-        char player_path[11];
-        sprintf(player_path, "player.txt");
+        char player_path[17];
+        sprintf(player_path, "world/player.txt");
         file = fopen(player_path, "w");
         char to_write[60];
         sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy);
@@ -118,16 +117,16 @@ void save(bool with_player)
     }
     if (player.in_dungeon)
     {
-        char filename[25];
-        sprintf(filename, "%9d-%9ddung", player.map_x, player.map_y);
+        char filename[31];
+        sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
         FILE *chunk = fopen(filename, "w");
         fwrite(dungeon.dungeon_terrain_list, sizeof(dungeon.dungeon_terrain_list), 1, chunk);
         fclose(chunk);
     }
     else
     {
-        char filename[20];
-        sprintf(filename, "%9d-%9d", player.map_x, player.map_y);
+        char filename[26];
+        sprintf(filename, "world/%9d-%9d", player.map_x, player.map_y);
         FILE *chunk = fopen(filename, "w");
         fwrite(terrain_list, sizeof(terrain_list), 1, chunk);
         fclose(chunk);
@@ -139,8 +138,8 @@ void load(bool with_player)
     {
         int temp;
         FILE *file;
-        char player_path[11];
-        sprintf(player_path, "player.txt");
+        char player_path[17];
+        sprintf(player_path, "world/player.txt");
         if ((file = fopen(player_path, "r")))
         {
             fscanf(file, "%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy);
@@ -154,8 +153,8 @@ void load(bool with_player)
     }
     if (player.in_dungeon)
     {
-        char filename[25];
-        sprintf(filename, "%9d-%9ddung", player.map_x, player.map_y);
+        char filename[30];
+        sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
         printf("%s\n", filename);
         FILE* chunk;
         if ((chunk = fopen(filename, "r")))
@@ -171,8 +170,8 @@ void load(bool with_player)
     }
     else
     {
-        char filename[20];
-        sprintf(filename, "%9d-%9d", player.map_x, player.map_y);
+        char filename[26];
+        sprintf(filename, "world/%9d-%9d", player.map_x, player.map_y);
         FILE* chunk;
         if ((chunk = fopen(filename, "r")))
         {
@@ -225,7 +224,7 @@ void Player::interact(int key, Dungeon &dungeon)
         {
             if (!(in_menu == menu_types::CLOSED))
             {
-                text.pointer_y++;
+                text.menu_pos++;
                 break;
             }
 
@@ -267,8 +266,12 @@ void Player::interact(int key, Dungeon &dungeon)
         case SDLK_UP:
         {
             if (!(in_menu == menu_types::CLOSED))
-            {
-                text.pointer_y--;
+            {       
+                text.menu_pos--;
+                if (text.menu_pos < 0)
+                {
+                    text.menu_pos=0;
+                }
                 break;
             }
 
@@ -304,6 +307,10 @@ void Player::interact(int key, Dungeon &dungeon)
         case SDLK_RIGHT:
         case SDLK_d:
         {
+            if (!(in_menu == menu_types::CLOSED))
+            {
+                break;
+            }
             if (in_dungeon)
             {
                 if (running)
@@ -330,6 +337,10 @@ void Player::interact(int key, Dungeon &dungeon)
         case SDLK_LEFT:
         case SDLK_a:
         {
+            if (!(in_menu == menu_types::CLOSED))
+            {
+                break;
+            }
             if (in_dungeon)
             {
                 if (running)
@@ -370,41 +381,15 @@ void Player::interact(int key, Dungeon &dungeon)
         {
             if (!(in_menu == menu_types::CLOSED))
             {
-                text.interact(in_menu);     
+                text.interact(); 
                 break;
             }
-            
 
-            string name_of_terrain;
-            switch (screen_list[x][y])
-            {
-                    case game_tiles::STONE:
-                        name_of_terrain = "stone";
-                        break;
-                    case game_tiles::DIRT:
-                        name_of_terrain = "dirt";
-                        break;
-                    case game_tiles::TREE:
-                        name_of_terrain = "tree";
-                        break;
-                    case game_tiles::DUNG_ENTRANCE:
-                        name_of_terrain = "dungeon entrance";
-                        break;
-                    case game_tiles::DUNG_EXIT:
-                        name_of_terrain = "dungeon exit";
-                        break;
-                    case game_tiles::DUNG_FLOOR:
-                        name_of_terrain = "dungeon floor";
-                        break;
-                    case game_tiles::DUNG_WALL:
-                        name_of_terrain = "dungeon wall";
-                        break;
-                }
-            if (name_of_terrain == "dungeon exit")
+            if (screen_list[x][y] == game_tiles::DUNG_EXIT)
             {
                 in_dungeon = false;
             }
-            if (name_of_terrain == "dungeon entrance")
+            else if (screen_list[x][y] == game_tiles::DUNG_ENTRANCE)
             {
                 in_dungeon = true;
                 load(false);
@@ -517,8 +502,8 @@ void draw(textures texts, Dungeon& dungeon)
     int energy_number_lenght = get_intiger_lenght(player.energy);
     int x_lenght = get_intiger_lenght(player.x+(player.map_x*SIZE));
     int y_lenght = get_intiger_lenght(player.y+(player.map_y*SIZE));
-    printf("%d, %d, %d\n", player.x+(player.map_x*SIZE), get_intiger_lenght(player.x+(player.map_x*SIZE)), x_lenght);
-    fflush(stdout);
+    //printf("%d, %d, %d\n", player.x+(player.map_x*SIZE), get_intiger_lenght(player.x+(player.map_x*SIZE)), x_lenght);
+    //fflush(stdout);
 
     SDL_Rect energy_text_rect = {10, 10, (energy_number_lenght+8)*single_letter_size, game_size/10};
     SDL_Rect energy_y_rect = {10, game_size/10, (y_lenght+3)*single_letter_size, game_size/10};
@@ -541,6 +526,9 @@ void draw(textures texts, Dungeon& dungeon)
         case menu_types::EXIT:
             text.show_menu(menu_types::EXIT);
             break;
+        case menu_types::HELP:
+            text.show_menu(menu_types::HELP);
+            break;
     }
 }
 
@@ -556,6 +544,13 @@ int main(int argi, char** agrs)
             return 2;
         }
     }
+
+    ret = stat("world", &statbuf);
+    if (ret)
+    {
+        mkdir("world", 0777);
+    }
+
     srand (time(NULL));
     player.in_dungeon = false;
     load(true);

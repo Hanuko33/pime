@@ -10,7 +10,7 @@ void load(bool with_player);
 void save(bool with_player);
 
 #define FONT_NAME "nerdfont.ttf"
-    
+menu_types in_menu = menu_types::CLOSED;
 int Text::load_font()
 {
      struct stat statbuf;
@@ -43,7 +43,7 @@ SDL_Texture* Text::create_font(const char* text, bool warning)
     return text_sdl;
 }
 
-void Text::draw_text_to_menu(char* text, int which_option, int options, bool first)
+void Text::draw_text_to_menu(const char* text, int which_option, int options, bool first)
 {   
     int WINDOW_WIDTH;
     int WINDOW_HEIGHT;  
@@ -60,13 +60,9 @@ void Text::draw_text_to_menu(char* text, int which_option, int options, bool fir
     {
         game_size = WINDOW_HEIGHT;
     }
-    if (pointer_y < 1)
+    if (menu_pos >= options)
     {
-        pointer_y=1;
-    }
-    if (pointer_y > options)
-    {
-        pointer_y=options;
+        menu_pos=options-1;
     }
 
     // menu_opt_size = single menu option size
@@ -79,7 +75,7 @@ void Text::draw_text_to_menu(char* text, int which_option, int options, bool fir
     if (first)
     {
         boxColor(renderer, modx, mody, modx2, mody2, color(0, 0, 0, 100));
-        boxColor(renderer, modx, mody+((pointer_y*menu_opt_size)-menu_opt_size), modx2, mody+(pointer_y*menu_opt_size), color(100, 100, 100, 100));
+        boxColor(renderer, modx, mody+(((menu_pos+1)*menu_opt_size)-(menu_opt_size)), modx2, mody+((menu_pos+1)*menu_opt_size), color(100, 100, 100, 100));
     }
     char text_but_char[100];
     strcpy(text_but_char, text);
@@ -98,53 +94,75 @@ void Text::show_menu(menu_types menu_type)
         case menu_types::CLOSED:
             break;
         case menu_types::ENERGY_MENU:
-            draw_text_to_menu((char*)"Regain 100 energy    ", 0, 2, true);
-            draw_text_to_menu((char*)"Set the energy to 400", 1, 2, false);
+            draw_text_to_menu("Regain 100 energy    ", 0, 2, true);
+            draw_text_to_menu("Set the energy to 1000", 1, 2, false);
             break;
 
         case menu_types::EXIT:
-            draw_text_to_menu((char*)"Exit & Save          ", 0, 4, true);
-            draw_text_to_menu((char*)"Exit                 ", 1, 4, false);
-            draw_text_to_menu((char*)"Save                 ", 2, 4, false);
-            draw_text_to_menu((char*)"Load                 ", 3, 4, false);
+            draw_text_to_menu("Save & Exit          ", 0, 6, true);
+            draw_text_to_menu("Exit                 ", 1, 6, false);
+            draw_text_to_menu("Save                 ", 2, 6, false);
+            draw_text_to_menu("Load                 ", 3, 6, false);
+            draw_text_to_menu("Help                 ", 4, 6, false);
+            draw_text_to_menu("Cancel               ", 5, 6, false);
+            break;
+        case menu_types::HELP:
+            draw_text_to_menu("ESC - game menu      ", 0, 6, true);
+            draw_text_to_menu("m - energy menu      ", 1, 6, false);
+            draw_text_to_menu("arrows - moves       ", 2, 6, false);
+            draw_text_to_menu("w, a, s, d - moves   ", 3, 6, false);
+            draw_text_to_menu("r - switch running   ", 4, 6, false);
+            draw_text_to_menu("e, ENTER - interact  ", 5, 6, false);
             break;
     }
 }
 
-void Text::interact(menu_types in_menu)
+void Text::interact()
 {
     switch(in_menu)
     {
         case menu_types::CLOSED:
             break;
         case menu_types::ENERGY_MENU:
-            switch(pointer_y)
+            switch(menu_pos)
             {
-                case 1:
+                case 0:
                     player.energy+=100;
                     break;
-                case 2:
-                    player.energy=400;
+                case 1:
+                    player.energy=1000;
                     break;
             }
+            in_menu = menu_types::CLOSED;
             break;
         case menu_types::EXIT:
-            switch(pointer_y)
+            switch(menu_pos)
             {
-                case 1:
+                case 0:
                     save(true);
-                case 2:
+                case 1:
                     SDL_Quit();
+                    in_menu = menu_types::CLOSED;
                     exit(0);
                     break;
-                case 3:
+                case 2:
                     save(true);
+                    in_menu = menu_types::CLOSED;
                     break;
-                case 4:
+                case 3:
                     load(true);
+                    in_menu = menu_types::CLOSED;
+                    break;
+                case 4: 
+                    in_menu = menu_types::HELP;
+                    break;
+                case 5:
+                    in_menu = menu_types::CLOSED;
                     break;
             }
             break;
+        case menu_types::HELP:
+            in_menu = menu_types::CLOSED;
+            break;
     }
-    
 }

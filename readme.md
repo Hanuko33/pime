@@ -21,12 +21,12 @@ Windows compatibility =)
 * [Build instruction](build.md)
 
 ## Keys
-
-* ESC - menu: exit, load, save
+)
+* ESC - menu: exit, load, save, help menu
 * m   - menu: energy
 * arrows, w, a, s, d - moves
 * r - switch running
-* e, ENTER - enter dungeon
+* e, ENTER - interact
 
 ## screenshots / art
 ![](screenshots/1.png)
