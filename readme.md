@@ -3,14 +3,19 @@
 This is a game made with sdl2 and c++
 it has (almost) infinite worlds, with 3 types of terrain, stone ground, dirt ground, and tree. In the future there will be propobly a lot more!
 
+### DUNGEONS CAN GET YOU STUCK!
+
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
 
-### IMPORTANT: New update with dungeons, could get you stuck. I have idea for next update, where dungeons have more sense and can's get you stuck (probably),
-if you have any world you are proud of, you should download this version in other directory and play there! Also, dungeons WON'T appear on old chunks.
-
-This is still early stage (alpha/beta)
-
-Windows compatibility =)
+## ALPHA STAGE
+### Requirements (ideas) for Beta stage:
+[x] help menu in game
+[ ] dungeons fix
+[ ] in-game music
+[ ] in-game "timer"
+[ ] more distro support
+[ ] KaNaPi build script
+[ ] More terrain types
 
 ## Installation
 
@@ -21,7 +26,7 @@ Windows compatibility =)
 * [Build instruction](build.md)
 
 ## Keys
-)
+
 * ESC - menu: exit, load, save, help menu
 * m   - menu: energy
 * arrows, w, a, s, d - moves
