@@ -75,7 +75,7 @@ void Text::draw_text_to_menu(const char* text, int which_option, int options, bo
     if (first)
     {
         boxColor(renderer, modx, mody, modx2, mody2, color(0, 0, 0, 100));
-        boxColor(renderer, modx, mody+(((menu_pos+1)*menu_opt_size)-(menu_opt_size)), modx2, mody+((menu_pos+1)*menu_opt_size), color(100, 100, 100, 100));
+        boxColor(renderer, modx, mody+(((menu_pos+1)*menu_opt_size)-(menu_opt_size)), modx2, mody+((menu_pos+1)*menu_opt_size), color(150, 150, 150, 100));
     }
     char text_but_char[100];
     strcpy(text_but_char, text);
