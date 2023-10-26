@@ -480,6 +480,13 @@ void draw(textures texts, Dungeon& dungeon)
     if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, &screen_rect, &img_rect);
     else SDL_RenderCopy(renderer, texts.playerl, &screen_rect, &img_rect);
     
+    int icon_size = game_size/10;
+    if (player.running)
+    {
+        SDL_Rect running_icon_rect = {(game_size-(icon_size*2)), 0, icon_size, icon_size};
+        SDL_RenderCopy(renderer, texts.run_icon, &screen_rect, &running_icon_rect);
+    }
+
     if (player.energy > 1000) player.energy = 1000;   
 
     SDL_Texture* text_energy_sdl;

@@ -19,6 +19,7 @@ class textures
         SDL_Texture* dung_floor;
         SDL_Texture* dung_entrance;
         SDL_Texture* dung_exit;
+        SDL_Texture* run_icon;
         void load_textures();
         SDL_Texture* load_texture(string texture_name);
 };

@@ -33,7 +33,12 @@ void textures::load_textures()
     tree = load_texture("textures/tree.png");
     playerr = load_texture("textures/playerr.png");
     playerl = load_texture("textures/playerl.png");
+    run_icon = load_texture("textures/run_icon.png");
 
+    if (run_icon == NULL)
+    {
+        printf("Failed to load image: playerl.png error: %s\n", SDL_GetError());
+    }
     if (playerl == NULL)
     {
         printf("Failed to load image: playerl.png error: %s\n", SDL_GetError());
