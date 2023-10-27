@@ -13,7 +13,7 @@ it has (almost) infinite worlds, with 3 types of terrain, stone ground, dirt gro
 - [ ] dungeons fix
 - [ ] in-game music
 - [ ] in-game "timer"
-- [ ] more distro support
+- [x] more distro support
 - [ ] KaNaPi build script
 - [ ] More terrain types
 
