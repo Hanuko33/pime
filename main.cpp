@@ -14,12 +14,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define SIZE 16 
-
 using namespace std;
 
-game_tiles screen_list[SIZE][SIZE];
-game_tiles terrain_list[SIZE][SIZE];
+game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
+game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
 Dungeon dungeon;
 Text text;
 
@@ -74,11 +72,11 @@ void generator()
     int type_int = 0;
     bool chunk_contains_dung_entrance = false;
     printf("running generator...\n");
-    for (int i=0; i<=SIZE; i++)
+    for (int i=0; i<=DUNGEON_SIZE; i++)
     {
-        for (int j=0; j<=SIZE; j++)
+        for (int j=0; j<=DUNGEON_SIZE; j++)
         {
-            type_int = rand() % 3+0;
+            type_int = rand() % 3;
             switch (type_int)
             {
                 case 0:
@@ -187,7 +185,7 @@ void load(bool with_player)
 }
 
 
-void Player::interact(int key, Dungeon &dungeon)
+void Player::interact(int key)
 {
     switch (key)
     {
@@ -230,7 +228,7 @@ void Player::interact(int key, Dungeon &dungeon)
 
             if (in_dungeon)
             {
-                if(y < SIZE-1 && !(dungeon.dungeon_terrain_list[x][y+1] == game_tiles::DUNG_WALL))
+                if(y < DUNGEON_SIZE-1 && !(dungeon.dungeon_terrain_list[x][y+1] == game_tiles::DUNG_WALL))
                 {
                     if (running) 
                     {
@@ -247,7 +245,7 @@ void Player::interact(int key, Dungeon &dungeon)
             if (running)
             {
                 if (running) energy--;
-                if (y < SIZE-1) y++;
+                if (y < DUNGEON_SIZE-1) y++;
                 else {
                         y=0; 
                         save(false);
@@ -256,7 +254,7 @@ void Player::interact(int key, Dungeon &dungeon)
                 }
             }
             
-            if (y < SIZE-1) y++;
+            if (y < DUNGEON_SIZE-1) y++;
             else {y=0; save(false); map_y++; load(false);}
             energy--;
             
@@ -295,11 +293,11 @@ void Player::interact(int key, Dungeon &dungeon)
             if (running)
             {
                 if (y > 0) y--;
-                else {y=SIZE-1; save(false); map_y--;load(false);}
+                else {y=DUNGEON_SIZE-1; save(false); map_y--;load(false);}
                 energy--;
             }
             if (y > 0) y--;
-            else {y=SIZE-1; save(false); map_y--;load(false);}
+            else {y=DUNGEON_SIZE-1; save(false); map_y--;load(false);}
             
             energy--;
             break;
@@ -315,18 +313,18 @@ void Player::interact(int key, Dungeon &dungeon)
             {
                 if (running)
                 {
-                    if (x < SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
+                    if (x < DUNGEON_SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
                 }
-                if (x < SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
+                if (x < DUNGEON_SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
             }
             else
             {
                 if (running)
                 {
-                    if (x < SIZE-1) x++;
+                    if (x < DUNGEON_SIZE-1) x++;
                     else if (!in_dungeon) {x=0; save(false); map_x++;load(false);}
                 }
-                if (x < SIZE-1) x++;
+                if (x < DUNGEON_SIZE-1) x++;
                 else if (!in_dungeon) {x=0; save(false); map_x++;load(false);}
             }
             energy--;
@@ -354,10 +352,10 @@ void Player::interact(int key, Dungeon &dungeon)
                 if (running)
                 {
                     if (x > 0) x--;
-                    else if (!in_dungeon) {x=SIZE-1; save(false); map_x--;load(false);}
+                    else if (!in_dungeon) {x=DUNGEON_SIZE-1; save(false); map_x--;load(false);}
                 }
                 if (x > 0) x--;
-                else if (!in_dungeon) {x=SIZE-1; save(false); map_x--;load(false);}
+                else if (!in_dungeon) {x=DUNGEON_SIZE-1; save(false); map_x--;load(false);}
             }
             energy--;
             if (running) energy--;
@@ -399,84 +397,73 @@ void Player::interact(int key, Dungeon &dungeon)
     }
 }
 
-void update_screen_list(Dungeon& dungeon)
+void update_screen_list()
 {
-    if (player.in_dungeon)
+    for (int i=0; i < DUNGEON_SIZE; i++)
     {
-        for (int i=0; i < SIZE; i++)
+        for (int j=0; j < DUNGEON_SIZE; j++)
         {
-            for (int j=0; j < SIZE; j++)
-            {
+            if (player.in_dungeon)
                 screen_list[i][j] = dungeon.dungeon_terrain_list[i][j];
-            }
-        } 
-    }
-    else
-    {
-        for (int i=0; i < SIZE; i++)
-        {
-            for (int j=0; j < SIZE; j++)
-            {
+            else
                 screen_list[i][j] = terrain_list[i][j];
-            }
         }
-    }
+    } 
 }
 
-void draw(textures texts, Dungeon& dungeon)
+void draw(textures &texts)
 {
     int WINDOW_WIDTH;
     int WINDOW_HEIGHT;
     int game_size;
     SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
-    int TILE_SIZE = 16;
+    int TILE_DUNGEON_SIZE = 16;
     if (WINDOW_WIDTH < WINDOW_HEIGHT)
     {
         game_size = WINDOW_WIDTH;
-        TILE_SIZE = WINDOW_WIDTH/(SIZE+1);
+        TILE_DUNGEON_SIZE = WINDOW_WIDTH/(DUNGEON_SIZE + 1);
     }
     if (WINDOW_HEIGHT <= WINDOW_WIDTH)
     {
         game_size = WINDOW_HEIGHT;
-        TILE_SIZE = WINDOW_HEIGHT/(SIZE+1);
+        TILE_DUNGEON_SIZE = WINDOW_HEIGHT/(DUNGEON_SIZE + 1);
     }
-    for (int i=0; i<(SIZE); i++)
+    for (int i=0; i<(DUNGEON_SIZE); i++)
     {
-        for (int j=0; j<SIZE; j++)
+        int x = i * TILE_DUNGEON_SIZE;
+        for (int j=0; j<DUNGEON_SIZE; j++)
         {
-            int x = i*TILE_SIZE;
-            int y = j*TILE_SIZE;
+            SDL_Texture *texture;
             SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-            SDL_Rect img_rect = {x, y, TILE_SIZE, TILE_SIZE};
+            SDL_Rect img_rect = {x, j * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
             switch (screen_list[i][j])
             {
                 case game_tiles::STONE:    
-                    SDL_RenderCopy(renderer, texts.stone, &screen_rect, &img_rect);
+                    texture = texts.stone;
                     break;
-                case game_tiles::DIRT:    
-                    SDL_RenderCopy(renderer, texts.dirt, &screen_rect, &img_rect);
+                case game_tiles::DIRT:
+                    texture = texts.dirt;
                     break;
                 case game_tiles::TREE:    
-                    SDL_RenderCopy(renderer, texts.tree, &screen_rect, &img_rect);
+                    texture = texts.tree;
                     break;
                 case game_tiles::DUNG_ENTRANCE:
-                    SDL_RenderCopy(renderer, texts.dung_entrance, &screen_rect, &img_rect);
+                    texture = texts.dung_entrance;
                     break;
                 case game_tiles::DUNG_EXIT:
-                    SDL_RenderCopy(renderer, texts.dung_exit, &screen_rect, &img_rect);
+                    texture = texts.dung_exit;
                     break;
                 case game_tiles::DUNG_WALL:
-                    SDL_RenderCopy(renderer, texts.dung_wall, &screen_rect, &img_rect);
+                    texture = texts.dung_wall;
                     break;
                 case game_tiles::DUNG_FLOOR:
-                    SDL_RenderCopy(renderer, texts.dung_floor, &screen_rect, &img_rect);
+                    texture = texts.dung_floor;
             }
+            SDL_RenderCopy(renderer, texture, &screen_rect, &img_rect);
         }
     }  
-    int px = player.x*(TILE_SIZE);
-    int py = player.y*(TILE_SIZE);
     SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-    SDL_Rect img_rect = {px, py, TILE_SIZE, TILE_SIZE};
+    SDL_Rect img_rect = {player.x * TILE_DUNGEON_SIZE, player.y * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
     if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, &screen_rect, &img_rect);
     else SDL_RenderCopy(renderer, texts.playerl, &screen_rect, &img_rect);
     
@@ -492,24 +479,22 @@ void draw(textures texts, Dungeon& dungeon)
     SDL_Texture* text_energy_sdl;
     char text_energy[20];
     sprintf(text_energy, "Energy: %d", player.energy);
-    if (player.energy > 100) text_energy_sdl = text.create_font(text_energy, false);
-    else if (player.energy <= 100) text_energy_sdl = text.create_font(text_energy, true);
-
+    text_energy_sdl = text.create_font(text_energy, player.energy < 100);
     
     SDL_Texture* text_x_sdl;
     SDL_Texture* text_y_sdl;
     char text_y[20];
     char text_x[20];
-    sprintf(text_y, "Y: %d", player.y+(player.map_y*SIZE));
-    sprintf(text_x, "X: %d", player.x+(player.map_x*SIZE));
+    sprintf(text_y, "Y: %d", player.y + (player.map_y * DUNGEON_SIZE));
+    sprintf(text_x, "X: %d", player.x + (player.map_x * DUNGEON_SIZE));
     text_y_sdl = text.create_font(text_y, false);
     text_x_sdl = text.create_font(text_x, false);
     int single_letter_size = game_size/25;
 
     int energy_number_lenght = get_intiger_lenght(player.energy);
-    int x_lenght = get_intiger_lenght(player.x+(player.map_x*SIZE));
-    int y_lenght = get_intiger_lenght(player.y+(player.map_y*SIZE));
-    //printf("%d, %d, %d\n", player.x+(player.map_x*SIZE), get_intiger_lenght(player.x+(player.map_x*SIZE)), x_lenght);
+    int x_lenght = get_intiger_lenght(player.x + (player.map_x * DUNGEON_SIZE));
+    int y_lenght = get_intiger_lenght(player.y + (player.map_y * DUNGEON_SIZE));
+    //printf("%d, %d, %d\n", player.x+(player.map_x*DUNGEON_SIZE), get_intiger_lenght(player.x+(player.map_x*DUNGEON_SIZE)), x_lenght);
     //fflush(stdout);
 
     SDL_Rect energy_text_rect = {10, 10, (energy_number_lenght+8)*single_letter_size, game_size/10};
@@ -561,7 +546,6 @@ int main(int argi, char** agrs)
     srand (time(NULL));
     player.in_dungeon = false;
     load(true);
-    save(true);
     int key;
     SDL_Event event;
     if (init_window()) return 1;
@@ -571,9 +555,9 @@ int main(int argi, char** agrs)
     for (;;)
     {   
         clear_window();
-        update_screen_list(dungeon);
+        update_screen_list();
 
-        draw(Texture, dungeon);
+        draw(Texture);
 
         while (SDL_PollEvent(&event))
         {
@@ -595,7 +579,7 @@ int main(int argi, char** agrs)
                     case SDLK_RETURN:
                     case SDLK_ESCAPE:
                     case SDLK_r:
-                        player.interact(key, dungeon);
+                        player.interact(key);
                         break;
                 }
             }

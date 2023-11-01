@@ -15,7 +15,7 @@ void Dungeon::generator()
     {
         for (int ij=0; ij<DUNGEON_SIZE; ij++)
         {
-            random_int = rand() % 2+0;
+            random_int = rand() % 2;
             if (random_int == 1 || (( dungeon_terrain_list[j-1][ij] == game_tiles::DUNG_WALL && dungeon_terrain_list[j-2][ij] == game_tiles::DUNG_WALL ) && ( dungeon_terrain_list[j][ij-1] == game_tiles::DUNG_WALL && dungeon_terrain_list[j][ij-2] == game_tiles::DUNG_WALL ) && (dungeon_terrain_list[j-1][j-1] == game_tiles::DUNG_WALL && dungeon_terrain_list[j-2][j-2] == game_tiles::DUNG_WALL)))
             {
                 dungeon_terrain_list[j][ij] = game_tiles::DUNG_FLOOR;

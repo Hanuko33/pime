@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL_image.h>
 
-using namespace std;
-
 class textures
 {
     public:

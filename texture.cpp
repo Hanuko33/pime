@@ -1,13 +1,13 @@
 #include "texture.h"
 #include "window.h"
 
-SDL_Texture* textures::load_texture(string texture_name)
+SDL_Texture* textures::load_texture(const char * texture_name)
 {
     SDL_Texture* texture = NULL;
-    SDL_Surface* loadedSurface = IMG_Load(texture_name.c_str()); 
+    SDL_Surface* loadedSurface = IMG_Load(texture_name); 
     if (loadedSurface == NULL)
     {
-        printf("Unable to load texture: %s error: %s\n", texture_name.c_str(), SDL_GetError()); 
+        printf("Unable to load texture: %s error: %s\n", texture_name, SDL_GetError()); 
     }
     else 
     {    
@@ -15,7 +15,7 @@ SDL_Texture* textures::load_texture(string texture_name)
 
         if (texture == NULL)
         {
-            printf("Unable to create texture: %s error: %s\n", texture_name.c_str(), SDL_GetError());
+            printf("Unable to create texture: %s error: %s\n", texture_name, SDL_GetError());
         }
         SDL_FreeSurface(loadedSurface);
     }
@@ -34,29 +34,4 @@ void textures::load_textures()
     playerr = load_texture("textures/playerr.png");
     playerl = load_texture("textures/playerl.png");
     run_icon = load_texture("textures/run_icon.png");
-
-    if (run_icon == NULL)
-    {
-        printf("Failed to load image: playerl.png error: %s\n", SDL_GetError());
-    }
-    if (playerl == NULL)
-    {
-        printf("Failed to load image: playerl.png error: %s\n", SDL_GetError());
-    }
-    if (playerr == NULL)
-    {
-        printf("Failed to load image: playerr.png error: %s\n", SDL_GetError());
-    }
-    if (stone == NULL)
-    {
-        printf("Failed to load image: stone.png error: %s\n", SDL_GetError());
-    }
-    if (dirt == NULL)
-    {
-        printf("Failed to load image: dirt.png error: %s\n", SDL_GetError());
-    }
-    if (tree == NULL)
-    {
-        printf("Failed to load image: tree.png error: %s\n", SDL_GetError());
-    }
 }

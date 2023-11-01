@@ -10,7 +10,7 @@ struct Player
     int y;
     int x;
     bool running;
-    void interact(int key, Dungeon& dungeon);
+    void interact(int key);
     bool going_right;
     bool in_dungeon;
     int energy = 250;

@@ -3,7 +3,6 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <errno.h>
 
 void load(bool with_player);
@@ -28,15 +27,14 @@ int Text::load_font()
 
 SDL_Texture* Text::create_font(const char* text, bool warning)
 {
-    if (!(font)) abort();
     SDL_Surface* surface;
-    if (!(warning))
+    if (warning)
     {
-        surface = TTF_RenderText_Solid(font, text, White);
+        surface = TTF_RenderText_Solid(font, text, Red);
     }
     else
     {
-        surface = TTF_RenderText_Solid(font, text, Red);
+        surface = TTF_RenderText_Solid(font, text, White);
     }
     SDL_Texture* text_sdl = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
