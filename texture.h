@@ -19,7 +19,7 @@ class textures
         SDL_Texture* dung_exit;
         SDL_Texture* run_icon;
         void load_textures();
-        SDL_Texture* load_texture(string texture_name);
+        SDL_Texture* load_texture(const char * texture_name);
 };
 
 #endif
