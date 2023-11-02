@@ -422,8 +422,8 @@ void draw(textures &texts)
     {
         game_size = WINDOW_WIDTH;
         TILE_DUNGEON_SIZE = WINDOW_WIDTH/(DUNGEON_SIZE + 1);
-    }
-    if (WINDOW_HEIGHT <= WINDOW_WIDTH)
+    } 
+	else
     {
         game_size = WINDOW_HEIGHT;
         TILE_DUNGEON_SIZE = WINDOW_HEIGHT/(DUNGEON_SIZE + 1);
@@ -459,56 +459,36 @@ void draw(textures &texts)
                 case game_tiles::DUNG_FLOOR:
                     texture = texts.dung_floor;
             }
-            SDL_RenderCopy(renderer, texture, &screen_rect, &img_rect);
+            SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
     }  
     SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
     SDL_Rect img_rect = {player.x * TILE_DUNGEON_SIZE, player.y * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
-    if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, &screen_rect, &img_rect);
-    else SDL_RenderCopy(renderer, texts.playerl, &screen_rect, &img_rect);
+    if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, NULL, &img_rect);
+    else SDL_RenderCopy(renderer, texts.playerl, NULL, &img_rect);
     
     int icon_size = game_size/10;
     if (player.running)
     {
         SDL_Rect running_icon_rect = {(game_size-(icon_size*2)), 0, icon_size, icon_size};
-        SDL_RenderCopy(renderer, texts.run_icon, &screen_rect, &running_icon_rect);
+        SDL_RenderCopy(renderer, texts.run_icon, NULL, &running_icon_rect);
     }
 
     if (player.energy > 1000) player.energy = 1000;   
 
-    SDL_Texture* text_energy_sdl;
     char text_energy[20];
-    sprintf(text_energy, "Energy: %d", player.energy);
-    text_energy_sdl = text.create_font(text_energy, player.energy < 100);
-    
-    SDL_Texture* text_x_sdl;
-    SDL_Texture* text_y_sdl;
     char text_y[20];
     char text_x[20];
+
+    sprintf(text_energy, "Energy: %d", player.energy);
     sprintf(text_y, "Y: %d", player.y + (player.map_y * DUNGEON_SIZE));
     sprintf(text_x, "X: %d", player.x + (player.map_x * DUNGEON_SIZE));
-    text_y_sdl = text.create_font(text_y, false);
-    text_x_sdl = text.create_font(text_x, false);
-    int single_letter_size = game_size/25;
-
-    int energy_number_lenght = get_intiger_lenght(player.energy);
-    int x_lenght = get_intiger_lenght(player.x + (player.map_x * DUNGEON_SIZE));
-    int y_lenght = get_intiger_lenght(player.y + (player.map_y * DUNGEON_SIZE));
-    //printf("%d, %d, %d\n", player.x+(player.map_x*DUNGEON_SIZE), get_intiger_lenght(player.x+(player.map_x*DUNGEON_SIZE)), x_lenght);
-    //fflush(stdout);
-
-    SDL_Rect energy_text_rect = {10, 10, (energy_number_lenght+8)*single_letter_size, game_size/10};
-    SDL_Rect energy_y_rect = {10, game_size/10, (y_lenght+3)*single_letter_size, game_size/10};
-    SDL_Rect energy_x_rect = {10, game_size/10*2, (x_lenght+3)*single_letter_size, game_size/10};
-
-    SDL_RenderCopy(renderer, text_x_sdl, NULL, &energy_x_rect);
-    SDL_RenderCopy(renderer, text_y_sdl, NULL, &energy_y_rect);
-    SDL_RenderCopy(renderer, text_energy_sdl, NULL, &energy_text_rect);
+	
+	text.write_text(10, 10, text_energy, text.White);
+	text.write_text(10, game_size/10, text_y, text.White);
+	text.write_text(10, game_size/5, text_x, text.White);
     
-    SDL_DestroyTexture(text_energy_sdl);
-    SDL_DestroyTexture(text_y_sdl);
-    SDL_DestroyTexture(text_x_sdl);
-    switch(in_menu)
+	switch(in_menu)
     {
         case menu_types::CLOSED:
             break;
@@ -548,8 +528,10 @@ int main(int argi, char** agrs)
     load(true);
     int key;
     SDL_Event event;
-    if (init_window()) return 1;
-    if (text.load_font()) {printf("failed to load font");return 1;};
+    
+	if (init_window()) return 1;
+    if (text.load_font()) return 1;
+
     textures Texture;
     Texture.load_textures();
     for (;;)

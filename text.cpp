@@ -41,6 +41,33 @@ SDL_Texture* Text::create_font(const char* text, bool warning)
     return text_sdl;
 }
 
+void Text::write_text(int x, int y, const char * text, SDL_Color color)
+{
+    SDL_Surface* surface;
+	surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture* text_sdl = SDL_CreateTextureFromSurface(renderer, surface);
+
+    int WINDOW_WIDTH;
+    int WINDOW_HEIGHT;
+    SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
+
+    int game_size;
+    
+	if (WINDOW_WIDTH < WINDOW_HEIGHT)
+    {
+        game_size = WINDOW_WIDTH;
+	} else {
+		game_size = WINDOW_HEIGHT;
+	}
+    
+	int t_size = strlen(text) * game_size/25;
+
+    SDL_Rect rect = {x, y, t_size, game_size/10};
+    SDL_RenderCopy(renderer, text_sdl, NULL, &rect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(text_sdl);
+}
+
 void Text::draw_text_to_menu(const char* text, int which_option, int options, bool first)
 {   
     int WINDOW_WIDTH;
@@ -81,7 +108,6 @@ void Text::draw_text_to_menu(const char* text, int which_option, int options, bo
     SDL_Rect text_rect = {modx, mody+menu_opt_size*which_option, (modx2-modx), menu_opt_size};
     SDL_RenderCopy(renderer, text_sdl, NULL, &text_rect);
     SDL_DestroyTexture(text_sdl);
-
 }
 
 
