@@ -94,7 +94,7 @@ void load(char with_player)
         if ((file = fopen(player_path, "r")))
         {
             fscanf(file, "%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy);
-            player.in_dungeon=temp & 255;
+            player.in_dungeon=(char)(temp & 255);
         }
         else 
         {
