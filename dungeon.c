@@ -1,5 +1,7 @@
 #include "dungeon.h"
 
+enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
+
 void dungeon_generator()
 {
     int random_int = 0;

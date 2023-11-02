@@ -15,7 +15,7 @@ enum  game_tiles
     TILE_DUNG_ENTRANCE
 };
 
-enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
+extern enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
 void dungeon_generator();
 
 #endif

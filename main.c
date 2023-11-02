@@ -25,9 +25,9 @@ void generator()
     char chunk_contains_dung_entrance = 0;
 
     printf("running generator...\n");
-    for (int i=0; i<=DUNGEON_SIZE; i++)
+    for (int i=0; i<DUNGEON_SIZE; i++)
     {
-        for (int j=0; j<=DUNGEON_SIZE; j++)
+        for (int j=0; j<DUNGEON_SIZE; j++)
         {
             type_int = rand() % 3;
             switch (type_int)
