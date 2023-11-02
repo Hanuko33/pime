@@ -9,13 +9,13 @@ struct Player
     int map_x;
     int y;
     int x;
-    bool running;
-    void interact(int key);
-    bool going_right;
-    bool in_dungeon;
-    int energy = 250;
+    char running;
+    char going_right;
+    char in_dungeon;
+    int energy;
 };
 
-extern Player player;
+extern struct Player player;
+void player_interact(int key );
 
 #endif

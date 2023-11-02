@@ -1,4 +1,3 @@
-#include <iostream>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,63 +13,17 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-using namespace std;
+enum game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
+enum game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
 
-game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
-game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
-Dungeon dungeon;
-Text text;
-
-Player player;
-
-int get_intiger_lenght(int intiger)
-{
-    int lenght;
-
-    if ((intiger/1000000000)>=1 || (intiger/100000000)<=-1)
-    {
-        return 10;
-    }
-    if ((intiger/100000000)>=1 || (intiger/10000000)<=-1)
-    {
-        return 9;
-    }
-    if ((intiger/10000000)>=1 || (intiger/1000000)<=-1)
-    {
-        return 8;
-    }
-    if ((intiger/1000000)>=1 || (intiger/100000)<=-1)
-    {
-        return 7;
-    }
-    if ((intiger/100000)>=1 || (intiger/10000)<=-1)
-    {
-        return 6;
-    }
-    if ((intiger/10000)>=1 || (intiger/1000)<=-1)
-    {
-        return 5;
-    }
-    if ((intiger/1000)>=1 || (intiger/100)<=-1)
-    {
-        return 4;
-    }
-    if ((intiger/100)>=1 || (intiger/10)<=-1)
-    {
-        return 3;
-    }
-    if ((intiger/10)>=1 || (intiger/1)<=-1)
-    {
-        return 2;
-    }
-    return 1;
-}
+struct Player player;
 
 void generator()
 {
     int random = 0;
     int type_int = 0;
-    bool chunk_contains_dung_entrance = false;
+    char chunk_contains_dung_entrance = 0;
+
     printf("running generator...\n");
     for (int i=0; i<=DUNGEON_SIZE; i++)
     {
@@ -80,26 +33,26 @@ void generator()
             switch (type_int)
             {
                 case 0:
-                    terrain_list[i][j] = game_tiles::STONE;
+                    terrain_list[i][j] = TILE_STONE;
                     break;
                 case 1:
-                    terrain_list[i][j] = game_tiles::DIRT;
+                    terrain_list[i][j] = TILE_DIRT;
                     break;
                 case 2:
                     random = rand() % 1000+0;
                     if (random == 51 && !(chunk_contains_dung_entrance))
                     {
-                        terrain_list[i][j] = game_tiles::DUNG_ENTRANCE;
-                        chunk_contains_dung_entrance = true;
+                        terrain_list[i][j] = TILE_DUNG_ENTRANCE;
+                        chunk_contains_dung_entrance = 1;
                     }
-                    else terrain_list[i][j] = game_tiles::TREE;
+                    else terrain_list[i][j] = TILE_TREE;
                     break;
             }
         }
     }
 }
 
-void save(bool with_player)
+void save(char with_player)
 {
     if (with_player)
     {
@@ -118,7 +71,7 @@ void save(bool with_player)
         char filename[31];
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
         FILE *chunk = fopen(filename, "w");
-        fwrite(dungeon.dungeon_terrain_list, sizeof(dungeon.dungeon_terrain_list), 1, chunk);
+        fwrite(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
         fclose(chunk);
     }
     else
@@ -130,7 +83,7 @@ void save(bool with_player)
         fclose(chunk);
     }
 }
-void load(bool with_player)
+void load(char with_player)
 {
     if (with_player)
     {
@@ -141,7 +94,7 @@ void load(bool with_player)
         if ((file = fopen(player_path, "r")))
         {
             fscanf(file, "%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy);
-            player.in_dungeon=temp;
+            player.in_dungeon=temp & 255;
         }
         else 
         {
@@ -158,12 +111,12 @@ void load(bool with_player)
         if ((chunk = fopen(filename, "r")))
         {
             chunk = fopen(filename, "r");
-            fread(dungeon.dungeon_terrain_list, sizeof(dungeon.dungeon_terrain_list), 1, chunk);
+            fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
         }
         else
         {
-            dungeon.generator();
+            dungeon_generator();
         }
     }
     else
@@ -185,212 +138,212 @@ void load(bool with_player)
 }
 
 
-void Player::interact(int key)
+void player_interact(int key )
 {
     switch (key)
     {
         case SDLK_ESCAPE:
         {
-            if ((!(in_menu == menu_types::EXIT)) && (!(in_menu == menu_types::CLOSED)))
+            if ((!(in_menu == MENU_EXIT)) && (!(in_menu == MENU_CLOSED)))
             {
-                in_menu = menu_types::CLOSED;
+                in_menu = MENU_CLOSED;
                 break;
             }
-            if (in_menu == menu_types::CLOSED)
+            if (in_menu == MENU_CLOSED)
             {
-                in_menu = menu_types::EXIT;
+                in_menu = MENU_EXIT;
                 break;
             }
-            if (in_menu == menu_types::EXIT)
+            if (in_menu == MENU_EXIT)
             {
-                in_menu = menu_types::CLOSED;
+                in_menu = MENU_CLOSED;
                 break;
             }
             break;
         }
         case SDLK_m:
         {
-            if (in_menu == menu_types::CLOSED) 
-                in_menu = menu_types::ENERGY_MENU;
-            else if (in_menu == menu_types::ENERGY_MENU) 
-                in_menu = menu_types::CLOSED;
+            if (in_menu == MENU_CLOSED) 
+                in_menu = MENU_ENERGY;
+            else if (in_menu == MENU_ENERGY) 
+                in_menu = MENU_CLOSED;
 
             break;
         }
         case SDLK_DOWN:
         case SDLK_s:
         {
-            if (!(in_menu == menu_types::CLOSED))
+            if (!(in_menu == MENU_CLOSED))
             {
-                text.menu_pos++;
+                menu_pos++;
                 break;
             }
 
-            if (in_dungeon)
+            if (player.in_dungeon)
             {
-                if(y < DUNGEON_SIZE-1 && !(dungeon.dungeon_terrain_list[x][y+1] == game_tiles::DUNG_WALL))
+                if(player.y < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x][player.y+1] == TILE_DUNG_WALL))
                 {
-                    if (running) 
+                    if (player.running) 
                     {
-                        y++;
-                        energy--;
+                        player.y++;
+                        player.energy--;
                     }
-                    y++;
-                    energy--;
+                    player.y++;
+                    player.energy--;
                     break;
                 }
                 break;
             }
             
-            if (running)
+            if (player.running)
             {
-                if (running) energy--;
-                if (y < DUNGEON_SIZE-1) y++;
+                if (player.running) player.energy--;
+                if (player.y < DUNGEON_SIZE-1) player.y++;
                 else {
-                        y=0; 
-                        save(false);
-                        map_y++;
-                        load(false);
+                        player.y=0; 
+                        save(0);
+                        player.map_y++;
+                        load(0);
                 }
             }
             
-            if (y < DUNGEON_SIZE-1) y++;
-            else {y=0; save(false); map_y++; load(false);}
-            energy--;
+            if (player.y < DUNGEON_SIZE-1) player.y++;
+            else {player.y=0; save(0); player.map_y++; load(0);}
+            player.energy--;
             
             break;
         }
         case SDLK_w:
         case SDLK_UP:
         {
-            if (!(in_menu == menu_types::CLOSED))
+            if (!(in_menu == MENU_CLOSED))
             {       
-                text.menu_pos--;
-                if (text.menu_pos < 0)
+                menu_pos--;
+                if (menu_pos < 0)
                 {
-                    text.menu_pos=0;
+                    menu_pos=0;
                 }
                 break;
             }
 
-            if (in_dungeon)
+            if (player.in_dungeon)
             {
-                if (y > 0 && !(dungeon.dungeon_terrain_list[x][y-1] == game_tiles::DUNG_WALL))
+                if (player.y > 0 && !(dungeon_terrain_list[player.x][player.y-1] == TILE_DUNG_WALL))
                 {
-                    if (running)
+                    if (player.running)
                     {
-                            y--;
-                            energy--;
+                            player.y--;
+                            player.energy--;
                     }
-                    y--;
-                    energy--;
+                    player.y--;
+                    player.energy--;
                     break;
                 }
                 break;
             }
 
             // IN MAIN WORLD
-            if (running)
+            if (player.running)
             {
-                if (y > 0) y--;
-                else {y=DUNGEON_SIZE-1; save(false); map_y--;load(false);}
-                energy--;
+                if (player.y > 0) player.y--;
+                else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
+                player.energy--;
             }
-            if (y > 0) y--;
-            else {y=DUNGEON_SIZE-1; save(false); map_y--;load(false);}
+            if (player.y > 0) player.y--;
+            else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
             
-            energy--;
+           player.energy--;
             break;
         }
         case SDLK_RIGHT:
         case SDLK_d:
         {
-            if (!(in_menu == menu_types::CLOSED))
+            if (!(in_menu == MENU_CLOSED))
             {
                 break;
             }
-            if (in_dungeon)
+            if (player.in_dungeon)
             {
-                if (running)
+                if (player.running)
                 {
-                    if (x < DUNGEON_SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
+                    if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) player.x++;
                 }
-                if (x < DUNGEON_SIZE-1 && !(dungeon.dungeon_terrain_list[x+1][y] == game_tiles::DUNG_WALL)) x++;
+                if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) player.x++;
             }
             else
             {
-                if (running)
+                if (player.running)
                 {
-                    if (x < DUNGEON_SIZE-1) x++;
-                    else if (!in_dungeon) {x=0; save(false); map_x++;load(false);}
+                    if (player.x < DUNGEON_SIZE-1) player.x++;
+                    else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
                 }
-                if (x < DUNGEON_SIZE-1) x++;
-                else if (!in_dungeon) {x=0; save(false); map_x++;load(false);}
+                if (player.x < DUNGEON_SIZE-1) player.x++;
+                else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
             }
-            energy--;
-            if (running) energy--;
-            going_right = true;
+            player.energy--;
+            if (player.running) player.energy--;
+            player.going_right = 1;
             break;
         }
         case SDLK_LEFT:
         case SDLK_a:
         {
-            if (!(in_menu == menu_types::CLOSED))
+            if (!(in_menu == MENU_CLOSED))
             {
                 break;
             }
-            if (in_dungeon)
+            if (player.in_dungeon)
             {
-                if (running)
+                if (player.running)
                 {
-                    if (x > 0 && !(dungeon.dungeon_terrain_list[x-1][y] == game_tiles::DUNG_WALL)) x--;
+                    if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL)) player.x--;
                 }
-                if (x > 0 && !(dungeon.dungeon_terrain_list[x-1][y] == game_tiles::DUNG_WALL)) x--;
+                if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL)) player.x--;
             }
             else
             {
-                if (running)
+                if (player.running)
                 {
-                    if (x > 0) x--;
-                    else if (!in_dungeon) {x=DUNGEON_SIZE-1; save(false); map_x--;load(false);}
+                    if (player.x > 0) player.x--;
+                    else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
                 }
-                if (x > 0) x--;
-                else if (!in_dungeon) {x=DUNGEON_SIZE-1; save(false); map_x--;load(false);}
+                if (player.x > 0) player.x--;
+                else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
             }
-            energy--;
-            if (running) energy--;
-            going_right = false;
+            player.energy--;
+            if (player.running) player.energy--;
+            player.going_right = 0;
             break;
         }
         case SDLK_r:
         {  
-            if (!running)
+            if (!player.running)
             {
-                running = true;
+                player.running = 1;
             }
-            else if (running)
+            else if (player.running)
             {
-                running = false;
+                player.running = 0;
             }
             break;
         }
         case SDLK_RETURN:
         case SDLK_e:
         {
-            if (!(in_menu == menu_types::CLOSED))
+            if (!(in_menu == MENU_CLOSED))
             {
-                text.interact(); 
+                interact(); 
                 break;
             }
 
-            if (screen_list[x][y] == game_tiles::DUNG_EXIT)
+            if (screen_list[player.x][player.y] == TILE_DUNG_EXIT)
             {
-                in_dungeon = false;
+                player.in_dungeon = 0;
             }
-            else if (screen_list[x][y] == game_tiles::DUNG_ENTRANCE)
+            else if (screen_list[player.x][player.y] == TILE_DUNG_ENTRANCE)
             {
-                in_dungeon = true;
-                load(false);
+                player.in_dungeon = 1;
+                load(0);
             }
             break;
         }
@@ -404,14 +357,14 @@ void update_screen_list()
         for (int j=0; j < DUNGEON_SIZE; j++)
         {
             if (player.in_dungeon)
-                screen_list[i][j] = dungeon.dungeon_terrain_list[i][j];
+                screen_list[i][j] = dungeon_terrain_list[i][j];
             else
                 screen_list[i][j] = terrain_list[i][j];
         }
     } 
 }
 
-void draw(textures &texts)
+void draw()
 {
     int WINDOW_WIDTH;
     int WINDOW_HEIGHT;
@@ -438,40 +391,40 @@ void draw(textures &texts)
             SDL_Rect img_rect = {x, j * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
             switch (screen_list[i][j])
             {
-                case game_tiles::STONE:    
-                    texture = texts.stone;
+                case TILE_STONE:    
+                    texture = Texture.stone;
                     break;
-                case game_tiles::DIRT:
-                    texture = texts.dirt;
+                case TILE_DIRT:
+                    texture = Texture.dirt;
                     break;
-                case game_tiles::TREE:    
-                    texture = texts.tree;
+                case TILE_TREE:    
+                    texture = Texture.tree;
                     break;
-                case game_tiles::DUNG_ENTRANCE:
-                    texture = texts.dung_entrance;
+                case TILE_DUNG_ENTRANCE:
+                    texture = Texture.dung_entrance;
                     break;
-                case game_tiles::DUNG_EXIT:
-                    texture = texts.dung_exit;
+                case TILE_DUNG_EXIT:
+                    texture = Texture.dung_exit;
                     break;
-                case game_tiles::DUNG_WALL:
-                    texture = texts.dung_wall;
+                case TILE_DUNG_WALL:
+                    texture = Texture.dung_wall;
                     break;
-                case game_tiles::DUNG_FLOOR:
-                    texture = texts.dung_floor;
+                case TILE_DUNG_FLOOR:
+                    texture = Texture.dung_floor;
             }
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
     }  
     SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
     SDL_Rect img_rect = {player.x * TILE_DUNGEON_SIZE, player.y * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
-    if (player.going_right) SDL_RenderCopy(renderer, texts.playerr, NULL, &img_rect);
-    else SDL_RenderCopy(renderer, texts.playerl, NULL, &img_rect);
+    if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
+    else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
     
     int icon_size = game_size/10;
     if (player.running)
     {
         SDL_Rect running_icon_rect = {(game_size-(icon_size*2)), 0, icon_size, icon_size};
-        SDL_RenderCopy(renderer, texts.run_icon, NULL, &running_icon_rect);
+        SDL_RenderCopy(renderer, Texture.run_icon, NULL, &running_icon_rect);
     }
 
     if (player.energy > 1000) player.energy = 1000;   
@@ -484,24 +437,11 @@ void draw(textures &texts)
     sprintf(text_y, "Y: %d", player.y + (player.map_y * DUNGEON_SIZE));
     sprintf(text_x, "X: %d", player.x + (player.map_x * DUNGEON_SIZE));
 	
-	text.write_text(10, 10, text_energy, text.White);
-	text.write_text(10, game_size/10, text_y, text.White);
-	text.write_text(10, game_size/5, text_x, text.White);
+	write_text(10, 10, text_energy, player.energy < 100 ? Red : White);
+	write_text(10, game_size/10, text_y, White);
+	write_text(10, game_size/5, text_x, White);
     
-	switch(in_menu)
-    {
-        case menu_types::CLOSED:
-            break;
-        case menu_types::ENERGY_MENU:
-            text.show_menu(menu_types::ENERGY_MENU);
-            break;
-        case menu_types::EXIT:
-            text.show_menu(menu_types::EXIT);
-            break;
-        case menu_types::HELP:
-            text.show_menu(menu_types::HELP);
-            break;
-    }
+    show_menu(in_menu);
 }
 
 int main(int argi, char** agrs)
@@ -524,22 +464,23 @@ int main(int argi, char** agrs)
     }
 
     srand (time(NULL));
-    player.in_dungeon = false;
-    load(true);
+    player.in_dungeon = 0;
+	player.energy=250;
+
+    load(1);
     int key;
     SDL_Event event;
     
 	if (init_window()) return 1;
-    if (text.load_font()) return 1;
+    if (load_font()) return 1;
 
-    textures Texture;
-    Texture.load_textures();
+    load_textures();
     for (;;)
     {   
         clear_window();
         update_screen_list();
 
-        draw(Texture);
+        draw();
 
         while (SDL_PollEvent(&event))
         {
@@ -561,7 +502,7 @@ int main(int argi, char** agrs)
                     case SDLK_RETURN:
                     case SDLK_ESCAPE:
                     case SDLK_r:
-                        player.interact(key);
+                        player_interact(key);
                         break;
                 }
             }

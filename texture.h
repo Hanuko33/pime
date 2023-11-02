@@ -1,13 +1,11 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <string>
 #include <stdlib.h>
 #include <SDL2/SDL_image.h>
 
-class textures
+struct textures
 {
-    public:
         SDL_Texture* playerr;
         SDL_Texture* playerl;
         SDL_Texture* stone;
@@ -18,8 +16,11 @@ class textures
         SDL_Texture* dung_entrance;
         SDL_Texture* dung_exit;
         SDL_Texture* run_icon;
-        void load_textures();
-        SDL_Texture* load_texture(const char * texture_name);
 };
+    
+extern struct textures Texture;
+
+void load_textures();
+SDL_Texture* load_texture(const char * texture_name);
 
 #endif

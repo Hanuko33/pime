@@ -4,22 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum class game_tiles
+enum  game_tiles
 {
-    STONE,
-    DIRT,
-    TREE,
-    DUNG_WALL,
-    DUNG_FLOOR,
-    DUNG_EXIT,
-    DUNG_ENTRANCE
+    TILE_STONE,
+    TILE_DIRT,
+    TILE_TREE,
+    TILE_DUNG_WALL,
+    TILE_DUNG_FLOOR,
+    TILE_DUNG_EXIT,
+    TILE_DUNG_ENTRANCE
 };
 
-class Dungeon
-{
-    public:
-        game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
-        void generator();
-};
+enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
+void dungeon_generator();
 
 #endif

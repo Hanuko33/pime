@@ -5,12 +5,19 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-void load(bool with_player);
-void save(bool with_player);
+TTF_Font* font;
+int menu_pos = 0;
+SDL_Color White = {255, 255, 255};
+SDL_Color Red = {255, 0, 0};
+
+void load(char with_player);
+void save(char with_player);
 
 #define FONT_NAME "nerdfont.ttf"
-menu_types in_menu = menu_types::CLOSED;
-int Text::load_font()
+
+enum menu_types in_menu = MENU_CLOSED;
+
+int load_font()
 {
      struct stat statbuf;
     int ret;
@@ -25,7 +32,7 @@ int Text::load_font()
     else return 0;
 }
 
-SDL_Texture* Text::create_font(const char* text, bool warning)
+SDL_Texture* create_font(const char* text, char warning)
 {
     SDL_Surface* surface;
     if (warning)
@@ -41,7 +48,7 @@ SDL_Texture* Text::create_font(const char* text, bool warning)
     return text_sdl;
 }
 
-void Text::write_text(int x, int y, const char * text, SDL_Color color)
+void write_text(int x, int y, const char * text, SDL_Color color)
 {
     SDL_Surface* surface;
 	surface = TTF_RenderText_Solid(font, text, color);
@@ -68,7 +75,7 @@ void Text::write_text(int x, int y, const char * text, SDL_Color color)
     SDL_DestroyTexture(text_sdl);
 }
 
-void Text::draw_text_to_menu(const char* text, int which_option, int options, bool first)
+void draw_text_to_menu(const char* text, int which_option, int options, char first)
 {   
     int WINDOW_WIDTH;
     int WINDOW_HEIGHT;  
@@ -104,50 +111,50 @@ void Text::draw_text_to_menu(const char* text, int which_option, int options, bo
     }
     char text_but_char[100];
     strcpy(text_but_char, text);
-    SDL_Texture* text_sdl = create_font(text_but_char, false);
+    SDL_Texture* text_sdl = create_font(text_but_char, 0);
     SDL_Rect text_rect = {modx, mody+menu_opt_size*which_option, (modx2-modx), menu_opt_size};
     SDL_RenderCopy(renderer, text_sdl, NULL, &text_rect);
     SDL_DestroyTexture(text_sdl);
 }
 
 
-void Text::show_menu(menu_types menu_type)
+void show_menu(enum menu_types menu_type)
 {
     switch(menu_type)
     {
-        case menu_types::CLOSED:
+        case MENU_CLOSED:
             break;
-        case menu_types::ENERGY_MENU:
-            draw_text_to_menu("Regain 100 energy    ", 0, 2, true);
-            draw_text_to_menu("Set the energy to 1000", 1, 2, false);
+        case MENU_ENERGY:
+            draw_text_to_menu("Regain 100 energy    ", 0, 2, 1);
+            draw_text_to_menu("Set the energy to 1000", 1, 2, 0);
             break;
 
-        case menu_types::EXIT:
-            draw_text_to_menu("Save & Exit          ", 0, 6, true);
-            draw_text_to_menu("Exit                 ", 1, 6, false);
-            draw_text_to_menu("Save                 ", 2, 6, false);
-            draw_text_to_menu("Load                 ", 3, 6, false);
-            draw_text_to_menu("Help                 ", 4, 6, false);
-            draw_text_to_menu("Cancel               ", 5, 6, false);
+        case MENU_EXIT:
+            draw_text_to_menu("Save & Exit          ", 0, 6, 1);
+            draw_text_to_menu("Exit                 ", 1, 6, 0);
+            draw_text_to_menu("Save                 ", 2, 6, 0);
+            draw_text_to_menu("Load                 ", 3, 6, 0);
+            draw_text_to_menu("Help                 ", 4, 6, 0);
+            draw_text_to_menu("Cancel               ", 5, 6, 0);
             break;
-        case menu_types::HELP:
-            draw_text_to_menu("ESC - game menu      ", 0, 6, true);
-            draw_text_to_menu("m - energy menu      ", 1, 6, false);
-            draw_text_to_menu("arrows - moves       ", 2, 6, false);
-            draw_text_to_menu("w, a, s, d - moves   ", 3, 6, false);
-            draw_text_to_menu("r - switch running   ", 4, 6, false);
-            draw_text_to_menu("e, ENTER - interact  ", 5, 6, false);
+        case MENU_HELP:
+            draw_text_to_menu("ESC - game menu      ", 0, 6, 1);
+            draw_text_to_menu("m - energy menu      ", 1, 6, 0);
+            draw_text_to_menu("arrows - moves       ", 2, 6, 0);
+            draw_text_to_menu("w, a, s, d - moves   ", 3, 6, 0);
+            draw_text_to_menu("r - switch running   ", 4, 6, 0);
+            draw_text_to_menu("e, ENTER - interact  ", 5, 6, 0);
             break;
     }
 }
 
-void Text::interact()
+void interact()
 {
     switch(in_menu)
     {
-        case menu_types::CLOSED:
+        case MENU_CLOSED:
             break;
-        case menu_types::ENERGY_MENU:
+        case MENU_ENERGY:
             switch(menu_pos)
             {
                 case 0:
@@ -157,36 +164,36 @@ void Text::interact()
                     player.energy=1000;
                     break;
             }
-            in_menu = menu_types::CLOSED;
+            in_menu = MENU_CLOSED;
             break;
-        case menu_types::EXIT:
+        case MENU_EXIT:
             switch(menu_pos)
             {
                 case 0:
-                    save(true);
+                    save(1);
                 case 1:
                     SDL_Quit();
-                    in_menu = menu_types::CLOSED;
+                    in_menu = MENU_CLOSED;
                     exit(0);
                     break;
                 case 2:
-                    save(true);
-                    in_menu = menu_types::CLOSED;
+                    save(1);
+                    in_menu = MENU_CLOSED;
                     break;
                 case 3:
-                    load(true);
-                    in_menu = menu_types::CLOSED;
+                    load(1);
+                    in_menu = MENU_CLOSED;
                     break;
                 case 4: 
-                    in_menu = menu_types::HELP;
+                    in_menu = MENU_HELP;
                     break;
                 case 5:
-                    in_menu = menu_types::CLOSED;
+                    in_menu = MENU_CLOSED;
                     break;
             }
             break;
-        case menu_types::HELP:
-            in_menu = menu_types::CLOSED;
+        case MENU_HELP:
+            in_menu = MENU_CLOSED;
             break;
     }
 }
