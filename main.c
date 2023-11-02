@@ -7,11 +7,11 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "dungeon.h"
 #include "texture.h"
-#include "text.h"
 #include "player.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "menu.h"
 
 enum game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
 enum game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];

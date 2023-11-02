@@ -9,7 +9,7 @@ pkg_check_modules(SDL2_TTF SDL2_ttf)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(game_new window.c text.c texture.c dungeon.c main.c)
+add_executable(game_new window.c text.c texture.c dungeon.c main.c menu.c)
 
 target_link_libraries(game_new
     SDL2 SDL2_gfx SDL2_image SDL2_ttf
