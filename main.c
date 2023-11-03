@@ -422,7 +422,7 @@ int main(int argi, char** agrs)
     if (ret)
     {
 #if defined(_WIN32)
-        _mkdir("world");
+        mkdir("world");
 #else
         mkdir("world", 0777);
 #endif
