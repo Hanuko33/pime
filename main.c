@@ -39,7 +39,7 @@ void generator()
                     terrain_list[i][j] = TILE_DIRT;
                     break;
                 case 2:
-                    random = rand() % 1000+0;
+                    random = rand() % 1000;
                     if (random == 51 && !(chunk_contains_dung_entrance))
                     {
                         terrain_list[i][j] = TILE_DUNG_ENTRANCE;
