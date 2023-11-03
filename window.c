@@ -16,7 +16,7 @@ int  init_window()
 	}
     SDL_SetWindowTitle(main_window, "game_window");
     SDL_SetWindowPosition(main_window, 0,0);
-    SDL_SetWindowSize(main_window, 600, 600);
+    SDL_SetWindowSize(main_window, 512, 512);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     int imgFlags = IMG_INIT_PNG;

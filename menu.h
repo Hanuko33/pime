@@ -3,19 +3,38 @@
 
 #include "text.h"
 
-enum menu_types
+enum menu_actions
 {
-    MENU_CLOSED,
-    MENU_ENERGY,
+    MENU_CANCEL,
+    MENU_SAVE_EXIT,
     MENU_EXIT,
-    MENU_HELP
+    MENU_SAVE,
+    MENU_LOAD,
+    MENU_HELP,
+    MENU_REGAIN,
+    MENU_BOOST,
 };
-extern enum menu_types in_menu;
-extern int menu_pos;
 
-void interact();
-void show_menu(enum menu_types menu_type);
-void draw_text_to_menu(const char* text, int which_option, int options, char first);
+
+struct menu_struct
+{
+    int options;
+    int menu_pos;
+    int added;
+    const char ** entries;
+    enum menu_actions * actions;
+};
+
+extern enum menu_types in_menu;
+extern struct menu_struct menu_main;
+extern struct menu_struct menu_energy;
+extern struct menu_struct menu_help;
+extern struct menu_struct * current_menu;
+
+int interact();
+void show_menu();
+void create_menus();
+int  menu_interract(int key);
 
 #endif
 

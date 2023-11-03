@@ -140,45 +140,13 @@ void load(char with_player)
 
 void player_interact(int key )
 {
+    if ( menu_interract(key)) return;
+    
     switch (key)
     {
-        case SDLK_ESCAPE:
-        {
-            if ((!(in_menu == MENU_EXIT)) && (!(in_menu == MENU_CLOSED)))
-            {
-                in_menu = MENU_CLOSED;
-                break;
-            }
-            if (in_menu == MENU_CLOSED)
-            {
-                in_menu = MENU_EXIT;
-                break;
-            }
-            if (in_menu == MENU_EXIT)
-            {
-                in_menu = MENU_CLOSED;
-                break;
-            }
-            break;
-        }
-        case SDLK_m:
-        {
-            if (in_menu == MENU_CLOSED) 
-                in_menu = MENU_ENERGY;
-            else if (in_menu == MENU_ENERGY) 
-                in_menu = MENU_CLOSED;
-
-            break;
-        }
         case SDLK_DOWN:
         case SDLK_s:
         {
-            if (!(in_menu == MENU_CLOSED))
-            {
-                menu_pos++;
-                break;
-            }
-
             if (player.in_dungeon)
             {
                 if(player.y < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x][player.y+1] == TILE_DUNG_WALL))
@@ -216,16 +184,6 @@ void player_interact(int key )
         case SDLK_w:
         case SDLK_UP:
         {
-            if (!(in_menu == MENU_CLOSED))
-            {       
-                menu_pos--;
-                if (menu_pos < 0)
-                {
-                    menu_pos=0;
-                }
-                break;
-            }
-
             if (player.in_dungeon)
             {
                 if (player.y > 0 && !(dungeon_terrain_list[player.x][player.y-1] == TILE_DUNG_WALL))
@@ -258,10 +216,6 @@ void player_interact(int key )
         case SDLK_RIGHT:
         case SDLK_d:
         {
-            if (!(in_menu == MENU_CLOSED))
-            {
-                break;
-            }
             if (player.in_dungeon)
             {
                 if (player.running)
@@ -288,10 +242,6 @@ void player_interact(int key )
         case SDLK_LEFT:
         case SDLK_a:
         {
-            if (!(in_menu == MENU_CLOSED))
-            {
-                break;
-            }
             if (player.in_dungeon)
             {
                 if (player.running)
@@ -330,12 +280,6 @@ void player_interact(int key )
         case SDLK_RETURN:
         case SDLK_e:
         {
-            if (!(in_menu == MENU_CLOSED))
-            {
-                interact(); 
-                break;
-            }
-
             if (screen_list[player.x][player.y] == TILE_DUNG_EXIT)
             {
                 player.in_dungeon = 0;
@@ -370,16 +314,16 @@ void draw()
     int WINDOW_HEIGHT;
     int game_size;
     SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
-    int TILE_DUNGEON_SIZE = 16;
+    int TILE_DUNGEON_SIZE;
     if (WINDOW_WIDTH < WINDOW_HEIGHT)
     {
         game_size = WINDOW_WIDTH;
-        TILE_DUNGEON_SIZE = WINDOW_WIDTH/(DUNGEON_SIZE + 1);
+        TILE_DUNGEON_SIZE = WINDOW_WIDTH/(DUNGEON_SIZE);
     } 
 	else
     {
         game_size = WINDOW_HEIGHT;
-        TILE_DUNGEON_SIZE = WINDOW_HEIGHT/(DUNGEON_SIZE + 1);
+        TILE_DUNGEON_SIZE = WINDOW_HEIGHT/(DUNGEON_SIZE);
     }
     for (int i=0; i<(DUNGEON_SIZE); i++)
     {
@@ -387,7 +331,6 @@ void draw()
         for (int j=0; j<DUNGEON_SIZE; j++)
         {
             SDL_Texture *texture;
-            SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
             SDL_Rect img_rect = {x, j * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
             switch (screen_list[i][j])
             {
@@ -415,7 +358,6 @@ void draw()
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
     }  
-    SDL_Rect screen_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
     SDL_Rect img_rect = {player.x * TILE_DUNGEON_SIZE, player.y * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
     if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
     else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
@@ -437,11 +379,12 @@ void draw()
     sprintf(text_y, "Y: %d", player.y + (player.map_y * DUNGEON_SIZE));
     sprintf(text_x, "X: %d", player.x + (player.map_x * DUNGEON_SIZE));
 	
-	write_text(10, 10, text_energy, player.energy < 100 ? Red : White);
-	write_text(10, game_size/10, text_y, White);
-	write_text(10, game_size/5, text_x, White);
+	write_text(10, 10, text_energy, player.energy < 100 ? Red : White, 0,0);
+	write_text(10, game_size/10, text_y, White,0,0);
+	write_text(10, game_size/5, text_x, White,0,0);
     
-    show_menu(in_menu);
+    
+    show_menu();
 }
 
 int main(int argi, char** agrs)
@@ -475,6 +418,7 @@ int main(int argi, char** agrs)
     if (load_font()) return 1;
 
     load_textures();
+    create_menus();
     for (;;)
     {   
         clear_window();
@@ -505,6 +449,11 @@ int main(int argi, char** agrs)
                         player_interact(key);
                         break;
                 }
+            }
+            if (event.type=SDL_WINDOWEVENT)
+            {
+                //TODO:
+                  //  SDL_SetWindowSize(main_window, TILE_DUNGEON_SIZE * DUNGEON_SIZE, TILE_DUNGEON_SIZE * DUNGEON_SIZE);
             }
             if (event.type == SDL_KEYUP)
             {
