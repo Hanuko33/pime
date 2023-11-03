@@ -421,7 +421,11 @@ int main(int argi, char** agrs)
     ret = stat("world", &statbuf);
     if (ret)
     {
+#if defined(_WIN32)
+        _mkdir("world");
+#else
         mkdir("world", 0777);
+#endif
     }
 
     srand (time(NULL));
