@@ -387,6 +387,24 @@ void draw()
     show_menu();
 }
 
+void update_window_size()
+{
+    int tile_size;
+    int WINDOW_WIDTH;
+    int WINDOW_HEIGHT;
+    SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
+    if (WINDOW_WIDTH < WINDOW_HEIGHT)
+    {
+        tile_size = WINDOW_WIDTH/(DUNGEON_SIZE);
+    } 
+	else
+    {
+        tile_size = WINDOW_HEIGHT/(DUNGEON_SIZE);
+    }
+    if (tile_size<16) tile_size = 32;
+    SDL_SetWindowSize(main_window, tile_size * DUNGEON_SIZE, tile_size * DUNGEON_SIZE);
+}
+
 int main(int argi, char** agrs)
 {
     struct stat statbuf;
@@ -450,10 +468,10 @@ int main(int argi, char** agrs)
                         break;
                 }
             }
-            if (event.type=SDL_WINDOWEVENT)
+            if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
             {
-                //TODO:
-                  //  SDL_SetWindowSize(main_window, TILE_DUNGEON_SIZE * DUNGEON_SIZE, TILE_DUNGEON_SIZE * DUNGEON_SIZE);
+                //printf("window event %d %d \n", event.window.data1, event.window.data2);
+                update_window_size();
             }
             if (event.type == SDL_KEYUP)
             {

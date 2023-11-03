@@ -43,9 +43,9 @@ void show_menu()
         game_size = WINDOW_HEIGHT;
 
     int menu_opt_size = game_size/10;
-    int modx = (game_size/2)-(0.3*game_size);
+    int modx = (game_size/2)-(0.4*game_size);
     int mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
-    int modx2 = (game_size/2)+(0.3*game_size);
+    int modx2 = (game_size/2)+(0.4*game_size);
     int mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
    
     boxColor(renderer, modx, mody, modx2, mody2, color(0, 0, 0, 100));
@@ -53,7 +53,7 @@ void show_menu()
             modx2, mody+((current_menu->menu_pos+1)*menu_opt_size), color(150, 150, 150, 100));
 
     for (i=0; i < current_menu->options; i++)
-        write_text(modx, mody + i * menu_opt_size, current_menu->entries[i], White, game_size/37, menu_opt_size);
+        write_text(modx, mody + i * menu_opt_size, current_menu->entries[i], White, game_size/25, menu_opt_size);
 }
 
 void create_menus()
