@@ -10,12 +10,16 @@ it has (almost) infinite worlds, with 3 types of terrain, stone ground, dirt gro
 ## ALPHA STAGE
 ### Requirements (ideas) for Beta stage:
 - [x] help menu in game
-- [ ] dungeons fix
+- [ ] dungeons fix (better genration)
 - [ ] in-game music
-- [ ] in-game "timer"
+- [ ] in-game "timer" (for in game events)
 - [x] more distro support
 - [ ] KaNaPi build script
-- [ ] More terrain types
+- [ ] Better generation
+    - [ ] More terrain types
+        - [ ] Water, with collision
+    - [ ] biome support
+- [ ] something that interacts with the "timer"
 
 ## Installation
 
