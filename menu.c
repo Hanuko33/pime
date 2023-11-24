@@ -53,7 +53,7 @@ void show_menu()
             modx2, mody+((current_menu->menu_pos+1)*menu_opt_size), color(150, 150, 150, 100));
 
     for (i=0; i < current_menu->options; i++)
-        write_text(modx, mody + i * menu_opt_size, current_menu->entries[i], White, game_size/25, menu_opt_size);
+        write_text(modx, mody + i * menu_opt_size, current_menu->entries[i], White, game_size/27, menu_opt_size);
 }
 
 void create_menus()
