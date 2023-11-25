@@ -16,7 +16,8 @@
 enum biomes
 {
     BIOME_DESERT,
-    BIOME_FOREST
+    BIOME_FOREST,
+    SWEET_TREE
 };
 enum game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
 enum game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
@@ -30,7 +31,7 @@ void generator()
     char chunk_contains_dung_entrance = 0;
 	
     int random_biome = 0;
-    random_biome = rand() % 2;
+    random_biome = rand() % 3;
 
     printf("running generator...\n");
     for (int i=0; i<DUNGEON_SIZE; i++)
@@ -40,7 +41,7 @@ void generator()
             switch (random_biome)
 	    	{
 				case 1:
-            		type_int = rand() % 3;
+            		type_int = rand() % 4;
 	    			switch (type_int)
             		{
                 		case 0:
@@ -50,7 +51,7 @@ void generator()
                     		terrain_list[i][j] = TILE_DIRT;
                     		break;
                 		case 2:
-                    		random = rand() % 1000;
+                    		random = rand() % 100;
                     		if (random == 51 && !(chunk_contains_dung_entrance))
                     		{
                         		terrain_list[i][j] = TILE_DUNG_ENTRANCE;
@@ -58,6 +59,9 @@ void generator()
                     		}
                     		else terrain_list[i][j] = TILE_TREE;
                     		break;
+                        case 3:
+                            terrain_list[i][j] = TILE_GRASS;
+                            break;
             		}
 	    			break;
 		    	
@@ -71,8 +75,26 @@ void generator()
 						case 1:
 		    				terrain_list[i][j] = TILE_SANDSTONE;
 		    				break;
-	    			
 					}
+                    break;
+                case 2:
+                    type_int = rand() % 4;
+                    switch(type_int)
+                    {
+                        case 0:
+                            terrain_list[i][j] = TILE_SWEET_GRASS;
+                            break;
+                        case 1:
+                            terrain_list[i][j] = TILE_SWEET_TREE;
+                            break;
+                        case 2:
+                            terrain_list[i][j] = TILE_SWEET_BUSH;
+                            break;
+                        case 3:
+                            terrain_list[i][j] = TILE_SWEET_FLOWER;
+                            break;
+                    }
+                    break;
 			}
 		}
     }
@@ -88,7 +110,7 @@ void save(char with_player)
         sprintf(player_path, "world/player.txt");
         file = fopen(player_path, "w");
         char to_write[60];
-        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy);
+        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
     }
@@ -119,7 +141,7 @@ void load(char with_player)
         sprintf(player_path, "world/player.txt");
         if ((file = fopen(player_path, "r")))
         {
-            fscanf(file, "%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy);
+            fscanf(file, "%d%d%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy, &player.back_x, &player.back_y);
             player.in_dungeon=(char)(temp & 255);
         }
         else 
@@ -381,7 +403,22 @@ void draw()
             SDL_Rect img_rect = {x, j * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
             switch (screen_list[i][j])
             {
-				case TILE_SANDSTONE:
+                case TILE_SWEET_GRASS:
+                    texture = Texture.sweet_grass;
+                    break;
+                case TILE_GRASS:
+                    texture = Texture.grass;
+                    break;
+                case TILE_SWEET_BUSH:
+                    texture = Texture.sweet_bush;
+                    break;
+                case TILE_SWEET_TREE:
+                    texture = Texture.sweet_tree;
+                    break;
+                case TILE_SWEET_FLOWER:
+                    texture = Texture.sweet_flower;
+				    break;
+                case TILE_SANDSTONE:
 					texture = Texture.sandstone;
 					break;
                 case TILE_STONE:    

@@ -16,8 +16,13 @@ struct textures
         SDL_Texture* dung_entrance;
         SDL_Texture* dung_exit;
         SDL_Texture* run_icon;
-	SDL_Texture* sand;
-	SDL_Texture* sandstone;
+	    SDL_Texture* sand;
+    	SDL_Texture* sandstone;
+        SDL_Texture* sweet_tree;
+        SDL_Texture* sweet_bush;
+        SDL_Texture* sweet_flower;
+        SDL_Texture* grass;
+        SDL_Texture* sweet_grass;
 };
     
 extern struct textures Texture;

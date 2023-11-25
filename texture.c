@@ -39,4 +39,9 @@ void load_textures()
     Texture.run_icon = load_texture("textures/run_icon.png");
     Texture.sand = load_texture("textures/sand.png");
     Texture.sandstone = load_texture("textures/sandstone.png");
+    Texture.sweet_tree = load_texture("textures/sweet_tree.png");
+    Texture.sweet_bush = load_texture("textures/sweet_bush.png");
+    Texture.sweet_flower = load_texture("textures/sweet_flower.png");
+    Texture.grass = load_texture("textures/grass.png");
+    Texture.sweet_grass = load_texture("textures/sweet_grass.png");
 }
