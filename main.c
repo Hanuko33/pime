@@ -13,6 +13,11 @@
 #include <unistd.h>
 #include "menu.h"
 
+enum biomes
+{
+    BIOME_DESERT,
+    BIOME_FOREST
+};
 enum game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
 enum game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
 
@@ -23,32 +28,53 @@ void generator()
     int random = 0;
     int type_int = 0;
     char chunk_contains_dung_entrance = 0;
+	
+    int random_biome = 0;
+    random_biome = rand() % 2;
 
     printf("running generator...\n");
     for (int i=0; i<DUNGEON_SIZE; i++)
     {
         for (int j=0; j<DUNGEON_SIZE; j++)
         {
-            type_int = rand() % 3;
-            switch (type_int)
-            {
-                case 0:
-                    terrain_list[i][j] = TILE_STONE;
-                    break;
-                case 1:
-                    terrain_list[i][j] = TILE_DIRT;
-                    break;
-                case 2:
-                    random = rand() % 1000;
-                    if (random == 51 && !(chunk_contains_dung_entrance))
-                    {
-                        terrain_list[i][j] = TILE_DUNG_ENTRANCE;
-                        chunk_contains_dung_entrance = 1;
-                    }
-                    else terrain_list[i][j] = TILE_TREE;
-                    break;
-            }
-        }
+            switch (random_biome)
+	    	{
+				case 1:
+            		type_int = rand() % 3;
+	    			switch (type_int)
+            		{
+                		case 0:
+                    		terrain_list[i][j] = TILE_STONE;
+                    		break;
+                		case 1:
+                    		terrain_list[i][j] = TILE_DIRT;
+                    		break;
+                		case 2:
+                    		random = rand() % 1000;
+                    		if (random == 51 && !(chunk_contains_dung_entrance))
+                    		{
+                        		terrain_list[i][j] = TILE_DUNG_ENTRANCE;
+                        		chunk_contains_dung_entrance = 1;
+                    		}
+                    		else terrain_list[i][j] = TILE_TREE;
+                    		break;
+            		}
+	    			break;
+		    	
+				case 0:
+					type_int = rand() % 2; 
+					switch (type_int)
+					{
+						case 0:
+							terrain_list[i][j] = TILE_SAND;
+		    				break;
+						case 1:
+		    				terrain_list[i][j] = TILE_SANDSTONE;
+		    				break;
+	    			
+					}
+			}
+		}
     }
 }
 
@@ -113,11 +139,29 @@ void load(char with_player)
             chunk = fopen(filename, "r");
             fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
+			int stuck = 1;
+			while(stuck)
+			{
+				if (player.x<DUNGEON_SIZE)
+				{
+					player.x++;
+				}
+				else
+				{
+					player.x=0;
+					player.y++;
+				}
+				if (dungeon_terrain_list[player.x][player.y]==TILE_DUNG_FLOOR) stuck = 0;
+			}
         }
         else
         {
-            dungeon_generator();
-        }
+			player.back_x = player.x;
+			player.back_y = player.y;
+			player.x = rand() % DUNGEON_SIZE;
+			player.y = rand() % DUNGEON_SIZE;
+            dungeon_generator(player.x, player.y);
+		}
     }
     else
     {
@@ -283,6 +327,9 @@ void player_interact(int key )
             if (screen_list[player.x][player.y] == TILE_DUNG_EXIT)
             {
                 player.in_dungeon = 0;
+				load(0);
+				player.x = player.back_x;
+				player.y = player.back_y;
             }
             else if (screen_list[player.x][player.y] == TILE_DUNG_ENTRANCE)
             {
@@ -334,6 +381,9 @@ void draw()
             SDL_Rect img_rect = {x, j * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
             switch (screen_list[i][j])
             {
+				case TILE_SANDSTONE:
+					texture = Texture.sandstone;
+					break;
                 case TILE_STONE:    
                     texture = Texture.stone;
                     break;
@@ -354,6 +404,10 @@ void draw()
                     break;
                 case TILE_DUNG_FLOOR:
                     texture = Texture.dung_floor;
+				    break;
+				case TILE_SAND:
+				    texture = Texture.sand;
+				    break;
             }
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
@@ -401,7 +455,7 @@ void update_window_size()
     {
         tile_size = WINDOW_HEIGHT/(DUNGEON_SIZE);
     }
-    if (tile_size<16) tile_size = 32;
+    if (tile_size<32) tile_size = 32;
     SDL_SetWindowSize(main_window, tile_size * DUNGEON_SIZE, tile_size * DUNGEON_SIZE);
 }
 
@@ -431,6 +485,8 @@ int main(int argi, char** agrs)
     srand (time(NULL));
     player.in_dungeon = 0;
 	player.energy=250;
+	player.back_x=0;
+	player.back_y=0;
 
     load(1);
     int key;

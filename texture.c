@@ -37,4 +37,6 @@ void load_textures()
     Texture.playerr = load_texture("textures/playerr.png");
     Texture.playerl = load_texture("textures/playerl.png");
     Texture.run_icon = load_texture("textures/run_icon.png");
+    Texture.sand = load_texture("textures/sand.png");
+    Texture.sandstone = load_texture("textures/sandstone.png");
 }

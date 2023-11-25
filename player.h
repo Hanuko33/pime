@@ -9,6 +9,8 @@ struct Player
     int map_x;
     int y;
     int x;
+	int back_y;
+	int back_x;
     char running;
     char going_right;
     char in_dungeon;

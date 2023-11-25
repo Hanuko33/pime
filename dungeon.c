@@ -2,49 +2,56 @@
 
 enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
 
-void dungeon_generator()
+void dungeon_generator(int start_x, int start_y)
 {
-    int random_int = 0;
-    int random_x = 0;
-    int random_y = 0;
-    for (int i=0; i<25; i++)
-    {
-        random_x = rand() % DUNGEON_SIZE+0;
-        random_y = rand() % DUNGEON_SIZE+0;
-        dungeon_terrain_list[random_x][random_y] = TILE_DUNG_FLOOR;
-    }
-    for (int j=0; j<DUNGEON_SIZE; j++)
-    {
-        for (int ij=0; ij<DUNGEON_SIZE; ij++)
-        {
-            random_int = rand() % 2;
-            if (random_int == 1 || 
-					(( dungeon_terrain_list[j-1][ij] == TILE_DUNG_WALL && dungeon_terrain_list[j-2][ij] == TILE_DUNG_WALL ) 
-					 && ( dungeon_terrain_list[j][ij-1] == TILE_DUNG_WALL && dungeon_terrain_list[j][ij-2] == TILE_DUNG_WALL ) 
-					 && (dungeon_terrain_list[j-1][j-1] == TILE_DUNG_WALL && dungeon_terrain_list[j-2][j-2] == TILE_DUNG_WALL)
-					))
-            {
-                dungeon_terrain_list[j][ij] = TILE_DUNG_FLOOR;
-            }
-            else
-            {
-               dungeon_terrain_list[j][ij] = TILE_DUNG_WALL;
-            }
-        }
-    }
-    int random_int_max = DUNGEON_SIZE - 3;
-    random_x = rand() % random_int_max+4;
-    random_x = rand() % random_int_max+4;
-    dungeon_terrain_list[random_x-2][random_y-2] = TILE_DUNG_EXIT;
+	
 
-    dungeon_terrain_list[random_x-1][random_y-1] = TILE_DUNG_FLOOR;
-    dungeon_terrain_list[random_x-1][random_y-2] = TILE_DUNG_FLOOR;
-    dungeon_terrain_list[random_x-1][random_y-3] = TILE_DUNG_FLOOR;
-    
-    dungeon_terrain_list[random_x-2][random_y-1] = TILE_DUNG_FLOOR;
-    dungeon_terrain_list[random_x-2][random_y-3] = TILE_DUNG_FLOOR;
 
-    dungeon_terrain_list[random_x-3][random_y-1] = TILE_DUNG_FLOOR;
-    dungeon_terrain_list[random_x-3][random_y-2] = TILE_DUNG_FLOOR;
-    dungeon_terrain_list[random_x-3][random_y-3] = TILE_DUNG_FLOOR;
+
+	int gen_point_x=start_x;
+	int gen_point_y=start_y;
+	for (int i=0; i<DUNGEON_SIZE; i++)
+	{
+		for (int j=0; j<DUNGEON_SIZE; j++)
+		{
+			dungeon_terrain_list[i][j]=TILE_DUNG_WALL;
+		}
+	}
+	for (int i=0; i<(DUNGEON_SIZE*(DUNGEON_SIZE/4)); i++)
+    {
+		// 0 for x
+		// 1 for y
+		int y_x_axis = rand() % 2;
+		if (y_x_axis == 0)
+		{
+			// 0 for minus
+			// 1 for plus
+			int plus_minus = rand() %2;
+			dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_FLOOR;
+			if (plus_minus == 0)
+			{
+				if (gen_point_x > 1) gen_point_x--;
+			}
+			if (plus_minus == 1)
+			{
+				if (gen_point_x < (DUNGEON_SIZE-1)) gen_point_x++;	
+			}
+		}
+		if (y_x_axis == 1)
+		{
+			// 0 for minus
+			// 1 for plus
+			int plus_minus = rand() %2;
+			dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_FLOOR;
+			if (plus_minus == 0)
+			{
+				if (gen_point_y > 1) gen_point_y--;
+			}
+			if (plus_minus == 1)
+			{
+				if (gen_point_y < (DUNGEON_SIZE-1)) gen_point_y++;
+			}	
+		}
+	}
+    dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_EXIT;
 }

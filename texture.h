@@ -16,6 +16,8 @@ struct textures
         SDL_Texture* dung_entrance;
         SDL_Texture* dung_exit;
         SDL_Texture* run_icon;
+	SDL_Texture* sand;
+	SDL_Texture* sandstone;
 };
     
 extern struct textures Texture;
