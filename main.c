@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "menu.h"
+#include "time.h"
 
 enum biomes
 {
@@ -19,6 +20,11 @@ enum biomes
     BIOME_FOREST,
     SWEET_TREE
 };
+
+
+
+Game_time game_time;
+
 enum game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
 enum game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
 
@@ -110,7 +116,7 @@ void save(char with_player)
         sprintf(player_path, "world/player.txt");
         file = fopen(player_path, "w");
         char to_write[60];
-        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y);
+        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
     }
@@ -141,7 +147,7 @@ void load(char with_player)
         sprintf(player_path, "world/player.txt");
         if ((file = fopen(player_path, "r")))
         {
-            fscanf(file, "%d%d%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy, &player.back_x, &player.back_y);
+            fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy, &player.back_x, &player.back_y, &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds);
             player.in_dungeon=(char)(temp & 255);
         }
         else 
@@ -217,13 +223,18 @@ void player_interact(int key )
             {
                 if(player.y < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x][player.y+1] == TILE_DUNG_WALL))
                 {
-                    if (player.running) 
+                    if (player.running)
                     {
+                        game_time.seconds+=15;
+                        player.y++;
+                        player.energy-=2;
+                    }
+                    else
+                    {
+                        game_time.seconds+=30;
                         player.y++;
                         player.energy--;
                     }
-                    player.y++;
-                    player.energy--;
                     break;
                 }
                 break;
@@ -231,7 +242,7 @@ void player_interact(int key )
             
             if (player.running)
             {
-                if (player.running) player.energy--;
+                player.energy--;
                 if (player.y < DUNGEON_SIZE-1) player.y++;
                 else {
                         player.y=0; 
@@ -239,10 +250,14 @@ void player_interact(int key )
                         player.map_y++;
                         load(0);
                 }
+                game_time.seconds+=15;
             }
-            
-            if (player.y < DUNGEON_SIZE-1) player.y++;
-            else {player.y=0; save(0); player.map_y++; load(0);}
+            else
+            {
+                game_time.seconds+=30;
+                if (player.y < DUNGEON_SIZE-1) player.y++;
+                else {player.y=0; save(0); player.map_y++; load(0);}
+            }
             player.energy--;
             
             break;
@@ -256,11 +271,16 @@ void player_interact(int key )
                 {
                     if (player.running)
                     {
-                            player.y--;
-                            player.energy--;
+                        player.y--;
+                        player.energy-=2;
+                        game_time.seconds+=15;
                     }
-                    player.y--;
-                    player.energy--;
+                    else
+                    {
+                        player.y--;
+                        player.energy--;
+                        game_time.seconds+=30;
+                    }
                     break;
                 }
                 break;
@@ -271,12 +291,16 @@ void player_interact(int key )
             {
                 if (player.y > 0) player.y--;
                 else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
-                player.energy--;
+                player.energy-=2;
+                game_time.seconds+=15;
             }
-            if (player.y > 0) player.y--;
-            else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
-            
-           player.energy--;
+            else
+            {
+                if (player.y > 0) player.y--;
+                else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
+                player.energy--;
+                game_time.seconds+=30;
+            }
             break;
         }
         case SDLK_RIGHT:
@@ -286,23 +310,41 @@ void player_interact(int key )
             {
                 if (player.running)
                 {
-                    if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) player.x++;
+                    if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) 
+                    {
+                        player.energy-=2;
+                        player.x++;
+                        game_time.seconds+=15;
+                    }
                 }
-                if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) player.x++;
+                else
+                {
+                    if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) 
+                    {
+                        player.energy--;
+                        player.x++;
+                        game_time.seconds+=30;
+                    }
+                }
             }
             else
             {
                 if (player.running)
                 {
+                    player.energy-=2;
+                    game_time.seconds+=15;
                     if (player.x < DUNGEON_SIZE-1) player.x++;
                     else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
                 }
-                if (player.x < DUNGEON_SIZE-1) player.x++;
-                else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                else
+                {
+                    player.energy--;
+                    game_time.seconds+=30;
+                    if (player.x < DUNGEON_SIZE-1) player.x++;
+                    else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                }
             }
-            player.energy--;
-            if (player.running) player.energy--;
-            player.going_right = 1;
+            player.going_right=1;
             break;
         }
         case SDLK_LEFT:
@@ -312,22 +354,40 @@ void player_interact(int key )
             {
                 if (player.running)
                 {
-                    if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL)) player.x--;
+                    if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL)) 
+                    {
+                        player.energy-=2;
+                        player.x--;
+                        game_time.seconds+=15;
+                    }
                 }
-                if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL)) player.x--;
+                else
+                {
+                    if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL))                
+                    {
+                        player.energy--;
+                        player.x--;
+                        game_time.seconds+=30;
+                    }
+                }
             }
             else
             {
                 if (player.running)
                 {
+                    player.energy-=2;
+                    game_time.seconds+=15;
                     if (player.x > 0) player.x--;
                     else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
                 }
-                if (player.x > 0) player.x--;
-                else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
+                else
+                {
+                    player.energy--;
+                    game_time.seconds+=30;
+                    if (player.x > 0) player.x--;
+                    else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
+                }
             }
-            player.energy--;
-            if (player.running) player.energy--;
             player.going_right = 0;
             break;
         }
@@ -348,6 +408,7 @@ void player_interact(int key )
         {
             if (screen_list[player.x][player.y] == TILE_DUNG_EXIT)
             {
+                game_time.minutes++;
                 player.in_dungeon = 0;
 				load(0);
 				player.x = player.back_x;
@@ -355,6 +416,7 @@ void player_interact(int key )
             }
             else if (screen_list[player.x][player.y] == TILE_DUNG_ENTRANCE)
             {
+                game_time.minutes++;
                 player.in_dungeon = 1;
                 load(0);
             }
@@ -465,14 +527,17 @@ void draw()
     char text_energy[20];
     char text_y[20];
     char text_x[20];
+    char text_time[100];
 
     sprintf(text_energy, "Energy: %d", player.energy);
     sprintf(text_y, "Y: %d", player.y + (player.map_y * DUNGEON_SIZE));
     sprintf(text_x, "X: %d", player.x + (player.map_x * DUNGEON_SIZE));
-	
-	write_text(10, 10, text_energy, player.energy < 100 ? Red : White, 0,0);
-	write_text(10, game_size/10, text_y, White,0,0);
-	write_text(10, game_size/5, text_x, White,0,0);
+	sprintf(text_time, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
+
+	write_text(game_size/60, (game_size/60), text_energy, player.energy < 100 ? Red : White, 0,0);
+	write_text(game_size/60, (game_size/60)*5, text_y, White,0,0);
+	write_text(game_size/60, (game_size/60)*10, text_x, White,0,0);
+    write_text(game_size/60, (game_size/60)*15, text_time, White,0,0);
     
     
     show_menu();
@@ -576,6 +641,7 @@ int main(int argi, char** agrs)
             }
             
         }
+        update_time();
         if (player.energy <= 0)
         {
             printf("You ran out of energy (death)\n");
