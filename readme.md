@@ -1,29 +1,24 @@
 # Game_gui 
-###### inside name: game_new
-This is a game made with sdl2 and c++
-it has (almost) infinite worlds, with 3 types of terrain, stone ground, dirt ground, and tree. In the future there will be propobly a lot more!
-
-### DUNGEONS CAN GET YOU STUCK!
+This is a game made with sdl2 and c
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
 
 ## ALPHA STAGE
-### Requirements (ideas) for Beta stage:
+### Requirements for Beta stage:
 - [x] help menu in game
-- [ ] dungeons fix (better genration)
+- [x] dungeons fix (better genration)
 - [ ] in-game music
-- [ ] in-game "timer" (for in game events)
+- [x] in-game "timer" (for in game events)
 - [x] more distro support
-- [ ] KaNaPi build script
-- [ ] Better generation
-    - [ ] More terrain types
+- [x] Better generation
+    - [x] More terrain types
         - [ ] Water, with collision
-    - [ ] biome support
+    - [x] biome support
 - [ ] something that interacts with the "timer"
 
 ## Installation
 
-* [Installation under Ubuntu](install.md)
+* [Installation instruction](install.md)
 
 ## Build
 
@@ -37,13 +32,3 @@ it has (almost) infinite worlds, with 3 types of terrain, stone ground, dirt gro
 * r - switch running
 * e, ENTER - interact
 
-## screenshots / art
-![](screenshots/1.png)
-![](screenshots/2.png)
-![](screenshots/3.png)
-![](screenshots/4.png)
-![](screenshots/5.png)
-![](screenshots/6.png)
-![](screenshots/7.png)
-![](screenshots/8.png)
-![](screenshots/9.png)
