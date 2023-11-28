@@ -9,8 +9,6 @@ extern TTF_Font* font;
 extern SDL_Color White;
 extern SDL_Color Red;
 
-
-SDL_Texture* create_font(const char* text, char  warning);
 void write_text(int x, int y, const char * text, SDL_Color color, int scale_x, int scale_y);
 int load_font();
 

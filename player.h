@@ -13,7 +13,7 @@ struct Player
 	int back_x;
     char running;
     char going_right;
-    char in_dungeon;
+    int in_dungeon;
     int energy;
 };
 

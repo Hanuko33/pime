@@ -34,7 +34,7 @@ extern struct menu_struct * current_menu;
 int interact();
 void show_menu();
 void create_menus();
-int  menu_interract(int key);
+int  menu_interact(int key);
 
 #endif
 
