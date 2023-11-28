@@ -27,39 +27,23 @@ int load_font()
     else return 0;
 }
 
-SDL_Texture* create_font(const char* text, char warning)
-{
-    SDL_Surface* surface;
-    if (warning)
-    {
-        surface = TTF_RenderText_Solid(font, text, Red);
-    }
-    else
-    {
-        surface = TTF_RenderText_Solid(font, text, White);
-    }
-    SDL_Texture* text_sdl = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-    return text_sdl;
-}
-
 void write_text(int x, int y, const char * text, SDL_Color color, int scale_x, int scale_y)
 {
     SDL_Surface* surface;
 	surface = TTF_RenderText_Solid(font, text, color);
     SDL_Texture* text_sdl = SDL_CreateTextureFromSurface(renderer, surface);
 
-    int WINDOW_WIDTH;
-    int WINDOW_HEIGHT;
-    SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
+    int window_width;
+    int window_height;
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
 
     int game_size;
     
-	if (WINDOW_WIDTH < WINDOW_HEIGHT)
+	if (window_width < window_height)
     {
-        game_size = WINDOW_WIDTH;
+        game_size = window_width;
 	} else {
-		game_size = WINDOW_HEIGHT;
+		game_size = window_height;
 	}
     
 	int x_size, y_size;

@@ -1,6 +1,5 @@
 #ifndef DUNGEON_H
 #define DUNGEON_H
-#define DUNGEON_SIZE 16
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,7 +21,11 @@ enum  game_tiles
     TILE_SWEET_GRASS
 };
 
-extern enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
+#define DUNGEON_SIZE 16
+
+typedef enum game_tiles tile_table[DUNGEON_SIZE][DUNGEON_SIZE];
+extern tile_table dungeon_terrain_list;
+
 void dungeon_generator(int start_x, int start_y);
 
 #endif

@@ -30,17 +30,17 @@ void show_menu()
 {
     if (!current_menu) return;
 
-    int WINDOW_WIDTH;
-    int WINDOW_HEIGHT;  
+    int window_width;
+    int window_height;  
     int i;
     int game_size; 
 
-    SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
+    SDL_GetWindowSize(main_window, &window_width, &window_height);
 
-    if (WINDOW_WIDTH < WINDOW_HEIGHT) 
-        game_size = WINDOW_WIDTH;   
+    if (window_width < window_height) 
+        game_size = window_width;   
     else 
-        game_size = WINDOW_HEIGHT;
+        game_size = window_height;
 
     int menu_opt_size = game_size/10;
     int modx = (game_size/2)-(0.4*game_size);
@@ -93,7 +93,7 @@ void menu_go_up()
         current_menu->menu_pos = 0;
 }
 
-int menu_interract(int key)
+int menu_interact(int key)
 {
     switch (key)
     {
@@ -126,7 +126,10 @@ int menu_interract(int key)
             if (current_menu) 
             {
                 if (interact(current_menu->actions[current_menu->menu_pos])) 
+                {
                     current_menu=NULL;
+                    return 1;
+                }
             }
             break;
        }

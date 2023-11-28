@@ -1,13 +1,10 @@
 #include "dungeon.h"
+#include "player.h"
 
-enum game_tiles dungeon_terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
+tile_table dungeon_terrain_list;
 
 void dungeon_generator(int start_x, int start_y)
 {
-	
-
-
-
 	int gen_point_x=start_x;
 	int gen_point_y=start_y;
 	for (int i=0; i<DUNGEON_SIZE; i++)
@@ -54,4 +51,5 @@ void dungeon_generator(int start_x, int start_y)
 		}
 	}
     dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_EXIT;
+    dungeon_terrain_list[player.x][player.y] = TILE_DUNG_EXIT;
 }

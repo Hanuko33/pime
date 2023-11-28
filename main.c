@@ -21,12 +21,10 @@ enum biomes
     SWEET_TREE
 };
 
-
-
 Game_time game_time;
 
-enum game_tiles screen_list[DUNGEON_SIZE][DUNGEON_SIZE];
-enum game_tiles terrain_list[DUNGEON_SIZE][DUNGEON_SIZE];
+tile_table terrain_list;
+tile_table * screen_list = &terrain_list;
 
 struct Player player;
 
@@ -40,6 +38,7 @@ void generator()
     random_biome = rand() % 3;
 
     printf("running generator...\n");
+    
     for (int i=0; i<DUNGEON_SIZE; i++)
     {
         for (int j=0; j<DUNGEON_SIZE; j++)
@@ -58,7 +57,7 @@ void generator()
                     		break;
                 		case 2:
                     		random = rand() % 100;
-                    		if (random == 51 && !(chunk_contains_dung_entrance))
+                    		if (random < 10 && !(chunk_contains_dung_entrance))
                     		{
                         		terrain_list[i][j] = TILE_DUNG_ENTRANCE;
                         		chunk_contains_dung_entrance = 1;
@@ -112,10 +111,9 @@ void save(char with_player)
     {
         int temp;
         FILE *file;
-        char player_path[17];
-        sprintf(player_path, "world/player.txt");
-        file = fopen(player_path, "w");
         char to_write[60];
+        
+        file = fopen("world/player.txt", "w");
         sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
@@ -143,28 +141,35 @@ void load(char with_player)
     {
         int temp;
         FILE *file;
-        char player_path[17];
-        sprintf(player_path, "world/player.txt");
-        if ((file = fopen(player_path, "r")))
+        
+        if (file = fopen("world/player.txt", "r"))
         {
-            fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d", &player.map_y, &player.map_x, &player.y, &player.x, &temp, &player.energy, &player.back_x, &player.back_y, &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds);
-            player.in_dungeon=(char)(temp & 255);
+            printf("loading player: ");
+            if (fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d", 
+                   &player.map_y, &player.map_x, &player.y, &player.x, 
+                   &temp, &player.energy, 
+                   &player.back_x, &player.back_y, 
+                   &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds) == 12 )
+            {
+                player.in_dungeon=(char)(temp & 255);
+                if (player.in_dungeon) 
+                    screen_list=&dungeon_terrain_list;
+                else 
+                    screen_list = &terrain_list;
+                printf(" done\n");
+            }
+            else printf("failed\n");
+            fclose(file);
         }
-        else 
-        {
-            file = fopen(player_path, "w");
-        }
-        fclose(file);
     }
     if (player.in_dungeon)
     {
         char filename[30];
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
-        printf("%s\n", filename);
         FILE* chunk;
-        if ((chunk = fopen(filename, "r")))
+        if (chunk = fopen(filename, "r"))
         {
-            chunk = fopen(filename, "r");
+            printf("loading: %s\n", filename);
             fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
 			int stuck = 1;
@@ -196,9 +201,9 @@ void load(char with_player)
         char filename[26];
         sprintf(filename, "world/%9d-%9d", player.map_x, player.map_y);
         FILE* chunk;
-        if ((chunk = fopen(filename, "r")))
+        if (chunk = fopen(filename, "r"))
         {
-            chunk = fopen(filename, "r");
+            printf("loading: %s\n", filename);
             fread(terrain_list, sizeof(terrain_list), 1, chunk);
             fclose(chunk);
         }
@@ -212,7 +217,7 @@ void load(char with_player)
 
 void player_interact(int key )
 {
-    if ( menu_interract(key)) return;
+    if ( menu_interact(key)) return;
     
     switch (key)
     {
@@ -256,7 +261,12 @@ void player_interact(int key )
             {
                 game_time.seconds+=30;
                 if (player.y < DUNGEON_SIZE-1) player.y++;
-                else {player.y=0; save(0); player.map_y++; load(0);}
+                else {
+                    player.y=0; 
+                    save(0); 
+                    player.map_y++; 
+                    load(0);
+                }
             }
             player.energy--;
             
@@ -406,18 +416,21 @@ void player_interact(int key )
         case SDLK_RETURN:
         case SDLK_e:
         {
-            if (screen_list[player.x][player.y] == TILE_DUNG_EXIT)
+            if ((*screen_list)[player.x][player.y] == TILE_DUNG_EXIT)
             {
                 game_time.minutes++;
                 player.in_dungeon = 0;
-				load(0);
+				screen_list=&terrain_list;
+                load(0);
 				player.x = player.back_x;
 				player.y = player.back_y;
             }
-            else if (screen_list[player.x][player.y] == TILE_DUNG_ENTRANCE)
+            else if ((*screen_list)[player.x][player.y] == TILE_DUNG_ENTRANCE)
             {
+                save(0);
                 game_time.minutes++;
                 player.in_dungeon = 1;
+                screen_list=&dungeon_terrain_list;
                 load(0);
             }
             break;
@@ -425,45 +438,32 @@ void player_interact(int key )
     }
 }
 
-void update_screen_list()
-{
-    for (int i=0; i < DUNGEON_SIZE; i++)
-    {
-        for (int j=0; j < DUNGEON_SIZE; j++)
-        {
-            if (player.in_dungeon)
-                screen_list[i][j] = dungeon_terrain_list[i][j];
-            else
-                screen_list[i][j] = terrain_list[i][j];
-        }
-    } 
-}
-
 void draw()
 {
-    int WINDOW_WIDTH;
-    int WINDOW_HEIGHT;
+    int window_width;
+    int window_height;
     int game_size;
-    SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
-    int TILE_DUNGEON_SIZE;
-    if (WINDOW_WIDTH < WINDOW_HEIGHT)
+    int tile_dungeon_size;
+
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
+    if (window_width < window_height)
     {
-        game_size = WINDOW_WIDTH;
-        TILE_DUNGEON_SIZE = WINDOW_WIDTH/(DUNGEON_SIZE);
+        game_size = window_width;
+        tile_dungeon_size = window_width/(DUNGEON_SIZE);
     } 
 	else
     {
-        game_size = WINDOW_HEIGHT;
-        TILE_DUNGEON_SIZE = WINDOW_HEIGHT/(DUNGEON_SIZE);
+        game_size = window_height;
+        tile_dungeon_size = window_height/(DUNGEON_SIZE);
     }
-    for (int i=0; i<(DUNGEON_SIZE); i++)
+    for (int i=0; i < DUNGEON_SIZE ; i++)
     {
-        int x = i * TILE_DUNGEON_SIZE;
-        for (int j=0; j<DUNGEON_SIZE; j++)
+        int x = i * tile_dungeon_size;
+        for (int j=0; j < DUNGEON_SIZE; j++)
         {
             SDL_Texture *texture;
-            SDL_Rect img_rect = {x, j * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
-            switch (screen_list[i][j])
+            SDL_Rect img_rect = {x, j * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            switch ((*screen_list)[i][j])
             {
                 case TILE_SWEET_GRASS:
                     texture = Texture.sweet_grass;
@@ -511,7 +511,7 @@ void draw()
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
     }  
-    SDL_Rect img_rect = {player.x * TILE_DUNGEON_SIZE, player.y * TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE, TILE_DUNGEON_SIZE};
+    SDL_Rect img_rect = {player.x * tile_dungeon_size, player.y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
     if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
     else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
     
@@ -546,16 +546,17 @@ void draw()
 void update_window_size()
 {
     int tile_size;
-    int WINDOW_WIDTH;
-    int WINDOW_HEIGHT;
-    SDL_GetWindowSize(main_window, &WINDOW_WIDTH, &WINDOW_HEIGHT); 
-    if (WINDOW_WIDTH < WINDOW_HEIGHT)
+    int window_width;
+    int window_height;
+
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
+    if (window_width < window_height)
     {
-        tile_size = WINDOW_WIDTH/(DUNGEON_SIZE);
+        tile_size = window_width/(DUNGEON_SIZE);
     } 
 	else
     {
-        tile_size = WINDOW_HEIGHT/(DUNGEON_SIZE);
+        tile_size = window_height/(DUNGEON_SIZE);
     }
     if (tile_size<32) tile_size = 32;
     SDL_SetWindowSize(main_window, tile_size * DUNGEON_SIZE, tile_size * DUNGEON_SIZE);
@@ -585,14 +586,11 @@ int main(int argi, char** agrs)
     }
 
     srand (time(NULL));
-    player.in_dungeon = 0;
 	player.energy=250;
 	player.back_x=0;
 	player.back_y=0;
 
     load(1);
-    int key;
-    SDL_Event event;
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
@@ -601,8 +599,8 @@ int main(int argi, char** agrs)
     create_menus();
     for (;;)
     {   
+        SDL_Event event;
         clear_window();
-        update_screen_list();
 
         draw();
 
@@ -611,7 +609,7 @@ int main(int argi, char** agrs)
             if (event.type==SDL_QUIT) {SDL_Quit(); return 0;};
             if(event.type == SDL_KEYDOWN)
             {
-                key = event.key.keysym.sym;
+                int key= event.key.keysym.sym;
                 switch (key) {
                     case SDLK_w:
                     case SDLK_m:
@@ -635,11 +633,6 @@ int main(int argi, char** agrs)
                 //printf("window event %d %d \n", event.window.data1, event.window.data2);
                 update_window_size();
             }
-            if (event.type == SDL_KEYUP)
-            {
-                key = 0;
-            }
-            
         }
         update_time();
         if (player.energy <= 0)
