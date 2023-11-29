@@ -244,7 +244,7 @@ void player_interact(int key )
         {
             if (player.in_dungeon)
             {
-                if(player.y < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x][player.y+1] == TILE_DUNG_WALL))
+                if(player.y < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x][player.y+1] != TILE_DUNG_WALL))
                 {
                     if (player.running)
                     {
@@ -263,32 +263,32 @@ void player_interact(int key )
                 break;
             }
             
-            if (!(terrain_list[player.x][player.y+1] == TILE_WATER))
+            if (terrain_list[player.x][player.y+1] != TILE_WATER)
             {
-            if (player.running)
-            {
-                player.energy-=2;
-                if (player.y < DUNGEON_SIZE-1) player.y++;
-                else {
+                if (player.running)
+                {
+                    player.energy-=2;
+                    if (player.y < DUNGEON_SIZE-1) player.y++;
+                    else {
+                            player.y=0; 
+                            save(0);
+                            player.map_y++;
+                            load(0);
+                    }
+                    game_time.seconds+=15;
+                }
+                else
+                {
+                    game_time.seconds+=30;
+                    if (player.y < DUNGEON_SIZE-1) player.y++;
+                    else {
                         player.y=0; 
-                        save(0);
-                        player.map_y++;
+                        save(0); 
+                        player.map_y++; 
                         load(0);
+                    }
+                    player.energy--;
                 }
-                game_time.seconds+=15;
-            }
-            else
-            {
-                game_time.seconds+=30;
-                if (player.y < DUNGEON_SIZE-1) player.y++;
-                else {
-                    player.y=0; 
-                    save(0); 
-                    player.map_y++; 
-                    load(0);
-                }
-                player.energy--;
-            }
             }
             break;
         }
@@ -297,7 +297,7 @@ void player_interact(int key )
         {
             if (player.in_dungeon)
             {
-                if (player.y > 0 && !(dungeon_terrain_list[player.x][player.y-1] == TILE_DUNG_WALL))
+                if (player.y > 0 && (dungeon_terrain_list[player.x][player.y-1] != TILE_DUNG_WALL))
                 {
                     if (player.running)
                     {
@@ -315,23 +315,23 @@ void player_interact(int key )
                 }
                 break;
             }
-            if (!(terrain_list[player.x][player.y-1] == TILE_WATER))
+            if (terrain_list[player.x][player.y-1] != TILE_WATER)
             // IN MAIN WORLD
             {
-            if (player.running)
-            {
-                if (player.y > 0) player.y--;
-                else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
-                player.energy-=2;
-                game_time.seconds+=15;
-            }
-            else
-            {
-                if (player.y > 0) player.y--;
-                else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
-                player.energy--;
-                game_time.seconds+=30;
-            }
+                if (player.running)
+                {
+                    if (player.y > 0) player.y--;
+                    else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
+                    player.energy-=2;
+                    game_time.seconds+=15;
+                }
+                else
+                {
+                    if (player.y > 0) player.y--;
+                    else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
+                    player.energy--;
+                    game_time.seconds+=30;
+                }
             }
             break;
         }
@@ -342,7 +342,7 @@ void player_interact(int key )
             {
                 if (player.running)
                 {
-                    if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) 
+                    if (player.x < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x+1][player.y] != TILE_DUNG_WALL)) 
                     {
                         player.energy-=2;
                         player.x++;
@@ -351,7 +351,7 @@ void player_interact(int key )
                 }
                 else
                 {
-                    if (player.x < DUNGEON_SIZE-1 && !(dungeon_terrain_list[player.x+1][player.y] == TILE_DUNG_WALL)) 
+                    if (player.x < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x+1][player.y] != TILE_DUNG_WALL)) 
                     {
                         player.energy--;
                         player.x++;
@@ -361,22 +361,22 @@ void player_interact(int key )
             }
             else
             {
-                if (!(terrain_list[player.x+1][player.y] == TILE_WATER))
+                if (terrain_list[player.x+1][player.y] != TILE_WATER)
                 {
-                if (player.running)
-                {
-                    player.energy-=2;
-                    game_time.seconds+=15;
-                    if (player.x < DUNGEON_SIZE-1) player.x++;
-                    else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
-                }
-                else
-                {
-                    player.energy--;
-                    game_time.seconds+=30;
-                    if (player.x < DUNGEON_SIZE-1) player.x++;
-                    else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
-                }
+                    if (player.running)
+                    {
+                        player.energy-=2;
+                        game_time.seconds+=15;
+                        if (player.x < DUNGEON_SIZE-1) player.x++;
+                        else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                    }
+                    else
+                    {
+                        player.energy--;
+                        game_time.seconds+=30;
+                        if (player.x < DUNGEON_SIZE-1) player.x++;
+                        else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                    }
                 }
             }
             player.going_right=1;
@@ -389,7 +389,7 @@ void player_interact(int key )
             {
                 if (player.running)
                 {
-                    if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL)) 
+                    if (player.x > 0 && (dungeon_terrain_list[player.x-1][player.y] != TILE_DUNG_WALL)) 
                     {
                         player.energy-=2;
                         player.x--;
@@ -398,7 +398,7 @@ void player_interact(int key )
                 }
                 else
                 {
-                    if (player.x > 0 && !(dungeon_terrain_list[player.x-1][player.y] == TILE_DUNG_WALL))                
+                    if (player.x > 0 && (dungeon_terrain_list[player.x-1][player.y] != TILE_DUNG_WALL))                
                     {
                         player.energy--;
                         player.x--;
@@ -408,7 +408,7 @@ void player_interact(int key )
             }
             else
             {
-                if (!(terrain_list[player.x-1][player.y] == TILE_WATER))
+                if ((terrain_list[player.x-1][player.y] != TILE_WATER))
                 {
                 if (player.running)
                 {
@@ -431,14 +431,7 @@ void player_interact(int key )
         }
         case SDLK_r:
         {  
-            if (!player.running)
-            {
-                player.running = 1;
-            }
-            else if (player.running)
-            {
-                player.running = 0;
-            }
+            player.running ^= 1;
             break;
         }
         case SDLK_RETURN:
