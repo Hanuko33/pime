@@ -18,7 +18,8 @@ enum biomes
 {
     BIOME_DESERT,
     BIOME_FOREST,
-    SWEET_TREE
+    SWEET_TREE,
+    BIOME_LAKE
 };
 
 Game_time game_time;
@@ -35,7 +36,7 @@ void generator()
     char chunk_contains_dung_entrance = 0;
 	
     int random_biome = 0;
-    random_biome = rand() % 3;
+    random_biome = rand() % 4;
 
     printf("running generator...\n");
     
@@ -97,6 +98,23 @@ void generator()
                             break;
                         case 3:
                             terrain_list[i][j] = TILE_SWEET_FLOWER;
+                            break;
+                    }
+                case 3:
+                    type_int = rand() % 4;
+                    switch(type_int)
+                    {
+                        case 0:
+                            terrain_list[i][j] = TILE_WATER;
+                            break;
+                        case 1:
+                            terrain_list[i][j] = TILE_GRASS;
+                            break;
+                        case 2:
+                            terrain_list[i][j] = TILE_SAND;
+                            break;
+                        case 3:
+                            terrain_list[i][j] = TILE_DIRT;
                             break;
                     }
                     break;
@@ -245,9 +263,11 @@ void player_interact(int key )
                 break;
             }
             
+            if (!(terrain_list[player.x][player.y+1] == TILE_WATER))
+            {
             if (player.running)
             {
-                player.energy--;
+                player.energy-=2;
                 if (player.y < DUNGEON_SIZE-1) player.y++;
                 else {
                         player.y=0; 
@@ -267,9 +287,9 @@ void player_interact(int key )
                     player.map_y++; 
                     load(0);
                 }
+                player.energy--;
             }
-            player.energy--;
-            
+            }
             break;
         }
         case SDLK_w:
@@ -295,8 +315,9 @@ void player_interact(int key )
                 }
                 break;
             }
-
+            if (!(terrain_list[player.x][player.y-1] == TILE_WATER))
             // IN MAIN WORLD
+            {
             if (player.running)
             {
                 if (player.y > 0) player.y--;
@@ -310,6 +331,7 @@ void player_interact(int key )
                 else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
                 player.energy--;
                 game_time.seconds+=30;
+            }
             }
             break;
         }
@@ -339,6 +361,8 @@ void player_interact(int key )
             }
             else
             {
+                if (!(terrain_list[player.x+1][player.y] == TILE_WATER))
+                {
                 if (player.running)
                 {
                     player.energy-=2;
@@ -352,6 +376,7 @@ void player_interact(int key )
                     game_time.seconds+=30;
                     if (player.x < DUNGEON_SIZE-1) player.x++;
                     else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                }
                 }
             }
             player.going_right=1;
@@ -383,6 +408,8 @@ void player_interact(int key )
             }
             else
             {
+                if (!(terrain_list[player.x-1][player.y] == TILE_WATER))
+                {
                 if (player.running)
                 {
                     player.energy-=2;
@@ -396,6 +423,7 @@ void player_interact(int key )
                     game_time.seconds+=30;
                     if (player.x > 0) player.x--;
                     else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
+                }
                 }
             }
             player.going_right = 0;
@@ -465,6 +493,9 @@ void draw()
             SDL_Rect img_rect = {x, j * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             switch ((*screen_list)[i][j])
             {
+                case TILE_WATER:
+                    texture = Texture.water;
+                    break;
                 case TILE_SWEET_GRASS:
                     texture = Texture.sweet_grass;
                     break;

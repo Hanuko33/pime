@@ -23,6 +23,7 @@ struct textures
         SDL_Texture* sweet_flower;
         SDL_Texture* grass;
         SDL_Texture* sweet_grass;
+        SDL_Texture* water;
 };
     
 extern struct textures Texture;

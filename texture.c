@@ -44,4 +44,5 @@ void load_textures()
     Texture.sweet_flower = load_texture("textures/sweet_flower.png");
     Texture.grass = load_texture("textures/grass.png");
     Texture.sweet_grass = load_texture("textures/sweet_grass.png");
+    Texture.water = load_texture("textures/water.png");
 }
