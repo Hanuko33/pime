@@ -12,7 +12,7 @@ This is a game made with sdl2 and c
 ### Requirements for Beta stage:
 - [x] help menu in game
 - [x] dungeons fix (better genration)
-~~- [ ] in-game music ~~ Delayed, no music present (artist needs time)
+- [ ] ~~in-game music~~ Delayed, no music present (artist needs time)
 - [x] in-game "timer" (for in game events)
 - [x] more distro support
 - [x] Better generation
