@@ -50,6 +50,27 @@ void dungeon_generator(int start_x, int start_y)
 			}	
 		}
 	}
-    dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_EXIT;
-    dungeon_terrain_list[player.x][player.y] = TILE_DUNG_EXIT;
+    dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_DOOR;
+    int temp_x=0;
+    int temp_y=0;
+
+    int stuck = 1;
+    while(stuck)
+    {
+        if (temp_x<DUNGEON_SIZE)
+        {
+            temp_x++;
+        }
+        else
+        {
+            temp_x=0;
+            if (temp_y<DUNGEON_SIZE) temp_y++;
+        }
+        if (dungeon_terrain_list[temp_x][temp_y] == TILE_DUNG_FLOOR || dungeon_terrain_list[temp_x][temp_y] == TILE_DUNG_DOOR) 
+        {
+            stuck = 0;
+            dungeon_terrain_list[temp_x][temp_y] = TILE_DUNG_DOOR;
+            break;
+        }
+    }
 }

@@ -60,7 +60,7 @@ void generator()
                     		random = rand() % 100;
                     		if (random < 10 && !(chunk_contains_dung_entrance))
                     		{
-                        		terrain_list[i][j] = TILE_DUNG_ENTRANCE;
+                        		terrain_list[i][j] = TILE_DUNG_DOOR;
                         		chunk_contains_dung_entrance = 1;
                     		}
                     		else terrain_list[i][j] = TILE_TREE;
@@ -185,8 +185,14 @@ void load(char with_player)
         char filename[30];
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
         FILE* chunk;
+ 		
+        player.back_x = player.x;
+		player.back_y = player.y;       
+        
         if (chunk = fopen(filename, "r"))
         {
+            player.x=0;
+            player.y=0;
             printf("loading: %s\n", filename);
             fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
@@ -200,18 +206,40 @@ void load(char with_player)
 				else
 				{
 					player.x=0;
-					player.y++;
+                    if (player.y<DUNGEON_SIZE) player.y++;
 				}
-				if (dungeon_terrain_list[player.x][player.y]==TILE_DUNG_FLOOR) stuck = 0;
-			}
+                if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
+                {
+                    stuck = 0;
+                    break;
+                }
+          	}
         }
         else
         {
-			player.back_x = player.x;
-			player.back_y = player.y;
 			player.x = rand() % DUNGEON_SIZE;
 			player.y = rand() % DUNGEON_SIZE;
             dungeon_generator(player.x, player.y);
+            player.x=0;
+            player.y=0;
+			int stuck = 1;
+			while(stuck)
+			{
+				if (player.x<DUNGEON_SIZE)
+				{
+					player.x++;
+				}
+				else
+				{
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE) player.y++;
+				}
+                if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
+                {
+                    stuck = 0;
+                    break;
+                }
+          	}
 		}
     }
     else
@@ -437,22 +465,23 @@ void player_interact(int key )
         case SDLK_RETURN:
         case SDLK_e:
         {
-            if ((*screen_list)[player.x][player.y] == TILE_DUNG_EXIT)
+            if ((*screen_list)[player.x][player.y] == TILE_DUNG_DOOR)
             {
                 game_time.minutes++;
-                player.in_dungeon = 0;
-				screen_list=&terrain_list;
+                if (player.in_dungeon == 1)
+                {
+                    player.in_dungeon = 0;
+                    screen_list=&terrain_list;
+				    player.x = player.back_x;
+				    player.y = player.back_y;
+                }
+                else
+                {
+                    player.in_dungeon = 1;
+                    screen_list=&dungeon_terrain_list;
+                }
                 load(0);
-				player.x = player.back_x;
-				player.y = player.back_y;
-            }
-            else if ((*screen_list)[player.x][player.y] == TILE_DUNG_ENTRANCE)
-            {
                 save(0);
-                game_time.minutes++;
-                player.in_dungeon = 1;
-                screen_list=&dungeon_terrain_list;
-                load(0);
             }
             break;
         }
@@ -516,11 +545,8 @@ void draw()
                 case TILE_TREE:    
                     texture = Texture.tree;
                     break;
-                case TILE_DUNG_ENTRANCE:
+                case TILE_DUNG_DOOR:
                     texture = Texture.dung_entrance;
-                    break;
-                case TILE_DUNG_EXIT:
-                    texture = Texture.dung_exit;
                     break;
                 case TILE_DUNG_WALL:
                     texture = Texture.dung_wall;
