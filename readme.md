@@ -1,4 +1,4 @@
-# Game_gui 
+# Game\_gui 
 This is a game made with sdl2 and c
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
@@ -11,7 +11,7 @@ This is a game made with sdl2 and c
 ## ALPHA STAGE: done
 ### Requirements for Beta stage:
 - [x] help menu in game
-- [x] dungeons fix (better genration)
+- [x] dungeons fix (better generation)
 - [ ] ~~in-game music~~ Delayed, no music present (artist needs time)
 - [x] in-game "timer" (for in game events)
 - [x] more distro support
