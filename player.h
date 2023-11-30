@@ -14,6 +14,7 @@ struct Player
     char running;
     char going_right;
     int in_dungeon;
+    int in_cave;
     int energy;
 };
 

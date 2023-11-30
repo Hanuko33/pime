@@ -6,6 +6,7 @@
 #include <SDL2/SDL2_framerate.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "dungeon.h"
+#include "cave.h"
 #include "texture.h"
 #include "player.h"
 #include <sys/types.h>
@@ -14,14 +15,17 @@
 #include "menu.h"
 #include "time.h"
 
+/*
 enum biomes
 {
     BIOME_DESERT,
     BIOME_FOREST,
-    SWEET_TREE,
+    BIOME_SWEET_TREE,
     BIOME_LAKE
 };
 
+Useless for now, left for documentation purposes
+*/
 Game_time game_time;
 
 tile_table terrain_list;
@@ -34,7 +38,8 @@ void generator()
     int random = 0;
     int type_int = 0;
     char chunk_contains_dung_entrance = 0;
-	
+    char chunk_contains_cave_entrance = 0;
+    
     int random_biome = 0;
     random_biome = rand() % 4;
 
@@ -51,8 +56,17 @@ void generator()
 	    			switch (type_int)
             		{
                 		case 0:
-                    		terrain_list[i][j] = TILE_STONE;
-                    		break;
+                            random = rand() % 75;
+                            if (random < 10 && !(chunk_contains_cave_entrance))
+                            {
+                                terrain_list[i][j] = TILE_CAVE_DOOR;
+                                chunk_contains_cave_entrance = 1;
+                            }
+                            else
+                            {
+                                terrain_list[i][j] = TILE_STONE;
+                            }
+                            break;
                 		case 1:
                     		terrain_list[i][j] = TILE_DIRT;
                     		break;
@@ -132,7 +146,7 @@ void save(char with_player)
         char to_write[60];
         
         file = fopen("world/player.txt", "w");
-        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
+        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds, player.in_cave);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
     }
@@ -142,6 +156,14 @@ void save(char with_player)
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
         FILE *chunk = fopen(filename, "w");
         fwrite(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
+        fclose(chunk);
+    }
+    else if (player.in_cave)
+    {
+        char filename[31];
+        sprintf(filename, "world/%9d-%9dcave", player.map_x, player.map_y);
+        FILE *chunk = fopen(filename, "w");
+        fwrite(cave_terrain_list, sizeof(cave_terrain_list), 1, chunk);
         fclose(chunk);
     }
     else
@@ -163,15 +185,17 @@ void load(char with_player)
         if (file = fopen("world/player.txt", "r"))
         {
             printf("loading player: ");
-            if (fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d", 
+            if (fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d%d", 
                    &player.map_y, &player.map_x, &player.y, &player.x, 
                    &temp, &player.energy, 
                    &player.back_x, &player.back_y, 
-                   &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds) == 12 )
+                   &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds, &player.in_cave) == 13 )
             {
                 player.in_dungeon=(char)(temp & 255);
                 if (player.in_dungeon) 
                     screen_list=&dungeon_terrain_list;
+                else if (player.in_cave)
+                    screen_list=&cave_terrain_list;
                 else 
                     screen_list = &terrain_list;
                 printf(" done\n");
@@ -242,7 +266,69 @@ void load(char with_player)
           	}
 		}
     }
-    else
+    else if (player.in_cave)
+    {
+        char filename[30];
+        sprintf(filename, "world/%9d-%9dcave", player.map_x, player.map_y);
+        FILE* chunk;
+ 		
+        player.back_x = player.x;
+		player.back_y = player.y;       
+        
+        if (chunk = fopen(filename, "r"))
+        {
+            player.x=2;
+            player.y=2;
+            printf("loading: %s\n", filename);
+            fread(cave_terrain_list, sizeof(cave_terrain_list), 1, chunk);
+            fclose(chunk);
+			int stuck = 1;
+			while(stuck)
+			{
+				if (player.x<DUNGEON_SIZE-2)
+				{
+					player.x++;
+				}
+				else
+				{
+					player.x=2;
+                    if (player.y<DUNGEON_SIZE-2) player.y++;
+				}
+                if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
+                {
+                    stuck = 0;
+                    break;
+                }
+          	}
+        }
+        else
+        {
+			player.x = rand() % DUNGEON_SIZE;
+			player.y = rand() % DUNGEON_SIZE;
+            cave_generator(player.x, player.y);
+            player.x=0;
+            player.y=0;
+			int stuck = 1;
+			while(stuck)
+			{
+				if (player.x<DUNGEON_SIZE-2)
+				{
+					player.x++;
+				}
+				else
+				{
+					player.x=2;
+                    if (player.y<DUNGEON_SIZE-2) player.y++;
+				}
+                if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
+                {
+                    stuck = 0;
+                    break;
+                }
+          	}
+		}
+    }
+   else
     {
         char filename[26];
         sprintf(filename, "world/%9d-%9d", player.map_x, player.map_y);
@@ -285,6 +371,26 @@ void player_interact(int key )
                         game_time.seconds+=30;
                         player.y++;
                         player.energy--;
+                    }
+                    break;
+                }
+                break;
+            }
+            if (player.in_cave)
+            {
+                if (player.y < DUNGEON_SIZE-1 && (cave_terrain_list[player.x][player.y+1] != TILE_CAVE_WALL))
+                {
+                    if (player.running)
+                    {
+                        player.y++;
+                        player.energy-=2;
+                        game_time.seconds+=15;
+                    }
+                    else
+                    {
+                        player.y++;
+                        player.energy--;
+                        game_time.seconds+=30;
                     }
                     break;
                 }
@@ -343,6 +449,26 @@ void player_interact(int key )
                 }
                 break;
             }
+            if (player.in_cave)
+            {
+                if (player.y > 0 && (cave_terrain_list[player.x][player.y-1] != TILE_CAVE_WALL))
+                {
+                    if (player.running)
+                    {
+                        player.y--;
+                        player.energy-=2;
+                        game_time.seconds+=15;
+                    }
+                    else
+                    {
+                        player.y--;
+                        player.energy--;
+                        game_time.seconds+=30;
+                    }
+                    break;
+                }
+                break;
+            }
             if (terrain_list[player.x][player.y-1] != TILE_WATER)
             // IN MAIN WORLD
             {
@@ -368,18 +494,33 @@ void player_interact(int key )
         {
             if (player.in_dungeon)
             {
-                if (player.running)
+                if (player.x < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x+1][player.y] != TILE_DUNG_WALL)) 
                 {
-                    if (player.x < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x+1][player.y] != TILE_DUNG_WALL)) 
+                    if (player.running)
                     {
                         player.energy-=2;
                         player.x++;
                         game_time.seconds+=15;
                     }
+                    else
+                    {
+                        player.energy--;
+                        player.x++;
+                        game_time.seconds+=30;
+                    }
                 }
-                else
+            }
+            else if (player.in_cave)
+            {
+                if (player.x < DUNGEON_SIZE-1 && (cave_terrain_list[player.x+1][player.y] != TILE_CAVE_WALL))
                 {
-                    if (player.x < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x+1][player.y] != TILE_DUNG_WALL)) 
+                    if (player.running)
+                    {
+                        player.energy-=2;
+                        player.x++;
+                        game_time.seconds+=15;
+                    }
+                    else
                     {
                         player.energy--;
                         player.x++;
@@ -415,18 +556,33 @@ void player_interact(int key )
         {
             if (player.in_dungeon)
             {
-                if (player.running)
+                if (player.x > 0 && (dungeon_terrain_list[player.x-1][player.y] != TILE_DUNG_WALL)) 
                 {
-                    if (player.x > 0 && (dungeon_terrain_list[player.x-1][player.y] != TILE_DUNG_WALL)) 
+                    if (player.running)
                     {
                         player.energy-=2;
                         player.x--;
                         game_time.seconds+=15;
                     }
+                    else
+                    {
+                        player.energy--;
+                        player.x--;
+                        game_time.seconds+=30;
+                    }
                 }
-                else
+            }
+            else if (player.in_cave)
+            {
+                if (player.x > 0 && (cave_terrain_list[player.x-1][player.y] != TILE_CAVE_WALL))
                 {
-                    if (player.x > 0 && (dungeon_terrain_list[player.x-1][player.y] != TILE_DUNG_WALL))                
+                    if (player.running)
+                    {
+                        player.energy-=2;
+                        player.x--;
+                        game_time.seconds+=15;
+                    }
+                    else
                     {
                         player.energy--;
                         player.x--;
@@ -483,6 +639,24 @@ void player_interact(int key )
                 load(0);
                 save(0);
             }
+            if ((*screen_list)[player.x][player.y] == TILE_CAVE_DOOR)
+            {
+                game_time.minutes++;
+                if (player.in_cave == 1)
+                {
+                    player.in_cave = 0;
+                    screen_list=&terrain_list;
+                    player.x = player.back_x;
+                    player.y = player.back_y;
+                }
+                else
+                {
+                    player.in_cave = 1;
+                    screen_list=&cave_terrain_list;
+                }
+                load(0);
+                save(0);
+            }
             break;
         }
     }
@@ -515,6 +689,15 @@ void draw()
             SDL_Rect img_rect = {x, j * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             switch ((*screen_list)[i][j])
             {
+                case TILE_CAVE_WALL:
+                    texture = Texture.cave_wall;
+                    break;
+                case TILE_CAVE_FLOOR:
+                    texture = Texture.cave_floor;
+                    break;
+                case TILE_CAVE_DOOR:
+                    texture = Texture.cave_door;
+                    break;
                 case TILE_WATER:
                     texture = Texture.water;
                     break;
@@ -546,7 +729,7 @@ void draw()
                     texture = Texture.tree;
                     break;
                 case TILE_DUNG_DOOR:
-                    texture = Texture.dung_entrance;
+                    texture = Texture.dung_door;
                     break;
                 case TILE_DUNG_WALL:
                     texture = Texture.dung_wall;

@@ -29,8 +29,7 @@ void load_textures()
 {
     Texture.dung_floor = load_texture("textures/dung_floor.png");
     Texture.dung_wall = load_texture("textures/dung_wall.png");
-    Texture.dung_exit = load_texture("textures/dung_exit.png");
-    Texture.dung_entrance = load_texture("textures/dung_entrance.png");
+    Texture.dung_door = load_texture("textures/dung_door.png");
     Texture.stone = load_texture("textures/stone.png");
     Texture.dirt = load_texture("textures/dirt.png");
     Texture.tree = load_texture("textures/tree.png");
@@ -45,4 +44,7 @@ void load_textures()
     Texture.grass = load_texture("textures/grass.png");
     Texture.sweet_grass = load_texture("textures/sweet_grass.png");
     Texture.water = load_texture("textures/water.png");
+    Texture.cave_floor = load_texture("textures/cave_floor.png");
+    Texture.cave_wall = load_texture("textures/cave_wall.png");
+    Texture.cave_door = load_texture("textures/cave_door.png");
 }

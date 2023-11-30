@@ -18,7 +18,10 @@ enum  game_tiles
     TILE_SWEET_FLOWER,
     TILE_GRASS,
     TILE_SWEET_GRASS,
-    TILE_WATER
+    TILE_WATER,
+    TILE_CAVE_DOOR,
+    TILE_CAVE_FLOOR,
+    TILE_CAVE_WALL
 };
 
 #define DUNGEON_SIZE 16

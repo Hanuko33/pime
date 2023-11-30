@@ -1,9 +1,9 @@
-#include "dungeon.h"
+#include "cave.h"
 #include "player.h"
 
-tile_table dungeon_terrain_list;
+tile_table cave_terrain_list;
 
-void dungeon_generator(int start_x, int start_y)
+void cave_generator(int start_x, int start_y)
 {
 	int gen_point_x=start_x;
 	int gen_point_y=start_y;
@@ -11,10 +11,10 @@ void dungeon_generator(int start_x, int start_y)
 	{
 		for (int j=0; j<DUNGEON_SIZE; j++)
 		{
-			dungeon_terrain_list[i][j]=TILE_DUNG_WALL;
+			cave_terrain_list[i][j]=TILE_CAVE_WALL;
 		}
 	}
-	for (int i=0; i<(DUNGEON_SIZE*(DUNGEON_SIZE/3)); i++)
+	for (int i=0; i<(DUNGEON_SIZE*(DUNGEON_SIZE*3)); i++)
     {
 		// 0 for x
 		// 1 for y
@@ -24,7 +24,7 @@ void dungeon_generator(int start_x, int start_y)
 			// 0 for minus
 			// 1 for plus
 			int plus_minus = rand() %2;
-			dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_FLOOR;
+			cave_terrain_list[gen_point_x][gen_point_y] = TILE_CAVE_FLOOR;
 			if (plus_minus == 0)
 			{
 				if (gen_point_x > 1) gen_point_x--;
@@ -39,7 +39,7 @@ void dungeon_generator(int start_x, int start_y)
 			// 0 for minus
 			// 1 for plus
 			int plus_minus = rand() %2;
-			dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_FLOOR;
+			cave_terrain_list[gen_point_x][gen_point_y] = TILE_CAVE_FLOOR;
 			if (plus_minus == 0)
 			{
 				if (gen_point_y > 1) gen_point_y--;
@@ -52,7 +52,7 @@ void dungeon_generator(int start_x, int start_y)
 	}
     int temp_x=2;
     int temp_y=2;
-
+    
     int stuck = 1;
     while(stuck)
     {
@@ -65,10 +65,10 @@ void dungeon_generator(int start_x, int start_y)
             temp_x=2;
             if (temp_y<DUNGEON_SIZE-2) temp_y++;
         }
-        if (dungeon_terrain_list[temp_x][temp_y] == TILE_DUNG_FLOOR || dungeon_terrain_list[temp_x][temp_y] == TILE_DUNG_DOOR) 
+        if (cave_terrain_list[temp_x][temp_y] == TILE_CAVE_FLOOR || cave_terrain_list[temp_x][temp_y] == TILE_CAVE_DOOR) 
         {
             stuck = 0;
-            dungeon_terrain_list[temp_x][temp_y] = TILE_DUNG_DOOR;
+            cave_terrain_list[temp_x][temp_y] = TILE_CAVE_DOOR;
             break;
         }
     }
