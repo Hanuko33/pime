@@ -51,20 +51,20 @@ void dungeon_generator(int start_x, int start_y)
 		}
 	}
     dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_DOOR;
-    int temp_x=0;
-    int temp_y=0;
+    int temp_x=2;
+    int temp_y=2;
 
     int stuck = 1;
     while(stuck)
     {
-        if (temp_x<DUNGEON_SIZE)
+        if (temp_x<DUNGEON_SIZE-2)
         {
             temp_x++;
         }
         else
         {
-            temp_x=0;
-            if (temp_y<DUNGEON_SIZE) temp_y++;
+            temp_x=2;
+            if (temp_y<DUNGEON_SIZE-2) temp_y++;
         }
         if (dungeon_terrain_list[temp_x][temp_y] == TILE_DUNG_FLOOR || dungeon_terrain_list[temp_x][temp_y] == TILE_DUNG_DOOR) 
         {

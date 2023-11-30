@@ -191,22 +191,22 @@ void load(char with_player)
         
         if (chunk = fopen(filename, "r"))
         {
-            player.x=0;
-            player.y=0;
+            player.x=2;
+            player.y=2;
             printf("loading: %s\n", filename);
             fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE)
+				if (player.x<DUNGEON_SIZE-2)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=0;
-                    if (player.y<DUNGEON_SIZE) player.y++;
+					player.x=2;
+                    if (player.y<DUNGEON_SIZE-2) player.y++;
 				}
                 if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
                 {
@@ -225,14 +225,14 @@ void load(char with_player)
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE)
+				if (player.x<DUNGEON_SIZE-2)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=0;
-                    if (player.y<DUNGEON_SIZE) player.y++;
+					player.x=2;
+                    if (player.y<DUNGEON_SIZE-2) player.y++;
 				}
                 if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
                 {
