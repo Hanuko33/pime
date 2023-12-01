@@ -29,6 +29,7 @@ enum  game_tiles
 typedef enum game_tiles tile_table[DUNGEON_SIZE][DUNGEON_SIZE];
 extern tile_table dungeon_terrain_list;
 
-void dungeon_generator(int start_x, int start_y);
+void dungeon_generator();
+void generate_dungeon();
 
 #endif
