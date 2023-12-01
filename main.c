@@ -16,8 +16,8 @@
 #include "menu.h"
 #include "time.h"
 
-/*
-enum biomes
+
+enum  biomes
 {
     BIOME_DESERT,
     BIOME_FOREST,
@@ -25,8 +25,7 @@ enum biomes
     BIOME_LAKE
 };
 
-Useless for now, left for documentation purposes
-*/
+
 Game_time game_time;
 tile_table terrain_list;
 tile_table * screen_list = &terrain_list;
@@ -40,10 +39,9 @@ void generator()
     char chunk_contains_dung_entrance = 0;
     char chunk_contains_cave_entrance = 0;
     
-    int random_biome = 0;
-    random_biome = rand() % 4;
+    enum biomes random_biome = rand() % 4;
 
-    printf("running generator...\n");
+    printf("running generator... %d\n", random_biome);
     
     for (int i=0; i<DUNGEON_SIZE; i++)
     {
@@ -51,7 +49,7 @@ void generator()
         {
             switch (random_biome)
 	    	{
-				case 1:
+				case BIOME_FOREST:
             		type_int = rand() % 4;
 	    			switch (type_int)
             		{
@@ -85,7 +83,7 @@ void generator()
             		}
 	    			break;
 		    	
-				case 0:
+				case     BIOME_DESERT:
 					type_int = rand() % 2; 
 					switch (type_int)
 					{
@@ -97,7 +95,7 @@ void generator()
 		    				break;
 					}
                     break;
-                case 2:
+                case BIOME_SWEET_TREE:
                     type_int = rand() % 4;
                     switch(type_int)
                     {
@@ -114,7 +112,9 @@ void generator()
                             terrain_list[i][j] = TILE_SWEET_FLOWER;
                             break;
                     }
-                case 3:
+                    break;
+
+                case BIOME_LAKE:
                     type_int = rand() % 4;
                     switch(type_int)
                     {
@@ -223,8 +223,8 @@ void load(char with_player)
         
         if (chunk = fopen(filename, "r"))
         {
-            player.x=2;
-            player.y=2;
+            player.x=0;
+            player.y=0;
             printf("loading: %s\n", filename);
             fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
@@ -237,8 +237,8 @@ void load(char with_player)
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=1;
+                    if (player.y < DUNGEON_SIZE-2) player.y++;
 				}
                 if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
                 {
@@ -249,29 +249,7 @@ void load(char with_player)
         }
         else
         {
-			player.x = rand() % DUNGEON_SIZE;
-			player.y = rand() % DUNGEON_SIZE;
-            dungeon_generator(player.x, player.y);
-            player.x=0;
-            player.y=0;
-			int stuck = 1;
-			while(stuck)
-			{
-				if (player.x<DUNGEON_SIZE-2)
-				{
-					player.x++;
-				}
-				else
-				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
-				}
-                if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
-                {
-                    stuck = 0;
-                    break;
-                }
-          	}
+            dungeon_generator();
 		}
     }
     else if (player.in_cave)
@@ -285,22 +263,22 @@ void load(char with_player)
         
         if (chunk = fopen(filename, "r"))
         {
-            player.x=2;
-            player.y=2;
+            player.x=0;
+            player.y=0;
             printf("loading: %s\n", filename);
             fread(cave_terrain_list, sizeof(cave_terrain_list), 1, chunk);
             fclose(chunk);
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE-2)
+				if (player.x<DUNGEON_SIZE-1)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE-1) player.y++;
 				}
                 if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
                 {
@@ -311,22 +289,20 @@ void load(char with_player)
         }
         else
         {
-			player.x = rand() % DUNGEON_SIZE;
-			player.y = rand() % DUNGEON_SIZE;
-            cave_generator(player.x, player.y);
+            cave_generator();
             player.x=0;
             player.y=0;
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE-2)
+				if (player.x<DUNGEON_SIZE-1)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE-1) player.y++;
 				}
                 if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
                 {
@@ -361,6 +337,27 @@ void player_interact(int key )
     
     switch (key)
     {
+        case SDLK_F1:
+            screen_list=&terrain_list;
+            generator();
+            player.in_cave = 0;
+            player.in_dungeon = 0;
+        break;
+
+        case SDLK_F2:
+            screen_list=&dungeon_terrain_list;
+            dungeon_generator();
+            player.in_dungeon = 1;
+            player.in_cave = 0;
+        break;
+
+        case SDLK_F3:
+            screen_list=&cave_terrain_list;
+            cave_generator();
+            player.in_cave = 1;
+            player.in_dungeon = 0;
+        break;
+                    
         case SDLK_DOWN:
         case SDLK_s:
         {
@@ -631,6 +628,7 @@ void player_interact(int key )
         {
             if ((*screen_list)[player.x][player.y] == TILE_DUNG_DOOR)
             {
+                save(0);
                 game_time.minutes++;
                 if (player.in_dungeon == 1)
                 {
@@ -653,6 +651,7 @@ void player_interact(int key )
             }
             if ((*screen_list)[player.x][player.y] == TILE_CAVE_DOOR)
             {
+                save(0);
                 game_time.minutes++;
                 if (player.in_cave == 1)
                 {
@@ -870,24 +869,8 @@ int main(int argi, char** agrs)
             if(event.type == SDL_KEYDOWN)
             {
                 int key= event.key.keysym.sym;
-                switch (key) {
-                    case SDLK_w:
-                    case SDLK_m:
-                    case SDLK_a:
-                    case SDLK_s:
-                    case SDLK_d:
-                    case SDLK_e:
-                    case SDLK_UP:
-                    case SDLK_DOWN:
-                    case SDLK_LEFT:
-                    case SDLK_RIGHT:
-                    case SDLK_n:
-                    case SDLK_RETURN:
-                    case SDLK_ESCAPE:
-                    case SDLK_r:
-                        player_interact(key);
-                        break;
-                }
+
+                player_interact(key);
             }
             if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
             {

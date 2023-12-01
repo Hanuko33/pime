@@ -6,6 +6,6 @@
 
 extern tile_table cave_terrain_list;
 
-void cave_generator(int start_x, int start_y);
-
+void cave_generator();
+void generate_cave();
 #endif
