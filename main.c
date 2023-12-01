@@ -223,22 +223,22 @@ void load(char with_player)
         
         if (chunk = fopen(filename, "r"))
         {
-            player.x=2;
-            player.y=2;
+            player.x=0;
+            player.y=0;
             printf("loading: %s\n", filename);
             fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
             fclose(chunk);
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE-2)
+				if (player.x<DUNGEON_SIZE-1)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE-1) player.y++;
 				}
                 if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
                 {
@@ -257,14 +257,14 @@ void load(char with_player)
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE-2)
+				if (player.x<DUNGEON_SIZE-1)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE-1) player.y++;
 				}
                 if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
                 {
@@ -285,22 +285,22 @@ void load(char with_player)
         
         if (chunk = fopen(filename, "r"))
         {
-            player.x=2;
-            player.y=2;
+            player.x=0;
+            player.y=0;
             printf("loading: %s\n", filename);
             fread(cave_terrain_list, sizeof(cave_terrain_list), 1, chunk);
             fclose(chunk);
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE-2)
+				if (player.x<DUNGEON_SIZE-1)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE-1) player.y++;
 				}
                 if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
                 {
@@ -319,14 +319,14 @@ void load(char with_player)
 			int stuck = 1;
 			while(stuck)
 			{
-				if (player.x<DUNGEON_SIZE-2)
+				if (player.x<DUNGEON_SIZE-1)
 				{
 					player.x++;
 				}
 				else
 				{
-					player.x=2;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
+					player.x=0;
+                    if (player.y<DUNGEON_SIZE-1) player.y++;
 				}
                 if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
                 {
