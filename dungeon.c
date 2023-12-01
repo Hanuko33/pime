@@ -5,8 +5,8 @@ tile_table dungeon_terrain_list;
 
 void generate_dungeon()
 {
-    int gen_point_x = 1 + rand() % (DUNGEON_SIZE-1);
-	int gen_point_y = 1 + rand() % (DUNGEON_SIZE-1);
+    int gen_point_x = 1 + rand() % (DUNGEON_SIZE-3) + 1;
+	int gen_point_y = 1 + rand() % (DUNGEON_SIZE-3) + 1;
 
 	for (int i=0; i<DUNGEON_SIZE; i++)
 	{
@@ -15,19 +15,33 @@ void generate_dungeon()
 			dungeon_terrain_list[i][j]=TILE_DUNG_WALL;
 		}
 	}
+	dungeon_terrain_list[gen_point_x][gen_point_y]=TILE_SWEET_GRASS;
+
 	for (int i=0; i<(DUNGEON_SIZE*(DUNGEON_SIZE/3)); i++)
     {
 		int move = rand() % 4;
-		dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_FLOOR;
+		
+	    if (dungeon_terrain_list[gen_point_x][gen_point_y]!=TILE_SWEET_GRASS)
+            dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_FLOOR;
 		
         switch(move)
         {
-            case 0: if (gen_point_x > 1) gen_point_x--; break;
-            case 1: if (gen_point_x < (DUNGEON_SIZE - 2)) gen_point_x++; break;
-		    case 2: if (gen_point_y > 1) gen_point_y--; break;
-			case 3: if (gen_point_y < (DUNGEON_SIZE - 2)) gen_point_y++; break;
+            case 0: if ((gen_point_x > 1) && (dungeon_terrain_list[gen_point_x-1][gen_point_y] != TILE_DUNG_FLOOR)) {
+                        gen_point_x--; break;
+                    }
+            case 1: if ((gen_point_x < (DUNGEON_SIZE - 2)) && (dungeon_terrain_list[gen_point_x+1][gen_point_y] != TILE_DUNG_FLOOR)) {
+                        gen_point_x++; break;
+                    }
+		    case 2: if ((gen_point_y > 1) && (dungeon_terrain_list[gen_point_x][gen_point_y-1] != TILE_DUNG_FLOOR)) {
+                        gen_point_y--; break;
+                    }
+
+            case 3: if ((gen_point_y < (DUNGEON_SIZE - 2)) && (dungeon_terrain_list[gen_point_x][gen_point_y+1] != TILE_DUNG_FLOOR)) {
+                        gen_point_y++; break;
+                    }
 		}
 	}
+    dungeon_terrain_list[gen_point_x][gen_point_y] = TILE_DUNG_DOOR;
 }
 
 void dungeon_generator()

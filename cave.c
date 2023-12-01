@@ -5,8 +5,8 @@ tile_table cave_terrain_list;
 
 void generate_cave()
 {
-    int gen_point_x = 1 + rand() % (DUNGEON_SIZE-1);
-	int gen_point_y = 1 + rand() % (DUNGEON_SIZE-1);
+    int gen_point_x = 1 + rand() % (DUNGEON_SIZE-3)+1;
+	int gen_point_y = 1 + rand() % (DUNGEON_SIZE-3)+1;
 
 	for (int i=0; i<DUNGEON_SIZE; i++)
 	{

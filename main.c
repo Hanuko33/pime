@@ -146,11 +146,11 @@ void save(char with_player)
         char to_write[60];
         
         file = fopen("world/player.txt", "w");
-        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, (int)player.in_dungeon, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds, player.in_cave);
+        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds, player.in);
         fwrite(to_write, sizeof(to_write), 1, file);
         fclose(file);
     }
-    if (player.in_dungeon)
+    if (player.in == LOC_DUNGEON)
     {
         char filename[31];
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
@@ -158,7 +158,7 @@ void save(char with_player)
         fwrite(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
         fclose(chunk);
     }
-    else if (player.in_cave)
+    else if (player.in == LOC_CAVE)
     {
         char filename[31];
         sprintf(filename, "world/%9d-%9dcave", player.map_x, player.map_y);
@@ -185,20 +185,19 @@ void load(char with_player)
         if (file = fopen("world/player.txt", "r"))
         {
             printf("loading player: ");
-            if (fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d%d", 
+            if (fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d", 
                    &player.map_y, &player.map_x, &player.y, &player.x, 
-                   &temp, &player.energy, 
+                   &player.energy, 
                    &player.back_x, &player.back_y, 
-                   &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds, &player.in_cave) == 13 )
+                   &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds, &player.in) == 12 )
             {
-                player.in_dungeon=(char)(temp & 255);
-                if (player.in_dungeon) 
+                if (player.in == LOC_DUNGEON) 
                 {
                     screen_list=&dungeon_terrain_list;
                     Mix_Pause(0);
                     Mix_Resume(1);
                 }
-                else if (player.in_cave)
+                else if (player.in == LOC_CAVE)
                 {
                     screen_list=&cave_terrain_list;
                     Mix_Pause(0);
@@ -212,7 +211,7 @@ void load(char with_player)
             fclose(file);
         }
     }
-    if (player.in_dungeon)
+    if (player.in == LOC_CAVE)
     {
         char filename[30];
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
@@ -252,7 +251,7 @@ void load(char with_player)
             dungeon_generator();
 		}
     }
-    else if (player.in_cave)
+    else if (player.in == LOC_CAVE)
     {
         char filename[30];
         sprintf(filename, "world/%9d-%9dcave", player.map_x, player.map_y);
@@ -320,30 +319,27 @@ void player_interact(int key )
         case SDLK_F1:
             screen_list=&terrain_list;
             generator();
-            player.in_cave = 0;
-            player.in_dungeon = 0;
+            player.in = LOC_WORLD;
         break;
 
         case SDLK_F2:
             screen_list=&dungeon_terrain_list;
             dungeon_generator();
-            player.in_dungeon = 1;
-            player.in_cave = 0;
+            player.in = LOC_DUNGEON;
         break;
 
         case SDLK_F3:
             screen_list=&cave_terrain_list;
             cave_generator();
-            player.in_cave = 1;
-            player.in_dungeon = 0;
+            player.in = LOC_CAVE;
         break;
                     
         case SDLK_DOWN:
         case SDLK_s:
         {
-            if (player.in_dungeon)
+            if (player.in == LOC_DUNGEON)
             {
-                if(player.y < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x][player.y+1] != TILE_DUNG_WALL))
+                if(player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.x][player.y+1] != TILE_DUNG_WALL))
                 {
                     if (player.running)
                     {
@@ -361,9 +357,9 @@ void player_interact(int key )
                 }
                 break;
             }
-            if (player.in_cave)
+            if (player.in == LOC_CAVE)
             {
-                if (player.y < DUNGEON_SIZE-1 && (cave_terrain_list[player.x][player.y+1] != TILE_CAVE_WALL))
+                if (player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.x][player.y+1] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -414,9 +410,9 @@ void player_interact(int key )
         case SDLK_w:
         case SDLK_UP:
         {
-            if (player.in_dungeon)
+            if (player.in == LOC_DUNGEON)
             {
-                if (player.y > 0 && (dungeon_terrain_list[player.x][player.y-1] != TILE_DUNG_WALL))
+                if (player.y > 0 && ((*screen_list)[player.x][player.y-1] != TILE_DUNG_WALL))
                 {
                     if (player.running)
                     {
@@ -434,9 +430,9 @@ void player_interact(int key )
                 }
                 break;
             }
-            if (player.in_cave)
+            if (player.in == LOC_CAVE)
             {
-                if (player.y > 0 && (cave_terrain_list[player.x][player.y-1] != TILE_CAVE_WALL))
+                if (player.y > 0 && ((*screen_list)[player.x][player.y-1] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -477,9 +473,9 @@ void player_interact(int key )
         case SDLK_RIGHT:
         case SDLK_d:
         {
-            if (player.in_dungeon)
+            if (player.in == LOC_DUNGEON)
             {
-                if (player.x < DUNGEON_SIZE-1 && (dungeon_terrain_list[player.x+1][player.y] != TILE_DUNG_WALL)) 
+                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.x+1][player.y] != TILE_DUNG_WALL)) 
                 {
                     if (player.running)
                     {
@@ -495,9 +491,9 @@ void player_interact(int key )
                     }
                 }
             }
-            else if (player.in_cave)
+            else if (player.in == LOC_CAVE)
             {
-                if (player.x < DUNGEON_SIZE-1 && (cave_terrain_list[player.x+1][player.y] != TILE_CAVE_WALL))
+                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.x+1][player.y] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -522,14 +518,14 @@ void player_interact(int key )
                         player.energy-=2;
                         game_time.seconds+=15;
                         if (player.x < DUNGEON_SIZE-1) player.x++;
-                        else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                        else if (!(player.in == LOC_DUNGEON)) {player.x=0; save(0); player.map_x++;load(0);}
                     }
                     else
                     {
                         player.energy--;
                         game_time.seconds+=30;
                         if (player.x < DUNGEON_SIZE-1) player.x++;
-                        else if (!player.in_dungeon) {player.x=0; save(0); player.map_x++;load(0);}
+                        else if (!(player.in == LOC_DUNGEON)) {player.x=0; save(0); player.map_x++;load(0);}
                     }
                 }
             }
@@ -539,9 +535,9 @@ void player_interact(int key )
         case SDLK_LEFT:
         case SDLK_a:
         {
-            if (player.in_dungeon)
+            if (player.in == LOC_DUNGEON)
             {
-                if (player.x > 0 && (dungeon_terrain_list[player.x-1][player.y] != TILE_DUNG_WALL)) 
+                if (player.x > 0 && ((*screen_list)[player.x-1][player.y] != TILE_DUNG_WALL)) 
                 {
                     if (player.running)
                     {
@@ -557,9 +553,9 @@ void player_interact(int key )
                     }
                 }
             }
-            else if (player.in_cave)
+            else if (player.in == LOC_CAVE)
             {
-                if (player.x > 0 && (cave_terrain_list[player.x-1][player.y] != TILE_CAVE_WALL))
+                if (player.x > 0 && ((*screen_list)[player.x-1][player.y] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -584,14 +580,14 @@ void player_interact(int key )
                     player.energy-=2;
                     game_time.seconds+=15;
                     if (player.x > 0) player.x--;
-                    else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
+                    else if (!(player.in == LOC_DUNGEON)) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
                 }
                 else
                 {
                     player.energy--;
                     game_time.seconds+=30;
                     if (player.x > 0) player.x--;
-                    else if (!player.in_dungeon) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
+                    else if (!(player.in == LOC_DUNGEON)) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
                 }
                 }
             }
@@ -610,11 +606,11 @@ void player_interact(int key )
             {
                 save(0);
                 game_time.minutes++;
-                if (player.in_dungeon == 1)
+                if (player.in == LOC_DUNGEON == 1)
                 {
                     Mix_Pause(1);
                     Mix_Resume(0);
-                    player.in_dungeon = 0;
+                    player.in = LOC_WORLD;
                     screen_list=&terrain_list;
 				    player.x = player.back_x;
 				    player.y = player.back_y;
@@ -623,7 +619,7 @@ void player_interact(int key )
                 {
                     Mix_Pause(0);
                     Mix_Resume(1);
-                    player.in_dungeon = 1;
+                    player.in = LOC_DUNGEON;
                     screen_list=&dungeon_terrain_list;
                 }
                 load(0);
@@ -633,12 +629,12 @@ void player_interact(int key )
             {
                 save(0);
                 game_time.minutes++;
-                if (player.in_cave == 1)
+                if (player.in == LOC_CAVE)
                 {
                     Mix_Pause(1);
                     Mix_Resume(0);
-                    player.in_cave = 0;
                     screen_list=&terrain_list;
+                    player.in = LOC_CAVE;
                     player.x = player.back_x;
                     player.y = player.back_y;
                 }
@@ -646,7 +642,7 @@ void player_interact(int key )
                 {
                     Mix_Pause(0);
                     Mix_Resume(1);
-                    player.in_cave = 1;
+                    player.in = LOC_CAVE;
                     screen_list=&cave_terrain_list;
                 }
                 load(0);

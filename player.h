@@ -3,6 +3,13 @@
 
 #include "dungeon.h"
 
+enum location
+{
+    LOC_WORLD,
+    LOC_DUNGEON,
+    LOC_CAVE
+};
+
 struct Player
 {
     int map_y;
@@ -13,8 +20,7 @@ struct Player
 	int back_x;
     char running;
     char going_right;
-    int in_dungeon;
-    int in_cave;
+    enum location in;
     int energy;
 };
 
