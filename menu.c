@@ -1,8 +1,9 @@
 #include "menu.h"
 #include "window.h"
+#include "music.h"
 #include  <SDL2/SDL2_gfxPrimitives.h>
 
-
+struct menu_struct menu_music;
 struct menu_struct menu_main;
 struct menu_struct menu_energy;
 struct menu_struct menu_help;
@@ -77,6 +78,9 @@ void create_menus()
         add_entry(&menu_help, "w, a, s, d - moves", MENU_CANCEL);
         add_entry(&menu_help, "r - switch running", MENU_CANCEL);
         add_entry(&menu_help, "e, ENTER - interact", MENU_CANCEL);
+    create_menu(&menu_music, 2);
+        add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
+        add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
 }
                 
 void menu_go_down()
@@ -106,6 +110,11 @@ int menu_interact(int key)
        { 
            if (!current_menu) current_menu=&menu_energy; else if (current_menu ==  &menu_energy) current_menu=NULL;
            return 1;
+       }
+       case SDLK_n:
+       {
+            if (!current_menu) current_menu=&menu_music; else if (current_menu == &menu_music) current_menu=NULL;
+            return 1;
        }
        case SDLK_DOWN:
        case SDLK_s:
@@ -160,6 +169,7 @@ int interact(enum menu_actions a)
             save(1);
         case MENU_EXIT:
             SDL_Quit();
+            Mix_Quit();
             exit(0);
 
         case MENU_LOAD:
@@ -169,6 +179,16 @@ int interact(enum menu_actions a)
         case MENU_HELP: 
             current_menu=&menu_help;
             return 0;          
+        case MENU_LOUDER:
+            Mix_Volume(0, Mix_Volume(0, -1)+5);
+            Mix_Volume(1, Mix_Volume(1, -1)+5);
+            printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
+            break;
+        case MENU_QUIETER:
+            Mix_Volume(0, Mix_Volume(0, -1)-5);
+            Mix_Volume(1, Mix_Volume(1, -1)-5);
+            printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
+            break;
     }
     return 1;
 }

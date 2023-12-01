@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "window.h"
+#include "music.h"
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL2_framerate.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -26,7 +27,6 @@ enum  biomes
 
 
 Game_time game_time;
-
 tile_table terrain_list;
 tile_table * screen_list = &terrain_list;
 
@@ -193,9 +193,17 @@ void load(char with_player)
             {
                 player.in_dungeon=(char)(temp & 255);
                 if (player.in_dungeon) 
+                {
                     screen_list=&dungeon_terrain_list;
+                    Mix_Pause(0);
+                    Mix_Resume(1);
+                }
                 else if (player.in_cave)
+                {
                     screen_list=&cave_terrain_list;
+                    Mix_Pause(0);
+                    Mix_Resume(1);
+                }
                 else 
                     screen_list = &terrain_list;
                 printf(" done\n");
@@ -624,6 +632,8 @@ void player_interact(int key )
                 game_time.minutes++;
                 if (player.in_dungeon == 1)
                 {
+                    Mix_Pause(1);
+                    Mix_Resume(0);
                     player.in_dungeon = 0;
                     screen_list=&terrain_list;
 				    player.x = player.back_x;
@@ -631,6 +641,8 @@ void player_interact(int key )
                 }
                 else
                 {
+                    Mix_Pause(0);
+                    Mix_Resume(1);
                     player.in_dungeon = 1;
                     screen_list=&dungeon_terrain_list;
                 }
@@ -643,6 +655,8 @@ void player_interact(int key )
                 game_time.minutes++;
                 if (player.in_cave == 1)
                 {
+                    Mix_Pause(1);
+                    Mix_Resume(0);
                     player.in_cave = 0;
                     screen_list=&terrain_list;
                     player.x = player.back_x;
@@ -650,6 +664,8 @@ void player_interact(int key )
                 }
                 else
                 {
+                    Mix_Pause(0);
+                    Mix_Resume(1);
                     player.in_cave = 1;
                     screen_list=&cave_terrain_list;
                 }
@@ -807,6 +823,7 @@ int main(int argi, char** agrs)
         }
     }
 
+    
     ret = stat("world", &statbuf);
     if (ret)
     {
@@ -822,13 +839,23 @@ int main(int argi, char** agrs)
 	player.back_x=0;
 	player.back_y=0;
 
-    load(1);
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
+    if (init_music()) return 1;
 
     load_textures();
     create_menus();
+    load_music();
+
+    Mix_PlayChannel(0, music.music_one, 99999); 
+    Mix_PlayChannel(1, music.music_two, 99999);
+    Mix_Volume(0, 50);
+    Mix_Volume(1, 50);
+    Mix_Pause(1);
+
+    load(1);
+    
     for (;;)
     {   
         SDL_Event event;
@@ -842,6 +869,7 @@ int main(int argi, char** agrs)
             if(event.type == SDL_KEYDOWN)
             {
                 int key= event.key.keysym.sym;
+
                 player_interact(key);
             }
             if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
