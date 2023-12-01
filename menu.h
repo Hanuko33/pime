@@ -13,6 +13,8 @@ enum menu_actions
     MENU_HELP,
     MENU_REGAIN,
     MENU_BOOST,
+    MENU_LOUDER,
+    MENU_QUIETER
 };
 
 
