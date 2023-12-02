@@ -3,22 +3,22 @@ This is a game made with sdl2 and c
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
 
-## BETA STAGE
-### Requirements for Gamma stage:
-- [ ] in-game music
-###### (this list will be longer)
-
 ## ALPHA STAGE: done
+
+## BETA STAGE
+
 ### Requirements for Beta stage:
 - [x] help menu in game
 - [x] dungeons fix (better generation)
-- [ ] ~~in-game music~~ Delayed, no music present (artist needs time)
+- [ ] in-game music - wip. artist needs more time
 - [x] in-game "timer" (for in game events)
 - [x] more distro support
 - [x] Better generation
     - [x] More terrain types
         - [x] Water, with collision
     - [x] biome support
+- [ ] Godot port
+#### (this list will be longer)
 
 ## Installation
 
