@@ -25,7 +25,7 @@ void generate_cave()
 			// 0 for minus
 			// 1 for plus
 			int plus_minus = rand() % 2;
-			cave_terrain_list[gen_point_x][gen_point_y] = TILE_CAVE_FLOOR;
+			cave_terrain_list[gen_point_y][gen_point_x] = TILE_CAVE_FLOOR;
 			if (!plus_minus)
 			{
 				if (gen_point_x > 1) gen_point_x--;
@@ -40,7 +40,7 @@ void generate_cave()
 			// 0 for minus
 			// 1 for plus
 			int plus_minus = rand() % 2;
-			cave_terrain_list[gen_point_x][gen_point_y] = TILE_CAVE_FLOOR;
+			cave_terrain_list[gen_point_y][gen_point_x] = TILE_CAVE_FLOOR;
 			if (!plus_minus)
 			{
 				if (gen_point_y > 1) gen_point_y--;
@@ -72,10 +72,11 @@ void cave_generator()
             temp_x=1;
             if (temp_y < DUNGEON_SIZE-1) temp_y++;
         }
-        if (cave_terrain_list[temp_x][temp_y] == TILE_CAVE_FLOOR || cave_terrain_list[temp_x][temp_y] == TILE_CAVE_DOOR) 
+        if (cave_terrain_list[temp_y][temp_x] == TILE_CAVE_FLOOR || cave_terrain_list[temp_y][temp_x] == TILE_CAVE_DOOR) 
         {
             stuck = 0;
-            cave_terrain_list[temp_x][temp_y] = TILE_CAVE_DOOR;
+            printf("cave door: %d, %d\n", temp_x, temp_y);
+            cave_terrain_list[temp_y][temp_x] = TILE_CAVE_DOOR;
             player.x=temp_x;
             player.y=temp_y;
             break;

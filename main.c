@@ -58,6 +58,7 @@ void generator()
                             if (random < 10 && !(chunk_contains_cave_entrance))
                             {
                                 terrain_list[i][j] = TILE_CAVE_DOOR;
+                                printf("cave door main: %d, %d\n", j, i);
                                 chunk_contains_cave_entrance = 1;
                             }
                             else
@@ -73,6 +74,7 @@ void generator()
                     		if (random < 10 && !(chunk_contains_dung_entrance))
                     		{
                         		terrain_list[i][j] = TILE_DUNG_DOOR;
+                                printf("dung door main: %d, %d\n", j, i);
                         		chunk_contains_dung_entrance = 1;
                     		}
                     		else terrain_list[i][j] = TILE_TREE;
@@ -211,7 +213,7 @@ void load(char with_player)
             fclose(file);
         }
     }
-    if (player.in == LOC_CAVE)
+    if (player.in == LOC_DUNGEON)
     {
         char filename[30];
         sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
@@ -239,7 +241,7 @@ void load(char with_player)
 					player.x=1;
                     if (player.y < DUNGEON_SIZE-2) player.y++;
 				}
-                if (dungeon_terrain_list[player.x][player.y] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.x][player.y] == TILE_DUNG_DOOR) 
+                if (dungeon_terrain_list[player.y][player.x] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.y][player.x] == TILE_DUNG_DOOR) 
                 {
                     stuck = 0;
                     break;
@@ -279,7 +281,7 @@ void load(char with_player)
 					player.x=0;
                     if (player.y<DUNGEON_SIZE-2) player.y++;
 				}
-                if (cave_terrain_list[player.x][player.y] == TILE_CAVE_FLOOR || cave_terrain_list[player.x][player.y] == TILE_CAVE_DOOR) 
+                if (cave_terrain_list[player.y][player.x] == TILE_CAVE_FLOOR || cave_terrain_list[player.y][player.x] == TILE_CAVE_DOOR) 
                 {
                     stuck = 0;
                     break;
@@ -339,7 +341,7 @@ void player_interact(int key )
         {
             if (player.in == LOC_DUNGEON)
             {
-                if(player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.x][player.y+1] != TILE_DUNG_WALL))
+                if(player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.y+1][player.x] != TILE_DUNG_WALL))
                 {
                     if (player.running)
                     {
@@ -359,7 +361,7 @@ void player_interact(int key )
             }
             if (player.in == LOC_CAVE)
             {
-                if (player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.x][player.y+1] != TILE_CAVE_WALL))
+                if (player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.y+1][player.x] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -412,7 +414,7 @@ void player_interact(int key )
         {
             if (player.in == LOC_DUNGEON)
             {
-                if (player.y > 0 && ((*screen_list)[player.x][player.y-1] != TILE_DUNG_WALL))
+                if (player.y > 0 && ((*screen_list)[player.y-1][player.x] != TILE_DUNG_WALL))
                 {
                     if (player.running)
                     {
@@ -432,7 +434,7 @@ void player_interact(int key )
             }
             if (player.in == LOC_CAVE)
             {
-                if (player.y > 0 && ((*screen_list)[player.x][player.y-1] != TILE_CAVE_WALL))
+                if (player.y > 0 && ((*screen_list)[player.y-1][player.x] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -450,7 +452,7 @@ void player_interact(int key )
                 }
                 break;
             }
-            if (terrain_list[player.x][player.y-1] != TILE_WATER)
+            if (terrain_list[player.y-1][player.x] != TILE_WATER)
             // IN MAIN WORLD
             {
                 if (player.running)
@@ -475,7 +477,7 @@ void player_interact(int key )
         {
             if (player.in == LOC_DUNGEON)
             {
-                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.x+1][player.y] != TILE_DUNG_WALL)) 
+                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.y][player.x+1] != TILE_DUNG_WALL)) 
                 {
                     if (player.running)
                     {
@@ -493,7 +495,7 @@ void player_interact(int key )
             }
             else if (player.in == LOC_CAVE)
             {
-                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.x+1][player.y] != TILE_CAVE_WALL))
+                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.y][player.x+1] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -511,7 +513,7 @@ void player_interact(int key )
             }
             else
             {
-                if (terrain_list[player.x+1][player.y] != TILE_WATER)
+                if (terrain_list[player.y][player.x+1] != TILE_WATER)
                 {
                     if (player.running)
                     {
@@ -537,7 +539,7 @@ void player_interact(int key )
         {
             if (player.in == LOC_DUNGEON)
             {
-                if (player.x > 0 && ((*screen_list)[player.x-1][player.y] != TILE_DUNG_WALL)) 
+                if (player.x > 0 && ((*screen_list)[player.y][player.x-1] != TILE_DUNG_WALL)) 
                 {
                     if (player.running)
                     {
@@ -555,7 +557,7 @@ void player_interact(int key )
             }
             else if (player.in == LOC_CAVE)
             {
-                if (player.x > 0 && ((*screen_list)[player.x-1][player.y] != TILE_CAVE_WALL))
+                if (player.x > 0 && ((*screen_list)[player.y][player.x-1] != TILE_CAVE_WALL))
                 {
                     if (player.running)
                     {
@@ -573,7 +575,7 @@ void player_interact(int key )
             }
             else
             {
-                if ((terrain_list[player.x-1][player.y] != TILE_WATER))
+                if ((terrain_list[player.y][player.x-1] != TILE_WATER))
                 {
                 if (player.running)
                 {
@@ -602,11 +604,12 @@ void player_interact(int key )
         case SDLK_RETURN:
         case SDLK_e:
         {
-            if ((*screen_list)[player.x][player.y] == TILE_DUNG_DOOR)
+            printf("player: %d, %d\n", player.x, player.y);
+            if ((*screen_list)[player.y][player.x] == TILE_DUNG_DOOR)
             {
                 save(0);
                 game_time.minutes++;
-                if (player.in == LOC_DUNGEON == 1)
+                if (player.in == LOC_DUNGEON)
                 {
                     Mix_Pause(1);
                     Mix_Resume(0);
@@ -625,7 +628,7 @@ void player_interact(int key )
                 load(0);
                 save(0);
             }
-            if ((*screen_list)[player.x][player.y] == TILE_CAVE_DOOR)
+            if ((*screen_list)[player.y][player.x] == TILE_CAVE_DOOR)
             {
                 save(0);
                 game_time.minutes++;
@@ -634,7 +637,7 @@ void player_interact(int key )
                     Mix_Pause(1);
                     Mix_Resume(0);
                     screen_list=&terrain_list;
-                    player.in = LOC_CAVE;
+                    player.in = LOC_WORLD;
                     player.x = player.back_x;
                     player.y = player.back_y;
                 }
@@ -673,11 +676,11 @@ void draw()
     }
     for (int i=0; i < DUNGEON_SIZE ; i++)
     {
-        int x = i * tile_dungeon_size;
+        int y = i * tile_dungeon_size;
         for (int j=0; j < DUNGEON_SIZE; j++)
         {
             SDL_Texture *texture;
-            SDL_Rect img_rect = {x, j * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_Rect img_rect = {j * tile_dungeon_size, y, tile_dungeon_size, tile_dungeon_size};
             switch ((*screen_list)[i][j])
             {
                 case TILE_CAVE_WALL:
