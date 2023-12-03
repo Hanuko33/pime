@@ -3,6 +3,8 @@
 #include "music.h"
 #include  <SDL2/SDL2_gfxPrimitives.h>
 
+extern struct Player player;
+
 struct menu_struct menu_music;
 struct menu_struct menu_main;
 struct menu_struct menu_energy;

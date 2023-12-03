@@ -15,133 +15,15 @@
 #include <unistd.h>
 #include "menu.h"
 #include "time.h"
+#include "world.h"
 
-
-enum  biomes
-{
-    BIOME_DESERT,
-    BIOME_FOREST,
-    BIOME_SWEET_TREE,
-    BIOME_LAKE
-};
-
-
-Game_time game_time;
-tile_table terrain_list;
-tile_table * screen_list = &terrain_list;
 
 struct Player player;
 
-void generator()
-{
-    int random = 0;
-    int type_int = 0;
-    char chunk_contains_dung_entrance = 0;
-    char chunk_contains_cave_entrance = 0;
-    
-    enum biomes random_biome = rand() % 4;
-
-    printf("running generator... %d\n", random_biome);
-    
-    for (int i=0; i<DUNGEON_SIZE; i++)
-    {
-        for (int j=0; j<DUNGEON_SIZE; j++)
-        {
-            switch (random_biome)
-	    	{
-				case BIOME_FOREST:
-            		type_int = rand() % 4;
-	    			switch (type_int)
-            		{
-                		case 0:
-                            random = rand() % 75;
-                            if (random < 10 && !(chunk_contains_cave_entrance))
-                            {
-                                terrain_list[i][j] = TILE_CAVE_DOOR;
-                                printf("cave door main: %d, %d\n", j, i);
-                                chunk_contains_cave_entrance = 1;
-                            }
-                            else
-                            {
-                                terrain_list[i][j] = TILE_STONE;
-                            }
-                            break;
-                		case 1:
-                    		terrain_list[i][j] = TILE_DIRT;
-                    		break;
-                		case 2:
-                    		random = rand() % 100;
-                    		if (random < 10 && !(chunk_contains_dung_entrance))
-                    		{
-                        		terrain_list[i][j] = TILE_DUNG_DOOR;
-                                printf("dung door main: %d, %d\n", j, i);
-                        		chunk_contains_dung_entrance = 1;
-                    		}
-                    		else terrain_list[i][j] = TILE_TREE;
-                    		break;
-                        case 3:
-                            terrain_list[i][j] = TILE_GRASS;
-                            break;
-            		}
-	    			break;
-		    	
-				case     BIOME_DESERT:
-					type_int = rand() % 2; 
-					switch (type_int)
-					{
-						case 0:
-							terrain_list[i][j] = TILE_SAND;
-		    				break;
-						case 1:
-		    				terrain_list[i][j] = TILE_SANDSTONE;
-		    				break;
-					}
-                    break;
-                case BIOME_SWEET_TREE:
-                    type_int = rand() % 4;
-                    switch(type_int)
-                    {
-                        case 0:
-                            terrain_list[i][j] = TILE_SWEET_GRASS;
-                            break;
-                        case 1:
-                            terrain_list[i][j] = TILE_SWEET_TREE;
-                            break;
-                        case 2:
-                            terrain_list[i][j] = TILE_SWEET_BUSH;
-                            break;
-                        case 3:
-                            terrain_list[i][j] = TILE_SWEET_FLOWER;
-                            break;
-                    }
-                    break;
-
-                case BIOME_LAKE:
-                    type_int = rand() % 4;
-                    switch(type_int)
-                    {
-                        case 0:
-                            terrain_list[i][j] = TILE_WATER;
-                            break;
-                        case 1:
-                            terrain_list[i][j] = TILE_GRASS;
-                            break;
-                        case 2:
-                            terrain_list[i][j] = TILE_SAND;
-                            break;
-                        case 3:
-                            terrain_list[i][j] = TILE_DIRT;
-                            break;
-                    }
-                    break;
-			}
-		}
-    }
-}
 
 void save(char with_player)
 {
-    if (with_player)
+ /*   if (with_player)
     {
         int temp;
         FILE *file;
@@ -175,11 +57,11 @@ void save(char with_player)
         FILE *chunk = fopen(filename, "w");
         fwrite(terrain_list, sizeof(terrain_list), 1, chunk);
         fclose(chunk);
-    }
+    }*/
 }
 void load(char with_player)
 {
-    if (with_player)
+/*    if (with_player)
     {
         int temp;
         FILE *file;
@@ -308,7 +190,7 @@ void load(char with_player)
         {
             generator();
         }
-    }
+    }*/
 }
 
 
@@ -319,281 +201,45 @@ void player_interact(int key )
     switch (key)
     {
         case SDLK_F1:
-            screen_list=&terrain_list;
             generator();
+            player.z = 0;
             player.in = LOC_WORLD;
         break;
 
         case SDLK_F2:
-            screen_list=&dungeon_terrain_list;
-            dungeon_generator();
+            generate_dungeon(world_table[player.map_y][player.map_x], player.x, player.y);
+            player.z = 1;
             player.in = LOC_DUNGEON;
         break;
 
         case SDLK_F3:
-            screen_list=&cave_terrain_list;
-            cave_generator();
+            generate_cave(world_table[player.map_y][player.map_x], player.x, player.y);
+            player.z = 2;
             player.in = LOC_CAVE;
         break;
                     
         case SDLK_DOWN:
         case SDLK_s:
         {
-            if (player.in == LOC_DUNGEON)
-            {
-                if(player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.y+1][player.x] != TILE_DUNG_WALL))
-                {
-                    if (player.running)
-                    {
-                        game_time.seconds+=15;
-                        player.y++;
-                        player.energy-=2;
-                    }
-                    else
-                    {
-                        game_time.seconds+=30;
-                        player.y++;
-                        player.energy--;
-                    }
-                    break;
-                }
-                break;
-            }
-            if (player.in == LOC_CAVE)
-            {
-                if (player.y < DUNGEON_SIZE-1 && ((*screen_list)[player.y+1][player.x] != TILE_CAVE_WALL))
-                {
-                    if (player.running)
-                    {
-                        player.y++;
-                        player.energy-=2;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.y++;
-                        player.energy--;
-                        game_time.seconds+=30;
-                    }
-                    break;
-                }
-                break;
-            }
-            
-            if (terrain_list[player.x][player.y+1] != TILE_WATER)
-            {
-                if (player.running)
-                {
-                    player.energy-=2;
-                    if (player.y < DUNGEON_SIZE-1) player.y++;
-                    else {
-                            player.y=0; 
-                            save(0);
-                            player.map_y++;
-                            load(0);
-                    }
-                    game_time.seconds+=15;
-                }
-                else
-                {
-                    game_time.seconds+=30;
-                    if (player.y < DUNGEON_SIZE-1) player.y++;
-                    else {
-                        player.y=0; 
-                        save(0); 
-                        player.map_y++; 
-                        load(0);
-                    }
-                    player.energy--;
-                }
-            }
+            player_move(&player, 0, 1);
             break;
         }
         case SDLK_w:
         case SDLK_UP:
         {
-            if (player.in == LOC_DUNGEON)
-            {
-                if (player.y > 0 && ((*screen_list)[player.y-1][player.x] != TILE_DUNG_WALL))
-                {
-                    if (player.running)
-                    {
-                        player.y--;
-                        player.energy-=2;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.y--;
-                        player.energy--;
-                        game_time.seconds+=30;
-                    }
-                    break;
-                }
-                break;
-            }
-            if (player.in == LOC_CAVE)
-            {
-                if (player.y > 0 && ((*screen_list)[player.y-1][player.x] != TILE_CAVE_WALL))
-                {
-                    if (player.running)
-                    {
-                        player.y--;
-                        player.energy-=2;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.y--;
-                        player.energy--;
-                        game_time.seconds+=30;
-                    }
-                    break;
-                }
-                break;
-            }
-            if (terrain_list[player.y-1][player.x] != TILE_WATER)
-            // IN MAIN WORLD
-            {
-                if (player.running)
-                {
-                    if (player.y > 0) player.y--;
-                    else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
-                    player.energy-=2;
-                    game_time.seconds+=15;
-                }
-                else
-                {
-                    if (player.y > 0) player.y--;
-                    else {player.y=DUNGEON_SIZE-1; save(0); player.map_y--;load(0);}
-                    player.energy--;
-                    game_time.seconds+=30;
-                }
-            }
+            player_move(&player, 0, -1);
             break;
         }
         case SDLK_RIGHT:
         case SDLK_d:
         {
-            if (player.in == LOC_DUNGEON)
-            {
-                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.y][player.x+1] != TILE_DUNG_WALL)) 
-                {
-                    if (player.running)
-                    {
-                        player.energy-=2;
-                        player.x++;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.energy--;
-                        player.x++;
-                        game_time.seconds+=30;
-                    }
-                }
-            }
-            else if (player.in == LOC_CAVE)
-            {
-                if (player.x < DUNGEON_SIZE-1 && ((*screen_list)[player.y][player.x+1] != TILE_CAVE_WALL))
-                {
-                    if (player.running)
-                    {
-                        player.energy-=2;
-                        player.x++;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.energy--;
-                        player.x++;
-                        game_time.seconds+=30;
-                    }
-                }
-            }
-            else
-            {
-                if (terrain_list[player.y][player.x+1] != TILE_WATER)
-                {
-                    if (player.running)
-                    {
-                        player.energy-=2;
-                        game_time.seconds+=15;
-                        if (player.x < DUNGEON_SIZE-1) player.x++;
-                        else if (!(player.in == LOC_DUNGEON)) {player.x=0; save(0); player.map_x++;load(0);}
-                    }
-                    else
-                    {
-                        player.energy--;
-                        game_time.seconds+=30;
-                        if (player.x < DUNGEON_SIZE-1) player.x++;
-                        else if (!(player.in == LOC_DUNGEON)) {player.x=0; save(0); player.map_x++;load(0);}
-                    }
-                }
-            }
-            player.going_right=1;
+            player_move(&player, 1, 0);
             break;
         }
         case SDLK_LEFT:
         case SDLK_a:
         {
-            if (player.in == LOC_DUNGEON)
-            {
-                if (player.x > 0 && ((*screen_list)[player.y][player.x-1] != TILE_DUNG_WALL)) 
-                {
-                    if (player.running)
-                    {
-                        player.energy-=2;
-                        player.x--;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.energy--;
-                        player.x--;
-                        game_time.seconds+=30;
-                    }
-                }
-            }
-            else if (player.in == LOC_CAVE)
-            {
-                if (player.x > 0 && ((*screen_list)[player.y][player.x-1] != TILE_CAVE_WALL))
-                {
-                    if (player.running)
-                    {
-                        player.energy-=2;
-                        player.x--;
-                        game_time.seconds+=15;
-                    }
-                    else
-                    {
-                        player.energy--;
-                        player.x--;
-                        game_time.seconds+=30;
-                    }
-                }
-            }
-            else
-            {
-                if ((terrain_list[player.y][player.x-1] != TILE_WATER))
-                {
-                if (player.running)
-                {
-                    player.energy-=2;
-                    game_time.seconds+=15;
-                    if (player.x > 0) player.x--;
-                    else if (!(player.in == LOC_DUNGEON)) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
-                }
-                else
-                {
-                    player.energy--;
-                    game_time.seconds+=30;
-                    if (player.x > 0) player.x--;
-                    else if (!(player.in == LOC_DUNGEON)) {player.x=DUNGEON_SIZE-1; save(0); player.map_x--;load(0);}
-                }
-                }
-            }
-            player.going_right = 0;
+            player_move(&player, -1, 0);
             break;
         }
         case SDLK_r:
@@ -605,7 +251,7 @@ void player_interact(int key )
         case SDLK_e:
         {
             printf("player: %d, %d\n", player.x, player.y);
-            if ((*screen_list)[player.y][player.x] == TILE_DUNG_DOOR)
+            if (get_tile_at_player_position(&player) == TILE_DUNG_DOOR)
             {
                 save(0);
                 game_time.minutes++;
@@ -614,21 +260,19 @@ void player_interact(int key )
                     Mix_Pause(1);
                     Mix_Resume(0);
                     player.in = LOC_WORLD;
-                    screen_list=&terrain_list;
-				    player.x = player.back_x;
-				    player.y = player.back_y;
+                    player.z = 0;
                 }
                 else
                 {
                     Mix_Pause(0);
                     Mix_Resume(1);
                     player.in = LOC_DUNGEON;
-                    screen_list=&dungeon_terrain_list;
+                    player.z = 1;
                 }
                 load(0);
                 save(0);
             }
-            if ((*screen_list)[player.y][player.x] == TILE_CAVE_DOOR)
+            if (get_tile_at_player_position(&player) == TILE_CAVE_DOOR)
             {
                 save(0);
                 game_time.minutes++;
@@ -636,17 +280,15 @@ void player_interact(int key )
                 {
                     Mix_Pause(1);
                     Mix_Resume(0);
-                    screen_list=&terrain_list;
                     player.in = LOC_WORLD;
-                    player.x = player.back_x;
-                    player.y = player.back_y;
+                    player.z = 0;
                 }
                 else
                 {
                     Mix_Pause(0);
                     Mix_Resume(1);
                     player.in = LOC_CAVE;
-                    screen_list=&cave_terrain_list;
+                    player.z = 2;
                 }
                 load(0);
                 save(0);
@@ -667,21 +309,21 @@ void draw()
     if (window_width < window_height)
     {
         game_size = window_width;
-        tile_dungeon_size = window_width/(DUNGEON_SIZE);
+        tile_dungeon_size = window_width/(CHUNK_SIZE);
     } 
-	else
+    else
     {
         game_size = window_height;
-        tile_dungeon_size = window_height/(DUNGEON_SIZE);
+        tile_dungeon_size = window_height/(CHUNK_SIZE);
     }
-    for (int i=0; i < DUNGEON_SIZE ; i++)
+    for (int i=0; i < CHUNK_SIZE ; i++)
     {
         int y = i * tile_dungeon_size;
-        for (int j=0; j < DUNGEON_SIZE; j++)
+        for (int j=0; j < CHUNK_SIZE; j++)
         {
             SDL_Texture *texture;
             SDL_Rect img_rect = {j * tile_dungeon_size, y, tile_dungeon_size, tile_dungeon_size};
-            switch ((*screen_list)[i][j])
+            switch ((*(world_table[player.map_y][player.map_x]))[player.z][i][j])
             {
                 case TILE_CAVE_WALL:
                     texture = Texture.cave_wall;
@@ -757,8 +399,8 @@ void draw()
     char text_time[100];
 
     sprintf(text_energy, "Energy: %d", player.energy);
-    sprintf(text_y, "Y: %d", player.y + (player.map_y * DUNGEON_SIZE));
-    sprintf(text_x, "X: %d", player.x + (player.map_x * DUNGEON_SIZE));
+    sprintf(text_y, "Y: %d", player.y + (player.map_y * CHUNK_SIZE));
+    sprintf(text_x, "X: %d", player.x + (player.map_x * CHUNK_SIZE));
 	sprintf(text_time, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
 
 	write_text(game_size/60, (game_size/60), text_energy, player.energy < 100 ? Red : White, 0,0);
@@ -779,14 +421,14 @@ void update_window_size()
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
     if (window_width < window_height)
     {
-        tile_size = window_width/(DUNGEON_SIZE);
+        tile_size = window_width/(CHUNK_SIZE);
     } 
 	else
     {
-        tile_size = window_height/(DUNGEON_SIZE);
+        tile_size = window_height/(CHUNK_SIZE);
     }
     if (tile_size<32) tile_size = 32;
-    SDL_SetWindowSize(main_window, tile_size * DUNGEON_SIZE, tile_size * DUNGEON_SIZE);
+    SDL_SetWindowSize(main_window, tile_size * CHUNK_SIZE, tile_size * CHUNK_SIZE);
 }
 
 int main(int argi, char** agrs)
@@ -829,11 +471,12 @@ int main(int argi, char** agrs)
 
     Mix_PlayChannel(0, music.music_one, 99999); 
     Mix_PlayChannel(1, music.music_two, 99999);
-    Mix_Volume(0, 50);
-    Mix_Volume(1, 50);
+    Mix_Volume(0, 0);
+    Mix_Volume(1, 0);
     Mix_Pause(1);
 
     load(1);
+    generator();
     
     for (;;)
     {   

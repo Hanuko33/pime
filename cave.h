@@ -1,11 +1,7 @@
 #ifndef CAVE_H
 #define CAVE_H
-#include <stdio.h>
-#include <stdlib.h>
-#include "dungeon.h"
 
-extern tile_table cave_terrain_list;
+#include "tiles.h"
 
-void cave_generator();
-void generate_cave();
+void generate_cave(chunk* chunk, int entrance_x, int entrance_y);
 #endif

@@ -1,7 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "dungeon.h"
 
 enum location
 {
@@ -14,6 +13,7 @@ struct Player
 {
     int map_y;
     int map_x;
+    int z;
     int y;
     int x;
 	int back_y;
@@ -24,7 +24,8 @@ struct Player
     int energy;
 };
 
-extern struct Player player;
-void player_interact(int key );
+void player_move(struct Player* player, int x, int y);
+
+
 
 #endif
