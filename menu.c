@@ -51,10 +51,17 @@ void show_menu()
     int modx2 = (game_size/2)+(0.4*game_size);
     int mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
    
-    boxColor(renderer, modx, mody, modx2, mody2, color(0, 0, 0, 100));
-    boxColor(renderer, modx, mody+(((current_menu->menu_pos+1)*menu_opt_size)-(menu_opt_size)), 
-            modx2, mody+((current_menu->menu_pos+1)*menu_opt_size), color(150, 150, 150, 100));
-
+    SDL_Rect rect = {modx, mody, modx2-modx, mody2-mody};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 1, 100);
+    SDL_RenderFillRect(renderer, &rect);
+    
+    int mody3 = mody+(((current_menu->menu_pos+1)*menu_opt_size)-(menu_opt_size));
+    int mody4 = mody+((current_menu->menu_pos+1)*menu_opt_size);
+    
+    SDL_Rect rect2 = {modx, mody3, modx2-modx, mody4-mody3};
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 100);
+    SDL_RenderFillRect(renderer, &rect2);
+    
     for (i=0; i < current_menu->options; i++)
         write_text(modx, mody + i * menu_opt_size, current_menu->entries[i], White, game_size/27, menu_opt_size);
 }

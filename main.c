@@ -5,7 +5,6 @@
 #include "music.h"
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL2_framerate.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include "dungeon.h"
 #include "cave.h"
 #include "texture.h"
