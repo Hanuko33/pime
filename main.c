@@ -442,6 +442,16 @@ void draw()
                   pixels[y * WORLD_SIZE + x] = 0xff000000;
         }
     }
+    
+    unsigned int p=pixels[player.map_y * WORLD_SIZE + player.map_x];
+    for (y=0; y < 3; y++)
+        for (x=0; x< 3; x++)
+        {
+            int py=player.map_y+y-1;
+            int px=player.map_x+x-1;
+            if (py >=0 && py < WORLD_SIZE && px >= 0 && px < WORLD_SIZE)
+                pixels[py * WORLD_SIZE + px]=0xffffffff;
+        }
 
     SDL_UnlockTexture(map);
 
@@ -566,8 +576,8 @@ int main(int argi, char** agrs)
         }
         if (auto_explore) {
            if ((dst_map_x == player.map_x) && (dst_map_y == player.map_y)) { 
-                int dx = 3 - (rand() % 7);
-                int dy = 3 - (rand() % 7);
+                int dx = 5 - (rand() % 11);
+                int dy = 5 - (rand() % 11);
 
                if (player.map_y+dy >= 0 && player.map_y+dy < WORLD_SIZE && player.map_x +dx >= 0 && player.map_x+dx < WORLD_SIZE)
                {
@@ -581,7 +591,11 @@ int main(int argi, char** agrs)
            if (dst_map_x < player.map_x) player_move(&player, -1, 0);
            if (dst_map_y > player.map_y) player_move(&player, 0, 1);
            if (dst_map_y < player.map_y) player_move(&player, 0, -1);
-        }
+         } else {
+                dst_map_x=player.map_x;
+                dst_map_y=player.map_y;
+         }
+
 
         update_time();
 #if 0
