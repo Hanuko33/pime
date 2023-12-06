@@ -7,8 +7,12 @@
 extern SDL_Renderer *renderer;
 extern SDL_Window *main_window;
 
+extern int window_width;
+extern int window_height;
+
 int init_window();
 void clear_window();
 unsigned int color(int r, int g, int b, int a);
-
+#define GAME_WINDOW 512
+#define PANEL_WINDOW 350
 #endif // WINDOW_H

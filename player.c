@@ -4,37 +4,41 @@
 #include "time.h"
 #include "world.h"
 
-void player_move(struct Player *player, int dx, int dy)
+void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, int new_y)
 {
-    int new_x = player->x + dx;
-    int new_y = player->y + dy;
-    int new_map_x = player->map_x;
-    int new_map_y = player->map_y;
+     if (traversable_tiles[world_table[new_map_y][new_map_x]->table[p->z][new_y][new_x]]) {
+        game_time.seconds += (p->running ? 15 : 30);
+        p->map_x = new_map_x;
+        p->map_y = new_map_y;
+        p->x = new_x;
+        p->y = new_y;
+        p->energy -= (p->running ? 2 : 1);
+    }
+}
 
-    if (new_x < 0 || new_x >= CHUNK_SIZE || new_y < 0 || new_y >= CHUNK_SIZE)
+void player_move(struct Player *p, int dx, int dy)
+{
+    int new_x = p->x + dx;
+    int new_y = p->y + dy;
+    int new_map_x = p->map_x;
+    int new_map_y = p->map_y;
+    
+    if (! ((new_x >= 0 && new_x < CHUNK_SIZE) && (new_y >= 0 && new_y < CHUNK_SIZE))) 
     {
-        if (load_chunk(player->map_x + dx, player->map_y + dy))
-        {
-            new_map_y += dy;
-            new_map_x += dx;
-            new_x += -CHUNK_SIZE * dx;
-            new_y += -CHUNK_SIZE * dy;
+        if (new_x < 0 || new_x >= CHUNK_SIZE) {
+                new_map_x += dx;
+                new_x += -CHUNK_SIZE * dx;
+            if (!load_chunk(new_map_x, new_map_y)) return;
         }
-        else 
+    
+        if (new_y < 0 || new_y >= CHUNK_SIZE)
         {
-            return;
+                new_map_y += dy;
+                new_y += -CHUNK_SIZE * dy;
+            if (!load_chunk(new_map_x, new_map_y)) return;
         }
     }
-    if (traversable_tiles[(*world_table[new_map_y][new_map_x])[player->z][new_y][new_x]]) {
-        game_time.seconds += (player->running ? 15 : 30);
-        player->map_x = new_map_x;
-        player->map_y = new_map_y;
-        player->x = new_x;
-        player->y = new_y;
-        player->energy -= (player->running ? 2 : 1);
-    }
-
-
+    check_and_move(p, new_map_x, new_map_y, new_x, new_y);
 }
 
 
