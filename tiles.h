@@ -34,6 +34,7 @@ enum  biomes
 
 #define CHUNK_SIZE 16
 #define WORLD_SIZE 256
+#define WORLD_CENTER WORLD_SIZE/2
 
 typedef enum game_tiles chunk[3][CHUNK_SIZE][CHUNK_SIZE];
 

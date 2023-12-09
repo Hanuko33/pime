@@ -11,7 +11,6 @@ extern char traversable_tiles[TILE_MAX_NUM];
 
 extern Game_time game_time;
 extern chunk * world_table[WORLD_SIZE][WORLD_SIZE];
-extern struct Player player;
 
 enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z);
 enum game_tiles get_tile_at_player_position(struct Player *player);

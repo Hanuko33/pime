@@ -1,9 +1,10 @@
+#include "player.h"
 #include "world.h"
 #include "cave.h"
 #include "dungeon.h"
-#include "player.h"
 #include "tiles.h"
 #include "time.h"
+#include "notifier.h"
 #include <stdlib.h>
 
 
@@ -15,13 +16,7 @@ chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
 void generator()
 {
-    player.map_x = WORLD_SIZE/2;
-    player.map_y = WORLD_SIZE/2;
-
-    world_table[WORLD_SIZE/2][WORLD_SIZE/2] = (chunk*) malloc(sizeof(chunk));
-
-    chunk* chunk = world_table[WORLD_SIZE/2][WORLD_SIZE/2];
-    generate_chunk(chunk);
+    load_chunk(WORLD_CENTER, WORLD_CENTER);
 }
 
 void generate_chunk(chunk *chunk)  
@@ -140,6 +135,7 @@ char load_chunk(int x, int y)
             chunk* c = (chunk*) malloc(sizeof(chunk));
             generate_chunk(c);
             world_table[y][x] = c;
+            notify_load_chunk(x, y);
         }
         return 1;
     }
@@ -151,7 +147,7 @@ char traversable_tiles[TILE_MAX_NUM] =
     1, //TILE_STONE,
     1, //TILE_DIRT,
     1, //TILE_TREE,
-    0, //TILE_DUNG_WALL,
+    1, //TILE_DUNG_WALL,
     1, //TILE_DUNG_FLOOR,
     1, //TILE_DUNG_DOOR,
     1, //TILE_SAND,
@@ -161,10 +157,10 @@ char traversable_tiles[TILE_MAX_NUM] =
     1, //TILE_SWEET_FLOWER,
     1, //TILE_GRASS,
     1, //TILE_SWEET_GRASS,
-    0, //TILE_WATER,
+    1, //TILE_WATER,
     1, //TILE_CAVE_DOOR,
     1, //TILE_CAVE_FLOOR,
-    0, //TILE_CAVE_WALL,
+    1, //TILE_CAVE_WALL,
 };
 
 enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)   

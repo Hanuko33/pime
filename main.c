@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "tiles.h"
 #include "window.h"
 #include "music.h"
 #include <SDL2/SDL_keycode.h>
@@ -459,6 +460,8 @@ int main(int argi, char** agrs)
 	player.energy=250;
 	player.back_x=0;
 	player.back_y=0;
+    player.map_x = WORLD_CENTER;
+    player.map_y = WORLD_CENTER;
 
     
 	if (init_window()) return 1;
