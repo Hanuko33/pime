@@ -31,6 +31,7 @@ extern enum menu_types in_menu;
 extern struct menu_struct menu_main;
 extern struct menu_struct menu_energy;
 extern struct menu_struct menu_help;
+extern struct menu_struct menu_inventory;
 extern struct menu_struct * current_menu;
 
 int interact();

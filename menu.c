@@ -2,6 +2,7 @@
 #include "window.h"
 #include "music.h"
 #include  <SDL2/SDL2_gfxPrimitives.h>
+#include "elements.h"
 
 extern struct Player player;
 
@@ -10,6 +11,7 @@ struct menu_struct menu_main;
 struct menu_struct menu_energy;
 struct menu_struct menu_help;
 struct menu_struct * current_menu;
+struct menu_struct menu_inventory;
 
 void load(char with_player);
 void save(char with_player);
@@ -88,10 +90,19 @@ void create_menus()
         add_entry(&menu_help, "r - switch running", MENU_CANCEL);
         add_entry(&menu_help, "e, ENTER - interact", MENU_CANCEL);
         add_entry(&menu_help, "n - change music volume", MENU_CANCEL);
-        add_entry(&menu_help, "", MENU_CANCEL);
+        add_entry(&menu_help, "i - inventory", MENU_CANCEL);
+
     create_menu(&menu_music, 2);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
         add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
+    
+    create_menu(&menu_inventory, EL_MAX);
+        for (int i=0; i < EL_MAX; i++)
+        {
+            add_entry(&menu_inventory, element_name[i], MENU_CANCEL);
+//            player.inventory[i];
+        }
+        
 }
                 
 void menu_go_down()
@@ -127,6 +138,12 @@ int menu_interact(int key)
             if (!current_menu) current_menu=&menu_music; else if (current_menu == &menu_music) current_menu=NULL;
             return 1;
        }
+       case SDLK_i:
+       {
+            if (!current_menu) current_menu=&menu_inventory; else if (current_menu == &menu_inventory) current_menu=NULL;
+            return 1;
+       }
+
        case SDLK_DOWN:
        case SDLK_s:
        {

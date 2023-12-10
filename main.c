@@ -17,7 +17,6 @@
 #include "time.h"
 #include "world.h"
 
-struct Player player;
 
 SDL_Texture *map;
 int auto_explore;
@@ -225,27 +224,27 @@ void player_interact(int key )
         case SDLK_DOWN:
         case SDLK_s:
         {
-            player_move(&player, 0, 1);
+            move_player(&player, 0, 1);
             break;
         }
         case SDLK_w:
         case SDLK_UP:
         {
-            player_move(&player, 0, -1);
+            move_player(&player, 0, -1);
             break;
         }
         case SDLK_RIGHT:
         case SDLK_d:
         {
             player.going_right=1;
-            player_move(&player, 1, 0);
+            move_player(&player, 1, 0);
             break;
         }
         case SDLK_LEFT:
         case SDLK_a:
         {
             player.going_right=0;
-            player_move(&player, -1, 0);
+            move_player(&player, -1, 0);
             break;
         }
         case SDLK_r:
@@ -397,23 +396,23 @@ void draw()
 
     if (player.energy > 1000) player.energy = 1000;   
 
-    char text_energy[20];
-    char text_y[20];
-    char text_x[20];
-    char text_time[100];
-
-    sprintf(text_energy, "Energy: %d", player.energy);
-    sprintf(text_y, "Y: %d", (player.y + (player.map_y * CHUNK_SIZE)) - (WORLD_SIZE*CHUNK_SIZE/2));
-    sprintf(text_x, "X: %d", player.x + (player.map_x * CHUNK_SIZE)- (WORLD_SIZE*CHUNK_SIZE/2));
-	sprintf(text_time, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
-
+    char text[256];
+     
     int tx=width+10;
     int ty=10;
-	write_text(tx, ty, text_energy, player.energy < 100 ? Red : White, 20,30);
-	write_text(tx, ty+25, text_y, White,20,30);
-	write_text(tx, ty+50, text_x, White,20,30);
-    write_text(tx, ty+75, text_time, White,20,30);
-     
+
+    sprintf(text, "Energy: %d", player.energy);
+	write_text(tx, ty, text, player.energy < 100 ? Red : White, 20,30);
+    
+    sprintf(text, "Y: %d", (player.y + (player.map_y * CHUNK_SIZE)) - (WORLD_SIZE*CHUNK_SIZE/2));
+	write_text(tx, ty+25, text, White,20,30);
+
+    sprintf(text, "X: %d", player.x + (player.map_x * CHUNK_SIZE)- (WORLD_SIZE*CHUNK_SIZE/2));
+	write_text(tx, ty+50, text, White,20,30);
+	
+    sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
+    write_text(tx, ty+75, text, White,20,30);
+    
     unsigned int * pixels;
     int pitch, x, y;
 
@@ -516,12 +515,7 @@ int main(int argi, char** agrs)
     }
 
     srand (time(NULL));
-	player.energy=250;
-	player.back_x=0;
-	player.back_y=0;
-    player.map_x = WORLD_CENTER;
-    player.map_y = WORLD_CENTER;
-
+    init_player();
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
@@ -592,10 +586,10 @@ int main(int argi, char** agrs)
                     }
                }
            }
-           if (dst_map_x > player.map_x) player_move(&player, 1, 0);
-           if (dst_map_x < player.map_x) player_move(&player, -1, 0);
-           if (dst_map_y > player.map_y) player_move(&player, 0, 1);
-           if (dst_map_y < player.map_y) player_move(&player, 0, -1);
+           if (dst_map_x > player.map_x) move_player(&player, 1, 0);
+           if (dst_map_x < player.map_x) move_player(&player, -1, 0);
+           if (dst_map_y > player.map_y) move_player(&player, 0, 1);
+           if (dst_map_y < player.map_y) move_player(&player, 0, -1);
          } else {
                 dst_map_x=player.map_x;
                 dst_map_y=player.map_y;
