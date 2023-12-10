@@ -80,13 +80,15 @@ void create_menus()
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
         add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
 
-    create_menu(&menu_help, 6);
+    create_menu(&menu_help, 8);
         add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
         add_entry(&menu_help, "m - energy", MENU_CANCEL);
         add_entry(&menu_help, "arrows - moves", MENU_CANCEL);
         add_entry(&menu_help, "w, a, s, d - moves", MENU_CANCEL);
         add_entry(&menu_help, "r - switch running", MENU_CANCEL);
         add_entry(&menu_help, "e, ENTER - interact", MENU_CANCEL);
+        add_entry(&menu_help, "n - change music volume", MENU_CANCEL);
+        add_entry(&menu_help, "", MENU_CANCEL);
     create_menu(&menu_music, 2);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
         add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
