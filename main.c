@@ -237,12 +237,14 @@ void player_interact(int key )
         case SDLK_RIGHT:
         case SDLK_d:
         {
+            player.going_right=1;
             player_move(&player, 1, 0);
             break;
         }
         case SDLK_LEFT:
         case SDLK_a:
         {
+            player.going_right=0;
             player_move(&player, -1, 0);
             break;
         }
