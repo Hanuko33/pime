@@ -1,5 +1,6 @@
 #ifndef TILES_H
 #define TILES_H
+#include "items.h"
 
 enum  game_tiles
 {
@@ -35,8 +36,14 @@ enum  biomes
 #define CHUNK_SIZE 16
 #define WORLD_SIZE 256
 #define WORLD_CENTER WORLD_SIZE/2
+
+struct tile {
+    enum game_tiles tile;
+    int count;
+    enum item_id item;
+};
     
-typedef enum game_tiles chunk_table[3][CHUNK_SIZE][CHUNK_SIZE];
+typedef struct tile chunk_table[3][CHUNK_SIZE][CHUNK_SIZE];
 
 typedef struct {
     enum biomes biome;

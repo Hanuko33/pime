@@ -8,7 +8,7 @@ struct Player player;
 
 void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, int new_y)
 {
-     if (traversable_tiles[world_table[new_map_y][new_map_x]->table[p->z][new_y][new_x]]) {
+     if (traversable_tiles[world_table[new_map_y][new_map_x]->table[p->z][new_y][new_x].tile]) {
         game_time.seconds += (p->running ? 15 : 30);
         p->map_x = new_map_x;
         p->map_y = new_map_y;
@@ -50,6 +50,6 @@ void init_player()
 	player.back_y=0;
     player.map_x = WORLD_CENTER;
     player.map_y = WORLD_CENTER;
-    for (int i=0; i < EL_MAX; i++)
+    for (int i=0; i < IT_MAX; i++)
         player.inventory[i]=rand() % 10;
 }

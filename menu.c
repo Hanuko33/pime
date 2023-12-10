@@ -2,7 +2,7 @@
 #include "window.h"
 #include "music.h"
 #include  <SDL2/SDL2_gfxPrimitives.h>
-#include "elements.h"
+#include "items.h"
 
 extern struct Player player;
 
@@ -11,7 +11,8 @@ struct menu_struct menu_main;
 struct menu_struct menu_energy;
 struct menu_struct menu_help;
 struct menu_struct * current_menu;
-struct menu_struct menu_inventory;
+struct menu_struct menu_inventory_categories;
+struct menu_struct menu_inventory_material;
 
 void load(char with_player);
 void save(char with_player);
@@ -71,8 +72,8 @@ void show_menu()
 void create_menus()
 {
     create_menu(&menu_main, 6);
-        add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
         add_entry(&menu_main, "Exit", MENU_EXIT);
+        add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
         add_entry(&menu_main, "Save", MENU_SAVE);
         add_entry(&menu_main, "Load", MENU_LOAD);
         add_entry(&menu_main, "Help", MENU_HELP);
@@ -96,10 +97,15 @@ void create_menus()
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
         add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
     
-    create_menu(&menu_inventory, EL_MAX);
-        for (int i=0; i < EL_MAX; i++)
+    create_menu(&menu_inventory_categories, CAT_MAX);
+        for (int i=0; i < CAT_MAX; i++)
         {
-            add_entry(&menu_inventory, element_name[i], MENU_CANCEL);
+            add_entry(&menu_inventory_categories, categories_names[i], MENU_MATERIAL+i);
+        }
+    create_menu(&menu_inventory_material, IT_MAX);
+        for (int i=0; i < IT_MAX; i++)
+        {
+            add_entry(&menu_inventory_material, items_names[i], MENU_CANCEL);
 //            player.inventory[i];
         }
         
@@ -140,7 +146,7 @@ int menu_interact(int key)
        }
        case SDLK_i:
        {
-            if (!current_menu) current_menu=&menu_inventory; else if (current_menu == &menu_inventory) current_menu=NULL;
+            if (!current_menu) current_menu=&menu_inventory_categories; else if (current_menu == &menu_inventory_categories) current_menu=NULL;
             return 1;
        }
 
@@ -206,7 +212,12 @@ int interact(enum menu_actions a)
 
         case MENU_HELP: 
             current_menu=&menu_help;
-            return 0;          
+            return 0;   
+        
+        case MENU_MATERIAL: 
+            current_menu=&menu_inventory_material;
+            return 0;   
+
         case MENU_LOUDER:
             Mix_Volume(0, Mix_Volume(0, -1)+5);
             Mix_Volume(1, Mix_Volume(1, -1)+5);

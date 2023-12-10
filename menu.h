@@ -14,7 +14,11 @@ enum menu_actions
     MENU_REGAIN,
     MENU_BOOST,
     MENU_LOUDER,
-    MENU_QUIETER
+    MENU_QUIETER,
+
+//  must be after other menus entries  
+    MENU_MATERIAL,
+    MENU_WEAPON,
 };
 
 

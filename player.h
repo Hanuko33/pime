@@ -1,6 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "elements.h"
+#include "items.h"
 
 enum location
 {
@@ -22,7 +22,7 @@ struct Player
     char going_right;
     enum location in;
     int energy;
-    int inventory[EL_MAX]; 
+    int inventory[IT_MAX]; 
 };
 
 extern struct Player player;

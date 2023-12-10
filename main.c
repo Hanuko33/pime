@@ -16,7 +16,7 @@
 #include "menu.h"
 #include "time.h"
 #include "world.h"
-
+#include "tiles.h"
 
 SDL_Texture *map;
 int auto_explore;
@@ -324,63 +324,14 @@ void draw()
         int y = i * tile_dungeon_size;
         for (int j=0; j < CHUNK_SIZE; j++)
         {
-            SDL_Texture *texture;
             SDL_Rect img_rect = {j * tile_dungeon_size, y, tile_dungeon_size, tile_dungeon_size};
-            switch ((world_table[player.map_y][player.map_x])->table[player.z][i][j])
-            {
-                case TILE_CAVE_WALL:
-                    texture = Texture.cave_wall;
-                    break;
-                case TILE_CAVE_FLOOR:
-                    texture = Texture.cave_floor;
-                    break;
-                case TILE_CAVE_DOOR:
-                    texture = Texture.cave_door;
-                    break;
-                case TILE_WATER:
-                    texture = Texture.water;
-                    break;
-                case TILE_SWEET_GRASS:
-                    texture = Texture.sweet_grass;
-                    break;
-                case TILE_GRASS:
-                    texture = Texture.grass;
-                    break;
-                case TILE_SWEET_BUSH:
-                    texture = Texture.sweet_bush;
-                    break;
-                case TILE_SWEET_TREE:
-                    texture = Texture.sweet_tree;
-                    break;
-                case TILE_SWEET_FLOWER:
-                    texture = Texture.sweet_flower;
-				    break;
-                case TILE_SANDSTONE:
-					texture = Texture.sandstone;
-					break;
-                case TILE_STONE:    
-                    texture = Texture.stone;
-                    break;
-                case TILE_DIRT:
-                    texture = Texture.dirt;
-                    break;
-                case TILE_TREE:    
-                    texture = Texture.tree;
-                    break;
-                case TILE_DUNG_DOOR:
-                    texture = Texture.dung_door;
-                    break;
-                case TILE_DUNG_WALL:
-                    texture = Texture.dung_wall;
-                    break;
-                case TILE_DUNG_FLOOR:
-                    texture = Texture.dung_floor;
-				    break;
-				case TILE_SAND:
-				    texture = Texture.sand;
-				    break;
-            }
+            struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][i][j]);
+            SDL_Texture *texture = tiles_textures[tile->tile];
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
+            if (tile->count) {
+                SDL_Texture *texture = items_textures[tile->item];
+                SDL_RenderCopy(renderer, texture, NULL, &img_rect);
+            }
         }
     }  
     SDL_Rect img_rect = {player.x * tile_dungeon_size, player.y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
@@ -412,7 +363,14 @@ void draw()
 	
     sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
     write_text(tx, ty+75, text, White,20,30);
+            
     
+    struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][player.y][player.x]);
+    if (tile->count) {
+        sprintf(text, "Items: %s %d", items_names[tile->item], tile->count);
+        write_text(tx, ty+125, text, White,20,30);
+    }
+
     unsigned int * pixels;
     int pitch, x, y;
 
@@ -520,7 +478,8 @@ int main(int argi, char** agrs)
 	if (init_window()) return 1;
     if (load_font()) return 1;
     if (init_music()) return 1;
-
+    
+    init_items();
     load_textures();
     create_menus();
     load_music();
