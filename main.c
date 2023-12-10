@@ -6,7 +6,6 @@
 #include "music.h"
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL2_framerate.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include "dungeon.h"
 #include "cave.h"
 #include "texture.h"
@@ -18,9 +17,10 @@
 #include "time.h"
 #include "world.h"
 
-
 struct Player player;
 
+SDL_Texture *map;
+int auto_explore;
 
 void save(char with_player)
 {
@@ -218,6 +218,9 @@ void player_interact(int key )
             player.z = 2;
             player.in = LOC_CAVE;
         break;
+        case SDLK_F5:
+            auto_explore^=1;
+        break;
                     
         case SDLK_DOWN:
         case SDLK_s:
@@ -301,16 +304,14 @@ void player_interact(int key )
 
 void draw()
 {
-    int window_width;
-    int window_height;
     int game_size;
     int tile_dungeon_size;
+    int width = window_width - PANEL_WINDOW;
 
-    SDL_GetWindowSize(main_window, &window_width, &window_height); 
-    if (window_width < window_height)
+    if (width < window_height)
     {
-        game_size = window_width;
-        tile_dungeon_size = window_width/(CHUNK_SIZE);
+        game_size = width;
+        tile_dungeon_size = width/(CHUNK_SIZE);
     } 
     else
     {
@@ -324,7 +325,7 @@ void draw()
         {
             SDL_Texture *texture;
             SDL_Rect img_rect = {j * tile_dungeon_size, y, tile_dungeon_size, tile_dungeon_size};
-            switch ((*(world_table[player.map_y][player.map_x]))[player.z][i][j])
+            switch ((world_table[player.map_y][player.map_x])->table[player.z][i][j])
             {
                 case TILE_CAVE_WALL:
                     texture = Texture.cave_wall;
@@ -400,36 +401,92 @@ void draw()
     char text_time[100];
 
     sprintf(text_energy, "Energy: %d", player.energy);
-    sprintf(text_y, "Y: %d", player.y + (player.map_y * CHUNK_SIZE));
-    sprintf(text_x, "X: %d", player.x + (player.map_x * CHUNK_SIZE));
+    sprintf(text_y, "Y: %d", (player.y + (player.map_y * CHUNK_SIZE)) - (WORLD_SIZE*CHUNK_SIZE/2));
+    sprintf(text_x, "X: %d", player.x + (player.map_x * CHUNK_SIZE)- (WORLD_SIZE*CHUNK_SIZE/2));
 	sprintf(text_time, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
 
-	write_text(game_size/60, (game_size/60), text_energy, player.energy < 100 ? Red : White, 0,0);
-	write_text(game_size/60, (game_size/60)*5, text_y, White,0,0);
-	write_text(game_size/60, (game_size/60)*10, text_x, White,0,0);
-    write_text(game_size/60, (game_size/60)*15, text_time, White,0,0);
+    int tx=width+10;
+    int ty=10;
+	write_text(tx, ty, text_energy, player.energy < 100 ? Red : White, 20,30);
+	write_text(tx, ty+25, text_y, White,20,30);
+	write_text(tx, ty+50, text_x, White,20,30);
+    write_text(tx, ty+75, text_time, White,20,30);
+     
+    unsigned int * pixels;
+    int pitch, x, y;
+
+    SDL_LockTexture(map, NULL, (void**)&pixels, &pitch);
+
+    for (y = 0; y < WORLD_SIZE; y++)
+    {
+        for (x = 0; x < WORLD_SIZE; x++)
+        {
+           chunk* chunk = world_table[y][x];
+           if (chunk) {
+               switch(chunk->biome)
+               {
+                   case BIOME_DESERT:
+                       pixels[y * WORLD_SIZE + x] = 0xffffff00;
+                       break;
+                   case BIOME_FOREST:
+                       pixels[y * WORLD_SIZE + x] = 0xff00ff00;
+                       break;
+                   case BIOME_SWEET_TREE:
+                       pixels[y * WORLD_SIZE + x] = 0xff79510a;
+                       break;
+                   case BIOME_LAKE:
+                       pixels[y * WORLD_SIZE + x] = 0xff0000ff;
+                       break;
+               }
+           }
+             else 
+                  pixels[y * WORLD_SIZE + x] = 0xff000000;
+        }
+    }
     
-    
+    unsigned int p=pixels[player.map_y * WORLD_SIZE + player.map_x];
+    for (y=0; y < 3; y++)
+        for (x=0; x< 3; x++)
+        {
+            int py=player.map_y+y-1;
+            int px=player.map_x+x-1;
+            if (py >=0 && py < WORLD_SIZE && px >= 0 && px < WORLD_SIZE)
+                pixels[py * WORLD_SIZE + px]=0xffffffff;
+        }
+
+    SDL_UnlockTexture(map);
+
+    SDL_Rect window_rec;
+    window_rec.w = WORLD_SIZE;
+    window_rec.h = WORLD_SIZE;
+    window_rec.x = width + 10;
+    window_rec.y = window_height - WORLD_SIZE - 10 ;
+
+    SDL_RenderCopy(renderer, map, NULL, &window_rec);
+
     show_menu();
 }
 
 void update_window_size()
 {
     int tile_size;
-    int window_width;
-    int window_height;
+    int width;
+   SDL_GetWindowSize(main_window, &window_width, &window_height); 
 
-    SDL_GetWindowSize(main_window, &window_width, &window_height); 
-    if (window_width < window_height)
+   width = window_width - PANEL_WINDOW;
+
+    if (width < window_height)
     {
-        tile_size = window_width/(CHUNK_SIZE);
+        tile_size = width/(CHUNK_SIZE);
     } 
 	else
     {
         tile_size = window_height/(CHUNK_SIZE);
     }
     if (tile_size<32) tile_size = 32;
-    SDL_SetWindowSize(main_window, tile_size * CHUNK_SIZE, tile_size * CHUNK_SIZE);
+
+    SDL_SetWindowSize(main_window, (tile_size * CHUNK_SIZE) + PANEL_WINDOW, tile_size * CHUNK_SIZE);
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
 }
 
 int main(int argi, char** agrs)
@@ -472,6 +529,7 @@ int main(int argi, char** agrs)
     create_menus();
     load_music();
 
+    map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WORLD_SIZE, WORLD_SIZE);
     Mix_PlayChannel(0, music.music_one, 99999); 
     Mix_PlayChannel(1, music.music_two, 99999);
     Mix_Volume(0, 0);
@@ -481,6 +539,9 @@ int main(int argi, char** agrs)
     load(1);
     generator();
     
+    int dst_map_x=player.map_x;
+    int dst_map_y=player.map_y;
+   
     for (;;)
     {   
         SDL_Event event;
@@ -499,11 +560,48 @@ int main(int argi, char** agrs)
             }
             if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
             {
-                //printf("window event %d %d \n", event.window.data1, event.window.data2);
+              //  printf("window event %d %d \n", event.window.data1, event.window.data2);
                 update_window_size();
             }
+
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+             /*   switch (event.button.button)
+                {
+                    case 1: break;
+                    case 2: break;
+                    case 3: break;
+                }
+             */
+                 printf("mouse %d,%d %d\n", event.button.x, event.button.y, event.button.button);
+            }
+            
         }
+        if (auto_explore) {
+           if ((dst_map_x == player.map_x) && (dst_map_y == player.map_y)) { 
+                int dx = 5 - (rand() % 11);
+                int dy = 5 - (rand() % 11);
+
+               if (player.map_y+dy >= 0 && player.map_y+dy < WORLD_SIZE && player.map_x +dx >= 0 && player.map_x+dx < WORLD_SIZE)
+               {
+                    if (!world_table[player.map_y+dy][player.map_x+dx]) {                
+                        dst_map_x=player.map_x + dx;
+                        dst_map_y=player.map_y + dy;
+                    }
+               }
+           }
+           if (dst_map_x > player.map_x) player_move(&player, 1, 0);
+           if (dst_map_x < player.map_x) player_move(&player, -1, 0);
+           if (dst_map_y > player.map_y) player_move(&player, 0, 1);
+           if (dst_map_y < player.map_y) player_move(&player, 0, -1);
+         } else {
+                dst_map_x=player.map_x;
+                dst_map_y=player.map_y;
+         }
+
+
         update_time();
+#if 0
         if (player.energy <= 0)
         {
             printf("You ran out of energy (death)\n");
@@ -512,12 +610,13 @@ int main(int argi, char** agrs)
             SDL_Quit();
             return 0;
         }
+#endif
         // DEBUG x, y, map_x, map_y, running
         //printf("x: %d y: %d\n map_x: %d map_y: %d running: %d\n", player.x, player.y, player.map_x, player.map_y, player.running);                   
         // DEBUG in_menu
         //printf("in_menu: %d\n", in_menu);
         
         SDL_RenderPresent(renderer);
-        SDL_Delay(20);   
+        if (!auto_explore) SDL_Delay(20);   
     }
 }

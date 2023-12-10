@@ -25,18 +25,24 @@ enum  game_tiles
 
 enum  biomes
 {
-    BIOME_DESERT,
-    BIOME_FOREST,
-    BIOME_SWEET_TREE,
-    BIOME_LAKE
+    BIOME_DESERT, // yellow
+    BIOME_FOREST, //  green
+    BIOME_SWEET_TREE,//brown
+    BIOME_LAKE //blue
 };
 
 
 #define CHUNK_SIZE 16
 #define WORLD_SIZE 256
 #define WORLD_CENTER WORLD_SIZE/2
+    
+typedef enum game_tiles chunk_table[3][CHUNK_SIZE][CHUNK_SIZE];
 
-typedef enum game_tiles chunk[3][CHUNK_SIZE][CHUNK_SIZE];
+typedef struct {
+    enum biomes biome;
+    chunk_table table;
+} chunk;
+
 
 
 #endif

@@ -11,7 +11,7 @@ void generate_cave(chunk* chunk, int entrance_x, int entrance_y)
 	{
 		for (int j=0; j<CHUNK_SIZE; j++)
 		{
-			(*chunk)[2][i][j]=TILE_CAVE_WALL;
+			chunk->table[2][i][j]=TILE_CAVE_WALL;
 		}
 	}
 	for (int i=0; i<(CHUNK_SIZE*(CHUNK_SIZE*3)); i++)
@@ -24,7 +24,7 @@ void generate_cave(chunk* chunk, int entrance_x, int entrance_y)
 			// 0 for minus
 			// 1 for plus
 			int plus_minus = rand() % 2;
-			(*chunk)[2][gen_point_y][gen_point_x] = TILE_CAVE_FLOOR;
+			chunk->table[2][gen_point_y][gen_point_x] = TILE_CAVE_FLOOR;
             if (!plus_minus)
 			{
 				if (gen_point_x > 1) gen_point_x--;
@@ -39,7 +39,7 @@ void generate_cave(chunk* chunk, int entrance_x, int entrance_y)
 			// 0 for minus
 			// 1 for plus
 			int plus_minus = rand() % 2;
-			(*chunk)[2][gen_point_y][gen_point_x] = TILE_CAVE_FLOOR;
+			chunk->table[2][gen_point_y][gen_point_x] = TILE_CAVE_FLOOR;
             if (!plus_minus)
 			{
 				if (gen_point_y > 1) gen_point_y--;
@@ -50,6 +50,6 @@ void generate_cave(chunk* chunk, int entrance_x, int entrance_y)
 			}	
 		}
 	}
-    (*chunk)[2][entrance_y][entrance_x] = TILE_CAVE_DOOR;
+    chunk->table[2][entrance_y][entrance_x] = TILE_CAVE_DOOR;
 }
 

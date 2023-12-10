@@ -2,6 +2,8 @@
 
 SDL_Renderer *renderer;
 SDL_Window *main_window;
+int window_width;
+int window_height;
 
 int  init_window()
 {
@@ -16,7 +18,8 @@ int  init_window()
 	}
     SDL_SetWindowTitle(main_window, "game_window");
     SDL_SetWindowPosition(main_window, 0,0);
-    SDL_SetWindowSize(main_window, 512, 512);
+    SDL_SetWindowSize(main_window, GAME_WINDOW+PANEL_WINDOW, GAME_WINDOW);
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     int imgFlags = IMG_INIT_PNG;

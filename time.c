@@ -1,8 +1,5 @@
 #include "time.h"
 
-
-
-
 void update_time()
 {
     if (game_time.seconds >= 60)
