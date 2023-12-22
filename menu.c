@@ -71,13 +71,15 @@ void show_menu()
 
 void create_menus()
 {
-    create_menu(&menu_main, 6);
+    create_menu(&menu_main, 8);
         add_entry(&menu_main, "Exit", MENU_EXIT);
         add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
         add_entry(&menu_main, "Save", MENU_SAVE);
         add_entry(&menu_main, "Load", MENU_LOAD);
         add_entry(&menu_main, "Help", MENU_HELP);
         add_entry(&menu_main, "Cancel", MENU_CANCEL);
+        add_entry(&menu_main, "Change music volume", MENU_MUSIC);
+        add_entry(&menu_main, "", MENU_CANCEL);
 
     create_menu(&menu_energy, 2);
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
@@ -90,8 +92,8 @@ void create_menus()
         add_entry(&menu_help, "w, a, s, d - moves", MENU_CANCEL);
         add_entry(&menu_help, "r - switch running", MENU_CANCEL);
         add_entry(&menu_help, "e, ENTER - interact", MENU_CANCEL);
-        add_entry(&menu_help, "n - change music volume", MENU_CANCEL);
         add_entry(&menu_help, "i - inventory", MENU_CANCEL);
+        add_entry(&menu_help, "", MENU_CANCEL);
 
     create_menu(&menu_music, 2);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
@@ -115,14 +117,14 @@ void menu_go_down()
 {
     current_menu->menu_pos++;
     if (current_menu->menu_pos == current_menu->options)
-        current_menu->menu_pos = current_menu->options - 1;
+        current_menu->menu_pos = 0;
 }
 
 void menu_go_up()
 {
     current_menu->menu_pos--;
     if (current_menu->menu_pos < 0 )
-        current_menu->menu_pos = 0;
+        current_menu->menu_pos = current_menu->options - 1;
 }
 
 int menu_interact(int key)
@@ -138,11 +140,6 @@ int menu_interact(int key)
        { 
            if (!current_menu) current_menu=&menu_energy; else if (current_menu ==  &menu_energy) current_menu=NULL;
            return 1;
-       }
-       case SDLK_n:
-       {
-            if (!current_menu) current_menu=&menu_music; else if (current_menu == &menu_music) current_menu=NULL;
-            return 1;
        }
        case SDLK_i:
        {
@@ -184,6 +181,10 @@ int interact(enum menu_actions a)
 {
     switch(a)
     {
+        case MENU_MUSIC:
+            current_menu=&menu_music;
+            return 0;
+
         case MENU_CANCEL:
             break;
             

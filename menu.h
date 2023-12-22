@@ -15,6 +15,7 @@ enum menu_actions
     MENU_BOOST,
     MENU_LOUDER,
     MENU_QUIETER,
+    MENU_MUSIC,
 
 //  must be after other menus entries  
     MENU_MATERIAL,
