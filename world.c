@@ -255,12 +255,11 @@ char traversable_tiles[TILE_MAX_NUM] =
     1, //TILE_CAVE_FLOOR,
     1,//0, //TILE_CAVE_WALL,
 };
-
 struct item get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     return world_table[chunk_y][chunk_x]->table[z][y][x].item;
 }
-struct item get_item_at_ppos(struct Player *player)
+struct item get_item_at_ppos(struct Player * player)
 {
     return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
