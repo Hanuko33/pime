@@ -263,8 +263,7 @@ void player_interact(int key )
                 printf("GOT ITEM: %s, new amount: %d\n", items_names[get_item_at_ppos(&player).id], player.inventory[item_id]);
                 world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x].item.count=0;
             }
-
-            if (get_tile_at_ppos(&player) == TILE_SAND)
+            else if (get_tile_at_ppos(&player) == TILE_SAND)
             {
                 player.inventory[IT_sand]++;
                 printf("GOT SAND, new amount: %d\n", player.inventory[IT_sand]);
