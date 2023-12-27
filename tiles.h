@@ -39,8 +39,7 @@ enum  biomes
 
 struct tile {
     enum game_tiles tile;
-    int count;
-    enum item_id item;
+    struct item item;
 };
     
 typedef struct tile chunk_table[3][CHUNK_SIZE][CHUNK_SIZE];

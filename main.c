@@ -256,7 +256,22 @@ void player_interact(int key )
         case SDLK_e:
         {
             printf("player: %d, %d\n", player.x, player.y);
-            if (get_tile_at_player_position(&player) == TILE_DUNG_DOOR)
+            
+            if (get_item_at_ppos(&player).count)
+            {
+                int item_id = get_item_at_ppos(&player).id;
+                player.inventory[item_id]+=get_item_at_ppos(&player).count;
+                printf("GOT ITEM: %s, new amount: %d\n", items_names[get_item_at_ppos(&player).id], player.inventory[item_id]);
+                world_table[player.map_x][player.map_y]->table[player.z][player.y][player.x].item.count=0;
+            }
+
+            if (get_tile_at_ppos(&player) == TILE_SAND)
+            {
+                player.inventory[IT_sand]++;
+                printf("GOT SAND, new amount: %d\n", player.inventory[IT_sand]);
+            }
+
+            if (get_tile_at_ppos(&player) == TILE_DUNG_DOOR)
             {
                 save(0);
                 game_time.minutes++;
@@ -277,7 +292,7 @@ void player_interact(int key )
                 load(0);
                 save(0);
             }
-            if (get_tile_at_player_position(&player) == TILE_CAVE_DOOR)
+            if (get_tile_at_ppos(&player) == TILE_CAVE_DOOR)
             {
                 save(0);
                 game_time.minutes++;
@@ -328,8 +343,8 @@ void draw()
             struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][i][j]);
             SDL_Texture *texture = tiles_textures[tile->tile];
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
-            if (tile->count) {
-                SDL_Texture *texture = items_textures[tile->item];
+            if (tile->item.count) {
+                SDL_Texture *texture = items_textures[tile->item.id];
                 SDL_RenderCopy(renderer, texture, NULL, &img_rect);
             }
         }
@@ -366,8 +381,8 @@ void draw()
             
     
     struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][player.y][player.x]);
-    if (tile->count) {
-        sprintf(text, "Items: %s %d", items_names[tile->item], tile->count);
+    if (tile->item.count) {
+        sprintf(text, "Items: %s %d", items_names[tile->item.id], tile->item.count);
         write_text(tx, ty+125, text, White,20,30);
     }
 

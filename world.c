@@ -42,21 +42,21 @@ void create_biome_forest(chunk * chunk)
                     else
                     {
                         chunk->table[0][i][j].tile = TILE_STONE;
-                        chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                        if (chunk->table[0][i][j].count)
-                            chunk->table[0][i][j].item=IT_stone;
+                        chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                        if (chunk->table[0][i][j].item.count)
+                            chunk->table[0][i][j].item.id=IT_stone;
 
                     }
                     break;
                 case 1:
                     chunk->table[0][i][j].tile = TILE_DIRT;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        if (rand() % 10 < 7) chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        if (rand() % 10 < 7) chunk->table[0][i][j].item.id=IT_stone;
                         else 
                         {
-                            chunk->table[0][i][j].item = IT_log;
-                            chunk->table[0][i][j].count = 1;
+                            chunk->table[0][i][j].item.id = IT_log;
+                            chunk->table[0][i][j].item.count = 1;
                         }
                     }
                     break;
@@ -73,13 +73,13 @@ void create_biome_forest(chunk * chunk)
                     break;
                 case 3:
                     chunk->table[0][i][j].tile = TILE_GRASS;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        if (rand() % 10 < 8) chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        if (rand() % 10 < 8) chunk->table[0][i][j].item.id=IT_stone;
                         else
                         { 
-                            chunk->table[0][i][j].item=IT_log;
-                            chunk->table[0][i][j].count=0;
+                            chunk->table[0][i][j].item.id=IT_log;
+                            chunk->table[0][i][j].item.count=0;
                         }
                     }
                     break;
@@ -102,9 +102,9 @@ void create_biome_desert(chunk * chunk)
             {
                 case 0:
                     chunk->table[0][i][j].tile = TILE_SAND;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        chunk->table[0][i][j].item.id=IT_stone;
                     }
                     break;
                 case 1:
@@ -132,32 +132,32 @@ void create_biome_lake(chunk * chunk)
                     break;
                 case 1:
                     chunk->table[0][i][j].tile = TILE_GRASS;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        if (rand() % 10 < 8) chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        if (rand() % 10 < 8) chunk->table[0][i][j].item.id=IT_stone;
                         else 
                         {
-                            chunk->table[0][i][j].item=IT_log;
-                            chunk->table[0][i][j].count=1;
+                            chunk->table[0][i][j].item.id=IT_log;
+                            chunk->table[0][i][j].item.count=1;
                         }
                     }
                 break;
                 case 2:
                     chunk->table[0][i][j].tile = TILE_SAND;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        chunk->table[0][i][j].item.id=IT_stone;
                     }
                     break;
                 case 3:
                     chunk->table[0][i][j].tile = TILE_DIRT;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        if (rand() % 10 < 7) chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        if (rand() % 10 < 7) chunk->table[0][i][j].item.id=IT_stone;
                         else 
                         {
-                            chunk->table[0][i][j].count=1;
-                            chunk->table[0][i][j].item=IT_log;
+                            chunk->table[0][i][j].item.count=1;
+                            chunk->table[0][i][j].item.id=IT_log;
                         }
                     }
               break;
@@ -180,13 +180,13 @@ void create_biome_sweet_tree(chunk * chunk)
             {
                 case 0:
                     chunk->table[0][i][j].tile = TILE_SWEET_GRASS;
-                    chunk->table[0][i][j].count = (it_randnum > 5) ? it_randnum/4 : 0;
-                    if (chunk->table[0][i][j].count) {
-                        if (rand() % 10 < 8) chunk->table[0][i][j].item=IT_stone;
+                    chunk->table[0][i][j].item.count = (it_randnum > 5) ? it_randnum/4 : 0;
+                    if (chunk->table[0][i][j].item.count) {
+                        if (rand() % 10 < 8) chunk->table[0][i][j].item.id=IT_stone;
                         else 
                         {
-                            chunk->table[0][i][j].item=IT_log;
-                            chunk->table[0][i][j].count=1;
+                            chunk->table[0][i][j].item.id=IT_log;
+                            chunk->table[0][i][j].item.count=1;
                         }
                     }
                      break;
@@ -256,12 +256,21 @@ char traversable_tiles[TILE_MAX_NUM] =
     1,//0, //TILE_CAVE_WALL,
 };
 
-enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)   
+struct item get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
+{
+    return world_table[chunk_y][chunk_x]->table[z][y][x].item;
+}
+struct item get_item_at_ppos(struct Player *player)
+{
+    return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
+}
+
+enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     return world_table[chunk_y][chunk_x]->table[z][y][x].tile;
 }
 
-enum game_tiles get_tile_at_player_position(struct Player *player)
+enum game_tiles get_tile_at_ppos(struct Player *player)
 {
     return get_tile_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }

@@ -7,6 +7,8 @@
 struct item {
     const char *name;
     enum category_id cat;
+    enum item_id id;
+    int count;
 };
 
 extern struct item items[IT_MAX];

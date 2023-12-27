@@ -13,7 +13,9 @@ extern Game_time game_time;
 extern chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
 enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z);
-enum game_tiles get_tile_at_player_position(struct Player *player);
+enum game_tiles get_tile_at_ppos(struct Player *player);
+struct item get_item_at_ppos(struct Player *player);
+struct item get_item_at(int chunk_x, int chunk_y, int x, int y, int z);
 void generator();
 void generate_chunk(chunk* chunk);
 char load_chunk(int x, int y);
