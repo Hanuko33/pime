@@ -49,10 +49,20 @@ void show_menu()
         game_size = window_height;
 
     int menu_opt_size = game_size/10;
-    int modx = (game_size/2)-(0.4*game_size);
     int mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
+    int mody2;
+
+    if (current_menu->options % 2)
+    {
+        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2)+menu_opt_size);
+    }
+    else
+    {
+        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
+    }
+
+    int modx = (game_size/2)-(0.4*game_size);
     int modx2 = (game_size/2)+(0.4*game_size);
-    int mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
    
     SDL_Rect rect = {modx, mody, modx2-modx, mody2-mody};
     SDL_SetRenderDrawColor(renderer, 0, 0, 1, 100);
