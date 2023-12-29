@@ -71,7 +71,7 @@ void show_menu()
 
 void create_menus()
 {
-    create_menu(&menu_main, 8);
+    create_menu(&menu_main, 7);
         add_entry(&menu_main, "Exit", MENU_EXIT);
         add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
         add_entry(&menu_main, "Save", MENU_SAVE);
@@ -79,13 +79,12 @@ void create_menus()
         add_entry(&menu_main, "Help", MENU_HELP);
         add_entry(&menu_main, "Cancel", MENU_CANCEL);
         add_entry(&menu_main, "Change music volume", MENU_MUSIC);
-        add_entry(&menu_main, "", MENU_CANCEL);
 
     create_menu(&menu_energy, 2);
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
         add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
 
-    create_menu(&menu_help, 8);
+    create_menu(&menu_help, 7);
         add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
         add_entry(&menu_help, "m - energy", MENU_CANCEL);
         add_entry(&menu_help, "arrows - moves", MENU_CANCEL);
@@ -93,7 +92,6 @@ void create_menus()
         add_entry(&menu_help, "r - switch running", MENU_CANCEL);
         add_entry(&menu_help, "e, ENTER - interact", MENU_CANCEL);
         add_entry(&menu_help, "i - inventory", MENU_CANCEL);
-        add_entry(&menu_help, "", MENU_CANCEL);
 
     create_menu(&menu_music, 2);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
