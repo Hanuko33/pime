@@ -20,7 +20,6 @@
 
 SDL_Texture *map;
 int auto_explore;
-
 void save(char with_player)
 {
  /*   if (with_player)
@@ -441,6 +440,7 @@ void draw()
 
 void update_window_size()
 {
+    
     int tile_size;
     int width;
    SDL_GetWindowSize(main_window, &window_width, &window_height); 

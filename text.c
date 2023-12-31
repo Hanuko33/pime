@@ -1,6 +1,5 @@
 #include "text.h"
 #include "window.h"
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>

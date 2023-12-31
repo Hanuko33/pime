@@ -1,7 +1,6 @@
 #include "menu.h"
 #include "window.h"
 #include "music.h"
-#include  <SDL2/SDL2_gfxPrimitives.h>
 #include "items.h"
 
 extern struct Player player;
@@ -115,7 +114,7 @@ void create_menus()
     create_menu(&menu_inventory_material, IT_MAX);
         for (int i=0; i < IT_MAX; i++)
         {
-            add_entry(&menu_inventory_material, items_names[i], MENU_CANCEL);
+            add_entry(&menu_inventory_material, items_names[i], MENU_ITEM);
 //            player.inventory[i];
         }
         
@@ -192,10 +191,9 @@ int interact(enum menu_actions a)
         case MENU_MUSIC:
             current_menu=&menu_music;
             return 0;
-
-        case MENU_CANCEL:
+        case MENU_ITEM:
+            printf("later");
             break;
-            
         case MENU_REGAIN:
             player.energy+=100;
             break;
