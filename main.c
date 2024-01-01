@@ -20,6 +20,8 @@
 
 SDL_Texture *map;
 int auto_explore;
+int active_hotbar=-1;
+
 void save(char with_player)
 {
  /*   if (with_player)
@@ -199,6 +201,10 @@ void player_interact(int key )
     
     switch (key)
     {
+		case SDLK_TAB:
+			active_hotbar++;
+			if (active_hotbar==10) active_hotbar=-1;
+			break;
         case SDLK_F1:
             generator();
             player.z = 0;
@@ -315,6 +321,7 @@ void player_interact(int key )
     }
 }
 
+
 void draw()
 {
     int game_size;
@@ -382,6 +389,29 @@ void draw()
         sprintf(text, "Items: %s %d", items_names[tile->item.id], tile->item.count);
         write_text(tx, ty+125, text, White,20,30);
     }
+
+	for (int i=0; i < 10; i++)
+	{
+		SDL_Rect rect;
+		rect.x = tx+32*i;
+		rect.y = ty+155;
+		rect.w = 32;
+		rect.h = 32;
+
+		if (player.hotbar[i] >= 0)
+        {
+			SDL_Texture *texture = items_textures[player.hotbar[i]];
+            SDL_RenderCopy(renderer, texture, NULL, &rect);
+			sprintf(text, "%d", player.inventory[player.hotbar[i]]);
+		    write_text(rect.x + 3 , rect.y+40, text, Gray, 10,20);
+		}
+		if (i == active_hotbar) {
+			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		} else
+			SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+		SDL_RenderDrawRect(renderer, &rect);
+    
+	}
 
     unsigned int * pixels;
     int pitch, x, y;

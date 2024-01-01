@@ -8,7 +8,8 @@ int window_height;
 int  init_window()
 {
 	Uint32 flags;
-    flags = SDL_WINDOW_RESIZABLE;
+    flags = SDL_WINDOW_RESIZABLE|SDL_WINDOW_HIDDEN;
+    //flags = SDL_WINDOW_HIDDEN;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) { fprintf(stderr, "\nUnable to initialize SDL:  %s\n", SDL_GetError()); }
 
@@ -21,6 +22,7 @@ int  init_window()
     SDL_SetWindowSize(main_window, GAME_WINDOW+PANEL_WINDOW, GAME_WINDOW);
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_ShowWindow(main_window);
 
     int imgFlags = IMG_INIT_PNG;
     if (!(IMG_Init(imgFlags) & imgFlags)) 

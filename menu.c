@@ -4,6 +4,7 @@
 #include "items.h"
 
 extern struct Player player;
+extern int active_hotbar;
 
 struct menu_struct menu_music;
 struct menu_struct menu_main;
@@ -109,12 +110,12 @@ void create_menus()
     create_menu(&menu_inventory_categories, CAT_MAX);
         for (int i=0; i < CAT_MAX; i++)
         {
-            add_entry(&menu_inventory_categories, categories_names[i], MENU_MATERIAL+i);
+            add_entry(&menu_inventory_categories, categories_names[i], MENU_MATERIAL | i);
         }
     create_menu(&menu_inventory_material, IT_MAX);
         for (int i=0; i < IT_MAX; i++)
         {
-            add_entry(&menu_inventory_material, items_names[i], MENU_ITEM);
+            add_entry(&menu_inventory_material, items_names[i], MENU_ITEM | i);
 //            player.inventory[i];
         }
         
@@ -184,16 +185,22 @@ int menu_interact(int key)
     return  current_menu ? 1 : 0;
 }
 
+int handle_item(int i)
+{
+	if (active_hotbar >=0) {
+		player.hotbar[active_hotbar]=i;
+	}
+	return 1;
+}	
+
 int interact(enum menu_actions a)
 {
+    if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
     switch(a)
     {
         case MENU_MUSIC:
             current_menu=&menu_music;
             return 0;
-        case MENU_ITEM:
-            printf("later");
-            break;
         case MENU_REGAIN:
             player.energy+=100;
             break;

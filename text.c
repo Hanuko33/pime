@@ -9,6 +9,7 @@ TTF_Font* font;
 #define FONT_NAME "nerdfont.ttf"
 
 SDL_Color White = {255, 255, 255};
+SDL_Color Gray = {200, 200, 200};
 SDL_Color Red = {255, 0, 0};
 
 int load_font()

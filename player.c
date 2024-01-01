@@ -50,6 +50,10 @@ void init_player()
 	player.back_y=0;
     player.map_x = WORLD_CENTER;
     player.map_y = WORLD_CENTER;
-    for (int i=0; i < IT_MAX; i++)
-        player.inventory[i]=rand() % 10;
+    //for (int i=0; i < IT_MAX; i++)
+    //	player.inventory[i]=rand() % 10;
+    player.inventory[IT_stone] = 10;
+
+	for (int i=0; i < 10; i++)
+        player.hotbar[i]=-1;
 }

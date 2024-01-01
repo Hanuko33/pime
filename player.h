@@ -23,7 +23,7 @@ struct Player
     enum location in;
     int energy;
     int inventory[IT_MAX]; 
-    int * hotbar[10];
+    int hotbar[10];
 };
 
 extern struct Player player;
