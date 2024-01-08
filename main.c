@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "text.h"
 #include "tiles.h"
 #include "window.h"
 #include "music.h"
@@ -21,6 +22,7 @@
 SDL_Texture *map;
 int auto_explore;
 int active_hotbar=-1;
+char force_screen=1;
 
 void save(char with_player)
 {
@@ -194,6 +196,28 @@ void load(char with_player)
     }*/
 }
 
+void update_window_size()
+{
+    
+    int tile_size;
+    int width;
+   SDL_GetWindowSize(main_window, &window_width, &window_height); 
+
+   width = window_width - PANEL_WINDOW;
+
+    if (width < window_height)
+    {
+        tile_size = width/(CHUNK_SIZE);
+    } 
+	else
+    {
+        tile_size = window_height/(CHUNK_SIZE);
+    }
+    if (tile_size<48) tile_size = 48;
+
+    SDL_SetWindowSize(main_window, (tile_size * CHUNK_SIZE) + PANEL_WINDOW, tile_size * CHUNK_SIZE);
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
+}
 
 void player_interact(int key )
 {
@@ -201,6 +225,10 @@ void player_interact(int key )
     
     switch (key)
     {
+        case SDLK_F11:
+            force_screen ^= 1;
+            update_window_size();
+            break;
 		case SDLK_TAB:
 			active_hotbar++;
 			if (active_hotbar==10) active_hotbar=-1;
@@ -372,22 +400,22 @@ void draw()
     int ty=10;
 
     sprintf(text, "Energy: %d", player.energy);
-	write_text(tx, ty, text, player.energy < 100 ? Red : White, 20,30);
+	write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
     
     sprintf(text, "Y: %d", (player.y + (player.map_y * CHUNK_SIZE)) - (WORLD_SIZE*CHUNK_SIZE/2));
-	write_text(tx, ty+25, text, White,20,30);
+	write_text(tx, ty+25, text, White,15,30);
 
     sprintf(text, "X: %d", player.x + (player.map_x * CHUNK_SIZE)- (WORLD_SIZE*CHUNK_SIZE/2));
-	write_text(tx, ty+50, text, White,20,30);
+	write_text(tx, ty+50, text, White,15,30);
 	
     sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
-    write_text(tx, ty+75, text, White,20,30);
+    write_text(tx, ty+75, text, White,15,30);
             
     
     struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][player.y][player.x]);
     if (tile->item.count) {
         sprintf(text, "Items: %s %d", items_names[tile->item.id], tile->item.count);
-        write_text(tx, ty+125, text, White,20,30);
+        write_text(tx, ty+125, text, White,15,30);
     }
 
 	for (int i=0; i < 10; i++)
@@ -412,6 +440,7 @@ void draw()
 		SDL_RenderDrawRect(renderer, &rect);
     
 	}
+
 
     unsigned int * pixels;
     int pitch, x, y;
@@ -455,6 +484,27 @@ void draw()
                 pixels[py * WORLD_SIZE + px]=0xffffffff;
         }
 
+    sprintf(text, "force screen: %d", force_screen);
+    write_text(tx, ty+220, text, White, 15, 30);
+    
+    switch(world_table[player.map_y][player.map_x]->biome)
+    {
+        case BIOME_DESERT:
+            sprintf(text, "biome: desert");
+            break;
+        case BIOME_FOREST:
+            sprintf(text, "biome: forest");
+            break;
+        case BIOME_SWEET_TREE:
+            sprintf(text, "biome: sweet forest");
+            break;
+        case BIOME_LAKE:
+            sprintf(text, "biome: lake");
+            break;
+    }
+   
+    write_text(tx, ty+245, text, White, 15, 30);
+
     SDL_UnlockTexture(map);
 
     SDL_Rect window_rec;
@@ -468,28 +518,7 @@ void draw()
     show_menu();
 }
 
-void update_window_size()
-{
-    
-    int tile_size;
-    int width;
-   SDL_GetWindowSize(main_window, &window_width, &window_height); 
 
-   width = window_width - PANEL_WINDOW;
-
-    if (width < window_height)
-    {
-        tile_size = width/(CHUNK_SIZE);
-    } 
-	else
-    {
-        tile_size = window_height/(CHUNK_SIZE);
-    }
-    if (tile_size<32) tile_size = 32;
-
-    SDL_SetWindowSize(main_window, (tile_size * CHUNK_SIZE) + PANEL_WINDOW, tile_size * CHUNK_SIZE);
-    SDL_GetWindowSize(main_window, &window_width, &window_height); 
-}
 
 int main(int argi, char** agrs)
 {
@@ -556,7 +585,7 @@ int main(int argi, char** agrs)
 
                 player_interact(key);
             }
-            if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+            if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED && force_screen)
             {
               //  printf("window event %d %d \n", event.window.data1, event.window.data2);
                 update_window_size();

@@ -6,7 +6,7 @@
 
 TTF_Font* font;
 
-#define FONT_NAME "nerdfont.ttf"
+#define FONT_NAME "nerdfont.otf"
 
 SDL_Color White = {255, 255, 255};
 SDL_Color Gray = {200, 200, 200};
