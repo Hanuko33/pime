@@ -229,7 +229,80 @@ void player_interact(int key )
             force_screen ^= 1;
             update_window_size();
             break;
-		case SDLK_TAB:
+        case SDLK_1:
+            if (active_hotbar == 0)
+                active_hotbar =-1;
+            else
+                active_hotbar=0;
+            break;
+        case SDLK_2:
+            if (active_hotbar==1)
+                active_hotbar=-1;
+            else
+                active_hotbar=1;
+            break;
+        case SDLK_3:
+            if (active_hotbar==2)
+                active_hotbar=-1;
+            else
+                active_hotbar=2;
+            break;
+        case SDLK_4:
+            if (active_hotbar==3)
+                active_hotbar=-1;
+            else
+                active_hotbar=3;
+            break;
+        case SDLK_5:
+            if (active_hotbar==4)
+                active_hotbar=-1;
+            else
+                active_hotbar=4;
+            break;
+        case SDLK_6:
+            if (active_hotbar==5)
+                active_hotbar=-1;
+            else
+                active_hotbar=5;
+            break;
+        case SDLK_7:
+            if (active_hotbar==6)
+                active_hotbar=-1;
+            else
+                active_hotbar=6;
+            break;
+        case SDLK_8:
+            if (active_hotbar==7)
+                active_hotbar=-1;
+            else
+                active_hotbar=7;
+            break;
+        case SDLK_9:
+            if (active_hotbar==8)
+                active_hotbar=-1;
+            else
+                active_hotbar=8;
+            break;
+        case SDLK_0:
+            if (active_hotbar==9)
+                active_hotbar=-1;
+            else
+                active_hotbar=9;
+            break;
+        /*
+         *  dropping
+         * case SDLK_q:
+            if (active_hotbar >= 0)
+            {
+                printf("DEBUG\n");
+                if (get_item_at_ppos(&player).count > 0)
+                {
+                    printf("%d\n", player.hotbar[active_hotbar]);
+                    printf("DEBUG item placed\n");
+                }
+            }
+            break;*/
+        case SDLK_TAB:
 			active_hotbar++;
 			if (active_hotbar==10) active_hotbar=-1;
 			break;
