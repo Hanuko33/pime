@@ -4,8 +4,6 @@
 #include "time.h"
 #include "world.h"
 
-struct Player player;
-
 void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, int new_y)
 {
      if (traversable_tiles[world_table[new_map_y][new_map_x]->table[p->z][new_y][new_x].tile]) {
@@ -43,17 +41,18 @@ void move_player(struct Player *p, int dx, int dy)
     check_and_move(p, new_map_x, new_map_y, new_x, new_y);
 }
 
-void init_player()
+void init_player(struct Player* player)
 {
-	player.energy=250;
-	player.back_x=0;
-	player.back_y=0;
-    player.map_x = WORLD_CENTER;
-    player.map_y = WORLD_CENTER;
+	player->energy=250;
+	player->back_x=0;
+	player->back_y=0;
+    player->map_x = WORLD_CENTER;
+    player->map_y = WORLD_CENTER;
     //for (int i=0; i < IT_MAX; i++)
-    //	player.inventory[i]=rand() % 10;
-    player.inventory[IT_stone] = 10;
+    //	player->inventory[i]=rand() % 10;
+    player->inventory[IT_stone] = 10;
 
 	for (int i=0; i < 10; i++)
-        player.hotbar[i]=-1;
+        player->hotbar[i]=-1;
+
 }

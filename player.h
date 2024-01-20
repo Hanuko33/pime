@@ -26,8 +26,6 @@ struct Player
     int hotbar[10];
 };
 
-extern struct Player player;
-
 void move_player(struct Player* player, int x, int y);
 void init_player();
 

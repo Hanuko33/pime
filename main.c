@@ -24,6 +24,10 @@ int auto_explore;
 int active_hotbar=-1;
 char force_screen=1;
 
+
+// DON'T MOVE THIS
+struct Player player;
+
 void save(char with_player)
 {
  /*   if (with_player)
@@ -618,7 +622,7 @@ int main(int argi, char** agrs)
     }
 
     srand (time(NULL));
-    init_player();
+    init_player(&player);
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
