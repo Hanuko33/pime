@@ -1,20 +1,23 @@
 #ifndef TILES_H
 #define TILES_H
+
 #include "items.h"
+#include "object.h"
 
 enum  game_tiles
 {
+    TILE_AIR,
     TILE_STONE,
     TILE_DIRT,
-    TILE_TREE,
+//    TILE_TREE,
     TILE_DUNG_WALL,
     TILE_DUNG_FLOOR,
     TILE_DUNG_DOOR,
     TILE_SAND,
     TILE_SANDSTONE,
-    TILE_SWEET_TREE,
-    TILE_SWEET_BUSH,
-    TILE_SWEET_FLOWER,
+//    TILE_SWEET_TREE,
+//    TILE_SWEET_BUSH,
+//    TILE_SWEET_FLOWER,
     TILE_GRASS,
     TILE_SWEET_GRASS,
     TILE_WATER,
@@ -36,17 +39,21 @@ enum  biomes
 #define CHUNK_SIZE 16
 #define WORLD_SIZE 256
 #define WORLD_CENTER WORLD_SIZE/2
+#define WORLD_SCALE 100.0
 
 struct tile {
     enum game_tiles tile;
-    struct item item;
+//    struct item item;
 };
     
-typedef struct tile chunk_table[3][CHUNK_SIZE][CHUNK_SIZE];
+typedef struct tile chunk_table[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
 
 typedef struct {
     enum biomes biome;
     chunk_table table;
+    // TODO: change objects and items arrays to lists
+    struct object* objects[10];
+    struct item* items[10];
 } chunk;
 
 

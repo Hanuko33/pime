@@ -1,4 +1,6 @@
 #include <time.h>
+//#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_render.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "text.h"
@@ -202,18 +204,17 @@ void load(char with_player)
 
 void update_window_size()
 {
-    
     int tile_size;
     int width;
-   SDL_GetWindowSize(main_window, &window_width, &window_height); 
+    SDL_GetWindowSize(main_window, &window_width, &window_height); 
 
-   width = window_width - PANEL_WINDOW;
+    width = window_width - PANEL_WINDOW;
 
     if (width < window_height)
     {
         tile_size = width/(CHUNK_SIZE);
     } 
-	else
+    else
     {
         tile_size = window_height/(CHUNK_SIZE);
     }
@@ -366,12 +367,16 @@ void player_interact(int key )
         case SDLK_e:
         {
             printf("player: %d, %d\n", player.x, player.y);
-            if (get_item_at_ppos(&player).count)
+            struct item** item_pointer = get_item_at_ppos(&player);
+            if (item_pointer)
             {
-                int item_id = get_item_at_ppos(&player).id;
-                player.inventory[item_id]+=get_item_at_ppos(&player).count;
-                printf("GOT ITEM: %s, new amount: %d\n", items_names[get_item_at_ppos(&player).id], player.inventory[item_id]);
-                world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x].item.count=0;
+                struct item * item = *item_pointer;
+                int item_id = item->id;
+                player.inventory[item_id]+=item->count;
+                printf("GOT ITEM: %s, new amount: %d\n", items_names[item->id], player.inventory[item_id]);
+                free(*item_pointer);
+                *item_pointer = NULL;
+                //world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x].item.count=0;
             }
             else if (get_tile_at_ppos(&player) == TILE_SAND)
             {
@@ -443,25 +448,90 @@ void draw()
         game_size = window_height;
         tile_dungeon_size = window_height/(CHUNK_SIZE);
     }
-    for (int i=0; i < CHUNK_SIZE ; i++)
+
+    // render terrain
+    int heightmap[CHUNK_SIZE][CHUNK_SIZE];
+    for (int y=0; y < CHUNK_SIZE ; y++)
     {
-        int y = i * tile_dungeon_size;
-        for (int j=0; j < CHUNK_SIZE; j++)
+        int y_size = y * tile_dungeon_size;
+        for (int x=0; x < CHUNK_SIZE; x++)
         {
-            SDL_Rect img_rect = {j * tile_dungeon_size, y, tile_dungeon_size, tile_dungeon_size};
-            struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][i][j]);
+            int dy = 0;
+            SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
+            if (world_table[player.map_y][player.map_x]->table[y][player.y][x].tile == TILE_AIR) 
+            {
+                while (world_table[player.map_y][player.map_x]->table[y][player.y+dy][x].tile == TILE_AIR)
+                {
+                    dy--;
+                }
+            }
+            else 
+            {
+                while (world_table[player.map_y][player.map_x]->table[y][player.y+dy+1][x].tile != TILE_AIR)
+                {
+                    dy++;
+                }
+            }
+            heightmap[x][y] = dy;
+            struct tile * tile = &((world_table[player.map_y][player.map_x])->table[y][player.y+dy][x]);    
             SDL_Texture *texture = tiles_textures[tile->tile];
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
-            if (tile->item.count) {
-                SDL_Texture *texture = items_textures[tile->item.id];
-                SDL_RenderCopy(renderer, texture, NULL, &img_rect);
+        }
+    }
+    // render objects
+    // TODO: change object array to list
+    for (int i = 0; i < 10; i++)
+    {
+        struct object * o = world_table[player.map_y][player.map_x]->objects[i];
+        SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+        int dy = o->y - player.y;
+        if (heightmap[o->x][o->z]+1 == dy)
+        {
+            SDL_RenderCopy(renderer, objects_textures[o->type], NULL, &img_rect);
+        }
+    }
+    // render items
+    // TODO: change items array to list
+    for (int i = 0; i < 10; i++)
+    {
+        struct item * o = world_table[player.map_y][player.map_x]->items[i];
+        if (o) 
+        {
+            SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            int dy = o->y - player.y;
+            if (heightmap[o->x][o->z]+1 == dy)
+            {
+                SDL_RenderCopy(renderer, items_textures[o->id], NULL, &img_rect);
             }
         }
-    }  
-    SDL_Rect img_rect = {player.x * tile_dungeon_size, player.y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+    }
+
+    // render mask
+    for (int y=0; y < CHUNK_SIZE ; y++)
+    {
+        int y_size = y * tile_dungeon_size;
+        for (int x=0; x < CHUNK_SIZE; x++)
+        {
+            int dy = heightmap[x][y];
+            SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
+            while (dy > -1)
+            {
+                SDL_RenderCopy(renderer, up_mask, NULL, &img_rect);
+                dy--;
+            }
+            while (dy < -1)
+            {
+                SDL_RenderCopy(renderer, down_mask, NULL, &img_rect);
+                dy++;
+            }
+        }
+    }
+    
+    // render player
+    SDL_Rect img_rect = {player.x * tile_dungeon_size, player.z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
     if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
     else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
-    
+    // render GUI
     int icon_size = game_size/10;
     if (player.running)
     {
@@ -489,9 +559,10 @@ void draw()
     write_text(tx, ty+75, text, White,15,30);
             
     
-    struct tile * tile = &((world_table[player.map_y][player.map_x])->table[player.z][player.y][player.x]);
-    if (tile->item.count) {
-        sprintf(text, "Items: %s %d", items_names[tile->item.id], tile->item.count);
+    struct item ** ip = get_item_at_ppos(&player);
+    if (ip) {
+        struct item * item = *ip;
+        sprintf(text, "Items: %s %d", items_names[item->id], item->count);
         write_text(tx, ty+125, text, White,15,30);
     }
 
@@ -528,26 +599,26 @@ void draw()
     {
         for (x = 0; x < WORLD_SIZE; x++)
         {
-           chunk* chunk = world_table[y][x];
-           if (chunk) {
-               switch(chunk->biome)
-               {
-                   case BIOME_DESERT:
-                       pixels[y * WORLD_SIZE + x] = 0xffffff00;
-                       break;
-                   case BIOME_FOREST:
-                       pixels[y * WORLD_SIZE + x] = 0xff00ff00;
-                       break;
-                   case BIOME_SWEET_TREE:
-                       pixels[y * WORLD_SIZE + x] = 0xff79510a;
-                       break;
-                   case BIOME_LAKE:
-                       pixels[y * WORLD_SIZE + x] = 0xff0000ff;
-                       break;
-               }
-           }
-             else 
-                  pixels[y * WORLD_SIZE + x] = 0xff000000;
+            chunk* chunk = world_table[y][x];   
+            if (chunk) {
+                switch(chunk->biome)
+                {
+                    case BIOME_DESERT:
+                        pixels[y * WORLD_SIZE + x] = 0xffffff00;
+                        break;
+                    case BIOME_FOREST:
+                        pixels[y * WORLD_SIZE + x] = 0xff00ff00;
+                        break;
+                    case BIOME_SWEET_TREE:
+                        pixels[y * WORLD_SIZE + x] = 0xff79510a;
+                        break;
+                    case BIOME_LAKE:
+                        pixels[y * WORLD_SIZE + x] = 0xff0000ff;
+                        break;
+                }
+            }
+            else
+            pixels[y * WORLD_SIZE + x] = 0xff000000;
         }
     }
     
@@ -622,6 +693,7 @@ int main(int argi, char** agrs)
     }
 
     srand (time(NULL));
+    generator();
     init_player(&player);
     
 	if (init_window()) return 1;
@@ -641,7 +713,6 @@ int main(int argi, char** agrs)
     Mix_Pause(1);
 
     load(1);
-    generator();
     
     int dst_map_x=player.map_x;
     int dst_map_y=player.map_y;

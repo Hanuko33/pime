@@ -9,6 +9,7 @@ struct item {
     enum category_id cat;
     enum item_id id;
     int count;
+    int x, y, z;
 };
 
 extern struct item items[IT_MAX];

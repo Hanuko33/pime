@@ -26,8 +26,8 @@ struct Player
     int hotbar[10];
 };
 
-void move_player(struct Player* player, int x, int y);
-void init_player();
+void move_player(struct Player* player, int x, int z);
+void init_player(struct Player* player);
 
 
 #endif

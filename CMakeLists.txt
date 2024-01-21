@@ -9,7 +9,7 @@ pkg_check_modules(SDL2_MIXER SDL2_mixer)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(game_gui window.c music.c text.c time.c texture.c dungeon.c cave.c main.c menu.c world.c player.c notifier.c items.c)
+add_executable(game_gui window.c music.c text.c time.c texture.c dungeon.c cave.c main.c menu.c world.c player.c notifier.c items.c OpenSimplex/OpenSimplex2F.c)
 
 target_link_libraries(game_gui
     SDL2 SDL2_image SDL2_ttf SDL2_mixer

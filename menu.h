@@ -32,7 +32,7 @@ struct menu_struct
     enum menu_actions * actions;
 };
 
-extern enum menu_types in_menu;
+//extern enum menu_types in_menu;
 extern struct menu_struct menu_main;
 extern struct menu_struct menu_energy;
 extern struct menu_struct menu_help;
