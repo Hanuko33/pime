@@ -68,7 +68,7 @@ void init_player(struct Player* player)
     //	player->inventory[i]=rand() % 10;
     player->inventory[IT_stone] = 10;
 
-    player->y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0)+1;
+    player->y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
 
 	for (int i=0; i < 10; i++)
         player->hotbar[i]=-1;

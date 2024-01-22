@@ -523,14 +523,14 @@ void draw()
     sprintf(text, "Energy: %d", player.energy);
 	write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
     
-    sprintf(text, "Y: %d", (player.y + (player.map_y * CHUNK_SIZE)) - (WORLD_SIZE*CHUNK_SIZE/2));
+    sprintf(text, "Player@%d, %d, %d", 
+			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
+			player.y,
+			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2));
 	write_text(tx, ty+25, text, White,15,30);
 
-    sprintf(text, "X: %d", player.x + (player.map_x * CHUNK_SIZE)- (WORLD_SIZE*CHUNK_SIZE/2));
-	write_text(tx, ty+50, text, White,15,30);
-	
     sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
-    write_text(tx, ty+75, text, White,15,30);
+    write_text(tx, ty+50, text, White,15,30);
             
     
     struct item ** ip = get_item_at_ppos(&player);
