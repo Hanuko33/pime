@@ -23,7 +23,7 @@
 
 SDL_Texture *map;
 int auto_explore;
-int active_hotbar=-1;
+int active_hotbar=0;
 char force_screen=1;
 
 
@@ -235,64 +235,34 @@ void player_interact(int key )
             update_window_size();
             break;
         case SDLK_1:
-            if (active_hotbar == 0)
-                active_hotbar =-1;
-            else
-                active_hotbar=0;
+            active_hotbar=0;
             break;
         case SDLK_2:
-            if (active_hotbar==1)
-                active_hotbar=-1;
-            else
-                active_hotbar=1;
+            active_hotbar=1;
             break;
         case SDLK_3:
-            if (active_hotbar==2)
-                active_hotbar=-1;
-            else
-                active_hotbar=2;
+            active_hotbar=2;
             break;
         case SDLK_4:
-            if (active_hotbar==3)
-                active_hotbar=-1;
-            else
-                active_hotbar=3;
+            active_hotbar=3;
             break;
         case SDLK_5:
-            if (active_hotbar==4)
-                active_hotbar=-1;
-            else
-                active_hotbar=4;
+            active_hotbar=4;
             break;
         case SDLK_6:
-            if (active_hotbar==5)
-                active_hotbar=-1;
-            else
-                active_hotbar=5;
+            active_hotbar=5;
             break;
         case SDLK_7:
-            if (active_hotbar==6)
-                active_hotbar=-1;
-            else
-                active_hotbar=6;
+            active_hotbar=6;
             break;
         case SDLK_8:
-            if (active_hotbar==7)
-                active_hotbar=-1;
-            else
-                active_hotbar=7;
+            active_hotbar=7;
             break;
         case SDLK_9:
-            if (active_hotbar==8)
-                active_hotbar=-1;
-            else
-                active_hotbar=8;
+            active_hotbar=8;
             break;
         case SDLK_0:
-            if (active_hotbar==9)
-                active_hotbar=-1;
-            else
-                active_hotbar=9;
+            active_hotbar=9;
             break;
         /*
          *  dropping
@@ -307,9 +277,13 @@ void player_interact(int key )
                 }
             }
             break;*/
+        case SDLK_BACKQUOTE:
+            active_hotbar--;
+            if (active_hotbar==-1) active_hotbar=9;
+            break;
         case SDLK_TAB:
 			active_hotbar++;
-			if (active_hotbar==10) active_hotbar=-1;
+			if (active_hotbar==10) active_hotbar=0;
 			break;
         case SDLK_F1:
             generator();
