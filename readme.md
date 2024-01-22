@@ -34,5 +34,7 @@ This is a game made with sdl2 and c
 * m   - menu: energy
 * arrows, w, a, s, d - moves
 * r - switch running
-* e, ENTER - interact
+* e, ENTER - interact / pickup item
+* f5 - autoexplorer
+* f11 - stop automaticly resizing (may break some things)
 
