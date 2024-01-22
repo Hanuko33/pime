@@ -35,6 +35,6 @@ This is a game made with sdl2 and c
 * arrows, w, a, s, d - moves
 * r - switch running
 * e, ENTER - interact / pickup item
-* f5 - autoexplorer
-* f11 - stop automaticly resizing (may break some things)
+* F5 - autoexplorer
+* F11 - stop automaticaly resizing (may break some things)
 
