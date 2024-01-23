@@ -49,15 +49,17 @@ void show_menu()
         game_size = window_height;
 
     int menu_opt_size = game_size/10;
-    int mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
+    int mody;
     int mody2;
 
     if (current_menu->options % 2)
     {
-        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2)+menu_opt_size);
+        mody = (game_size/2)-(menu_opt_size*(current_menu->options/2)+menu_opt_size/2);
+        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2)+menu_opt_size/2);
     }
     else
     {
+        mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
         mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
     }
 
@@ -94,15 +96,16 @@ void create_menus()
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
         add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
 
-    create_menu(&menu_help, 8);
+    create_menu(&menu_help, 9);
         add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
         add_entry(&menu_help, "m - energy", MENU_CANCEL);
         add_entry(&menu_help, "arrows - moves", MENU_CANCEL);
-        add_entry(&menu_help, "w, a, s, d - moves", MENU_CANCEL);
-        add_entry(&menu_help, "r - switch running", MENU_CANCEL);
-        add_entry(&menu_help, "e, ENTER - pickup", MENU_CANCEL);
+        add_entry(&menu_help, "w,a,s,d - moves", MENU_CANCEL);
+        add_entry(&menu_help, "ctrl - run", MENU_CANCEL);
+        add_entry(&menu_help, "shift - sneak", MENU_CANCEL);
+        add_entry(&menu_help, "e,ENTER - pickup", MENU_CANCEL);
         add_entry(&menu_help, "i - inventory", MENU_CANCEL);
-        add_entry(&menu_help, "numbers tab ` - hotbar", MENU_CANCEL);
+        add_entry(&menu_help, "numbers,tab,` - hotbar", MENU_CANCEL);
 
     create_menu(&menu_music, 2);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);

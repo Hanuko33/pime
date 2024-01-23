@@ -33,7 +33,8 @@ This is a game made with sdl2 and c
 * ESC - menu: exit, load, save, help menu
 * m   - menu: energy
 * arrows, w, a, s, d - moves
-* r - switch running
+* ctrl - run
+* shift - sneak
 * e, ENTER - interact / pickup item
 * F5 - autoexplorer
 * F11 - stop automaticaly resizing (may break some things)
