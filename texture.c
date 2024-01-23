@@ -78,6 +78,7 @@ void load_textures()
     add_items_texture(IT_stone, "textures/items/stone.png");
     add_items_texture(IT_log, "textures/items/log.png");
     add_items_texture(IT_sand, "textures/items/sand.png");
+    add_items_texture(IT_pumpkin, "textures/items/pumpkin.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 

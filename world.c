@@ -248,7 +248,8 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     for (int i = 0; i < 10; i++)
     {
         struct item *o = (struct item *)malloc(sizeof(struct item));
-        o->id = (rand() % 2 == 1) ? IT_stone : IT_log;
+        int ranint = rand() % 3;
+        o->id = (ranint == 1) ? IT_stone : (ranint == 2) ? IT_pumpkin : IT_log;
         o->count = rand() % 2 +1;
         o->x = rand() % 16;
         o->z = rand() % 16;

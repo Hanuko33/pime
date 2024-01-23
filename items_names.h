@@ -4,4 +4,5 @@ const char * items_names[IT_MAX]=
 "stone",
 "log",
 "sand",
+"pumpkin",
 };

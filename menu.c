@@ -237,12 +237,12 @@ int interact(enum menu_actions a)
             Mix_Volume(0, Mix_Volume(0, -1)+5);
             Mix_Volume(1, Mix_Volume(1, -1)+5);
             printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
-            break;
+            return 0;
         case MENU_QUIETER:
             Mix_Volume(0, Mix_Volume(0, -1)-5);
             Mix_Volume(1, Mix_Volume(1, -1)-5);
             printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
-            break;
+            return 0;
     }
     return 1;
 }
