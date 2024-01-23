@@ -92,9 +92,10 @@ void create_menus()
         add_entry(&menu_main, "Cancel", MENU_CANCEL);
         add_entry(&menu_main, "Change music volume", MENU_MUSIC);
 
-    create_menu(&menu_energy, 2);
+    create_menu(&menu_energy, 3);
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
         add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
+        add_entry(&menu_energy, "eat pumpkin", MENU_EAT);
 
     create_menu(&menu_help, 9);
         add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
@@ -208,6 +209,14 @@ int interact(enum menu_actions a)
         case MENU_REGAIN:
             player.energy+=100;
             break;
+
+        case MENU_EAT:
+            if (player.inventory[IT_pumpkin])
+            {
+                player.inventory[IT_pumpkin]--;
+                player.energy+=50;
+            }
+            return 0;
 
         case MENU_BOOST:
             player.energy=1000;
