@@ -378,7 +378,7 @@ void player_interact(int key)
     }
 }
 
-Uint64 move_interact(const Uint8 * keys, Uint64 last_time)
+Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_press)
 {
     Uint64 current_time = SDL_GetTicks64();
     int time_period = 0;
@@ -402,36 +402,42 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time)
         }
     }
       
-    if (current_menu==NULL && current_time - last_time > time_period)
+    if (current_menu==NULL && ((current_time - last_time > time_period) || !(*last_frame_press)))
     {
-        char moved=0;
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
             move_player(&player, 0, 1);
-            moved = 1;
+            *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
             move_player(&player, 0, -1);
-            moved = 1;
+            *last_frame_press=1;
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
             player.going_right=1;
             move_player(&player, 1, 0);
-            moved = 1;
+            *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
             player.going_right=0;
             move_player(&player, -1, 0);
-            moved = 1;
+            *last_frame_press=1;
         }
-        if (moved)
+        if (last_frame_press)
         {
             return SDL_GetTicks64();
         }
     }
+    if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
+    {
+        *last_frame_press=1;
+        return 0;
+    }
+
+    *last_frame_press=0;
     return 0;
 }
 
@@ -725,7 +731,8 @@ int main(int argi, char** agrs)
     
     int dst_map_x=player.map_x;
     int dst_map_y=player.map_y;
-   
+    int last_frame_press=0;
+
     Uint64 last_time = 0;
     
     for (;;)
@@ -767,14 +774,12 @@ int main(int argi, char** agrs)
 
         // keyboard handling for move
         const Uint8 *currentKeyState = SDL_GetKeyboardState(NULL);
-        
-        Uint64 tmp = move_interact(currentKeyState, last_time);
-        
+        Uint64 tmp = move_interact(currentKeyState, last_time, &last_frame_press);
         if (tmp > 0)
         {
             last_time = tmp;
         }
-
+        printf("%d\n", last_frame_press);
 
 
         if (auto_explore) {
