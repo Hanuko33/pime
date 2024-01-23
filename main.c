@@ -779,7 +779,7 @@ int main(int argi, char** agrs)
         {
             last_time = tmp;
         }
-        printf("%d\n", last_frame_press);
+        // printf("%d\n", last_frame_press);
 
 
         if (auto_explore) {
