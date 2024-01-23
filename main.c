@@ -237,6 +237,16 @@ void player_interact(int key)
             force_screen ^= 1;
             update_window_size();
             break;
+        case SDLK_EQUALS:
+            if (player.hotbar[active_hotbar] == IT_pumpkin)
+            {
+                if (player.inventory[IT_pumpkin] && player.energy < 1000)
+                {
+                    player.inventory[IT_pumpkin]--;
+                    player.energy+=75;
+                }
+            }
+            break;
         case SDLK_1:
             active_hotbar=0;
             break;

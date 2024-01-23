@@ -18,6 +18,8 @@ This is a game made with sdl2 and c
         - [x] Water, with collision
     - [x] biome support
 - [ ] Godot port
+- [ ] Dropping items
+- [ ] Change item backend
 #### (this list will be longer)
 
 ## Installation
@@ -38,4 +40,9 @@ This is a game made with sdl2 and c
 * e, ENTER - interact / pickup item
 * F5 - autoexplorer
 * F11 - stop automaticaly resizing (may break some things)
+* 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 - select hotbar
+* ` - previous hotbar
+* TAB - next hotbar
+* = - use from hotbar
+
 
