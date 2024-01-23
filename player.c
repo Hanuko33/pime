@@ -23,7 +23,7 @@ void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, 
     
     if (moved)
     { 
-        game_time.seconds += (p->running ? 15 : 30);
+        game_time.seconds += (p->running ? 15 : p-> sneaking ? 45 : 30);
         p->map_x = new_map_x;
         p->map_y = new_map_y;
         p->x = new_x;

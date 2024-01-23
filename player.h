@@ -19,6 +19,7 @@ struct Player
 	int back_y;
 	int back_x;
     char running;
+    char sneaking;
     char going_right;
     enum location in;
     int energy;

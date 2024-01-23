@@ -55,6 +55,7 @@ void load_textures()
     Texture.playerr = load_texture("textures/player/playerr.png");
     Texture.playerl = load_texture("textures/player/playerl.png");
     Texture.run_icon = load_texture("textures/gui/run_icon.png");
+    Texture.sneak_icon = load_texture("textures/gui/sneak_icon.png");
 
     add_tile_texture(TILE_AIR, "textures/game_tiles/world/air.png");
     add_tile_texture(TILE_STONE, "textures/game_tiles/world/stone.png");

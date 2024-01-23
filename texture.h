@@ -10,6 +10,7 @@ struct textures
         SDL_Texture* playerr;
         SDL_Texture* playerl;
         SDL_Texture* run_icon;
+        SDL_Texture* sneak_icon;
 };
 
 extern SDL_Texture * tiles_textures[TILE_MAX_NUM];
