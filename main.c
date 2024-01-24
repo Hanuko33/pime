@@ -28,6 +28,7 @@ int auto_explore;
 int active_hotbar=0;
 char force_screen=1;
 
+#define DISABLE_MUSIC 1
 
 // DON'T MOVE THIS
 struct Player player;
@@ -331,7 +332,6 @@ void player_interact(int key)
         case SDLK_RETURN:
         case SDLK_e:
         {
-            printf("player: %d, %d\n", player.x, player.y);
             struct item** item_pointer = get_item_at_ppos(&player);
             if (item_pointer)
             {
@@ -463,6 +463,7 @@ void draw()
     int game_size;
     int tile_dungeon_size;
     int width = window_width - PANEL_WINDOW;
+    char text[256];
 
     if (width < window_height)
     {
@@ -484,24 +485,25 @@ void draw()
         {
             int dy = 0;
             SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
-            if (world_table[player.map_y][player.map_x]->table[y][player.y][x].tile == TILE_AIR) 
+            if (get_tile_at(player.map_x, player.map_y, x, player.y, y) == TILE_AIR) 
             {
-                while (world_table[player.map_y][player.map_x]->table[y][player.y+dy][x].tile == TILE_AIR)
+                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy, y) == TILE_AIR) 
                 {
                     dy--;
                 }
             }
             else 
             {
-                while (world_table[player.map_y][player.map_x]->table[y][player.y+dy+1][x].tile != TILE_AIR)
+                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy +1 , y) != TILE_AIR) 
                 {
                     dy++;
                 }
             }
             heightmap[x][y] = dy;
-            struct tile * tile = &((world_table[player.map_y][player.map_x])->table[y][player.y+dy][x]);    
-            SDL_Texture *texture = tiles_textures[tile->tile];
+            enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, y);    
+            SDL_Texture *texture = tiles_textures[tile];
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
+            
         }
     }
     // render objects
@@ -533,6 +535,12 @@ void draw()
     }
 
     // render mask
+	Uint8 up, down;	
+	SDL_GetTextureAlphaMod(up_mask, &up);
+	SDL_GetTextureAlphaMod(down_mask, &down);
+	SDL_SetTextureAlphaMod(up_mask, 160);
+	SDL_SetTextureAlphaMod(down_mask, 160);
+
     for (int y=0; y < CHUNK_SIZE ; y++)
     {
         int y_size = y * tile_dungeon_size;
@@ -552,11 +560,14 @@ void draw()
             }
         }
     }
+	SDL_SetTextureAlphaMod(up_mask, up);
+	SDL_SetTextureAlphaMod(down_mask, down);
     
     // render player
     SDL_Rect img_rect = {player.x * tile_dungeon_size, player.z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
     if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
     else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
+
     // render GUI
     int icon_size = game_size/10;
     if (player.running)
@@ -608,7 +619,6 @@ void draw()
     if (player.thirst > 1000) player.thirst = 1000;
     if (player.health > 1000) player.health = 1000;
 
-    char text[256];
      
     int tx=width+10;
     int ty=10;
@@ -628,10 +638,12 @@ void draw()
 	write_text(tx, ty, text, player.health < 100 ? Red : White, 15,30);
     ty +=25; 
     
-    sprintf(text, "Player@%d, %d, %d", 
+    sprintf(text, "Player@(%d, %d, %d)->%d", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
 			player.y,
-			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2));
+			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
+            get_tile_at(player.map_x, player.map_y, player.x, player.y-1, player.z) 
+			);
 	write_text(tx, ty+25, text, White,15,30);
 
     //sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
@@ -642,7 +654,7 @@ void draw()
     if (ip) {
         struct item * item = *ip;
         sprintf(text, "Items: %s %d", items_names[item->id], item->count);
-        write_text(tx, ty+125, text, White,15,30);
+        write_text(tx, ty+75, text, White,15,30);
     }
 
 	for (int i=0; i < 10; i++)
@@ -777,19 +789,22 @@ int main(int argi, char** agrs)
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
-    if (init_music()) return 1;
-    
+
     init_items();
     load_textures();
     create_menus();
+    map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WORLD_SIZE, WORLD_SIZE);
+
+#ifndef DISABLE_MUSIC
+	if (init_music()) return 1;
     load_music();
 
-    map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WORLD_SIZE, WORLD_SIZE);
     Mix_PlayChannel(0, music.music_one, 99999); 
     Mix_PlayChannel(1, music.music_two, 99999);
     Mix_Volume(0, 0);
     Mix_Volume(1, 0);
     Mix_Pause(1);
+#endif
 
     load(1);
     
