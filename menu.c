@@ -84,18 +84,19 @@ void show_menu()
 
 void create_menus()
 {
-    create_menu(&menu_main, 7);
+    create_menu(&menu_main, 4);
         add_entry(&menu_main, "Exit", MENU_EXIT);
-        add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
-        add_entry(&menu_main, "Save", MENU_SAVE);
-        add_entry(&menu_main, "Load", MENU_LOAD);
+        //add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
+        //add_entry(&menu_main, "Save", MENU_SAVE);
+        //add_entry(&menu_main, "Load", MENU_LOAD);
         add_entry(&menu_main, "Help", MENU_HELP);
-        add_entry(&menu_main, "Cancel", MENU_CANCEL);
         add_entry(&menu_main, "Change music volume", MENU_MUSIC);
+        add_entry(&menu_main, "Cancel", MENU_CANCEL);
 
-    create_menu(&menu_energy, 2);
+    create_menu(&menu_energy, 3);
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
         add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
+        add_entry(&menu_energy, "Cancel", MENU_CANCEL);
 
     create_menu(&menu_help, 9);
         add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
@@ -108,16 +109,18 @@ void create_menus()
         add_entry(&menu_help, "i - inventory", MENU_CANCEL);
         add_entry(&menu_help, "N E X T", MENU_HELP_2);
 
-    create_menu(&menu_help2, 5);
+    create_menu(&menu_help2, 6);
         add_entry(&menu_help2, "P R E V I O U S", MENU_HELP_1);
         add_entry(&menu_help2, "= - use item in hotbar", MENU_CANCEL);
         add_entry(&menu_help2, "1234567890 - hotbar", MENU_CANCEL);
         add_entry(&menu_help2, "TAB - hotbar next", MENU_CANCEL);
         add_entry(&menu_help2, "` - hotbar previous", MENU_CANCEL);
+        add_entry(&menu_help2, "Cancel", MENU_CANCEL);
 
-    create_menu(&menu_music, 2);
+    create_menu(&menu_music, 3);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
         add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
+        add_entry(&menu_music, "Cancel", MENU_CANCEL);
     
     create_menu(&menu_inventory_categories, CAT_MAX);
         for (int i=0; i < CAT_MAX; i++)
