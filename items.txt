@@ -2,3 +2,4 @@ stone
 log
 sand
 pumpkin
+watermelon

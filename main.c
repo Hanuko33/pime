@@ -238,13 +238,15 @@ void player_interact(int key)
             update_window_size();
             break;
         case SDLK_EQUALS:
-            if (player.hotbar[active_hotbar] == IT_pumpkin)
+            if (player.hotbar[active_hotbar] == IT_pumpkin && player.inventory[IT_pumpkin] && player.energy < 1000)
             {
-                if (player.inventory[IT_pumpkin] && player.energy < 1000)
-                {
-                    player.inventory[IT_pumpkin]--;
-                    player.energy+=75;
-                }
+                player.inventory[IT_pumpkin]--;
+                player.energy+=75;
+            }
+            if (player.hotbar[active_hotbar] == IT_watermelon && player.inventory[IT_watermelon] && player.energy < 1000) 
+            {
+                player.inventory[IT_watermelon]--;
+                player.energy+=50;
             }
             break;
         case SDLK_1:

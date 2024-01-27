@@ -2,6 +2,6 @@
 enum category_id
 {
 CAT_material,
-CAT_weapon,
+CAT_food,
 CAT_MAX
 };

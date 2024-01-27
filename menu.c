@@ -14,6 +14,7 @@ struct menu_struct menu_help2;
 struct menu_struct * current_menu;
 struct menu_struct menu_inventory_categories;
 struct menu_struct menu_inventory_material;
+struct menu_struct menu_inventory_food;
 
 void load(char with_player);
 void save(char with_player);
@@ -127,11 +128,16 @@ void create_menus()
         {
             add_entry(&menu_inventory_categories, categories_names[i], MENU_MATERIAL | i);
         }
-    create_menu(&menu_inventory_material, IT_MAX);
-        for (int i=0; i < IT_MAX; i++)
+    create_menu(&menu_inventory_material, 3);
+        for (int i=0; i < 3; i++)
         {
             add_entry(&menu_inventory_material, items_names[i], MENU_ITEM | i);
 //            player.inventory[i];
+        }
+    create_menu(&menu_inventory_food, 2);
+        for (int i=3; i < 5; i++)
+        {
+            add_entry(&menu_inventory_food, items_names[i], MENU_ITEM | i);
         }
         
 }
@@ -253,6 +259,9 @@ int interact(enum menu_actions a)
         case MENU_MATERIAL: 
             current_menu=&menu_inventory_material;
             return 0;   
+        case MENU_FOOD:
+            current_menu=&menu_inventory_food;
+            return 0;
 
         case MENU_LOUDER:
             Mix_Volume(0, Mix_Volume(0, -1)+5);

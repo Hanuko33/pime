@@ -15,6 +15,9 @@ void init_items()
     add_item(IT_stone, CAT_material);
     add_item(IT_log,   CAT_material);
     add_item(IT_sand,  CAT_material);
+    
+    add_item(IT_sand,  CAT_food);
+    add_item(IT_sand,  CAT_food);
 }
 
 

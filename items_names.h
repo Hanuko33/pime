@@ -5,4 +5,5 @@ const char * items_names[IT_MAX]=
 "log",
 "sand",
 "pumpkin",
+"watermelon",
 };
