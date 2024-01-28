@@ -223,7 +223,7 @@ int interact(enum menu_actions a)
             current_menu=&menu_music;
             return 0;
         case MENU_REGAIN:
-            player.energy+=100;
+            player.hunger+=100;
             break;
 
         case MENU_HELP_2:

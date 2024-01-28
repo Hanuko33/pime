@@ -2,6 +2,7 @@
 #include "tiles.h"
 #include "time.h"
 #include "world.h"
+#include <stdlib.h>
 
 void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, int new_z)
 {
@@ -62,6 +63,9 @@ void init_player(struct Player* player)
 	player->energy=250;
 	player->back_x=0;
 	player->back_y=0;
+    player->health=1000;
+    player->hunger=200;
+    player->thirst=200;
     player->map_x = WORLD_CENTER;
     player->map_y = WORLD_CENTER;
     //for (int i=0; i < IT_MAX; i++)

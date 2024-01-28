@@ -23,6 +23,9 @@ struct Player
     char going_right;
     enum location in;
     int energy;
+    int thirst;
+    int hunger;
+    int health;
     int inventory[IT_MAX]; 
     int hotbar[10];
 };

@@ -238,15 +238,16 @@ void player_interact(int key)
             update_window_size();
             break;
         case SDLK_EQUALS:
-            if (player.hotbar[active_hotbar] == IT_pumpkin && player.inventory[IT_pumpkin] && player.energy < 1000)
+            if (player.hotbar[active_hotbar] == IT_pumpkin && player.inventory[IT_pumpkin] && player.hunger < 1000)
             {
                 player.inventory[IT_pumpkin]--;
-                player.energy+=75;
+                player.hunger+=75;
             }
-            if (player.hotbar[active_hotbar] == IT_watermelon && player.inventory[IT_watermelon] && player.energy < 1000) 
+            if (player.hotbar[active_hotbar] == IT_watermelon && player.inventory[IT_watermelon]) 
             {
                 player.inventory[IT_watermelon]--;
-                player.energy+=50;
+                player.hunger+=50;
+                player.thirst+=20;
             }
             break;
         case SDLK_1:
@@ -565,8 +566,40 @@ void draw()
         SDL_Rect sneaking_icon_rect = {(game_size-(icon_size*1.1)), 0, icon_size, icon_size};
         SDL_RenderCopy(renderer, Texture.sneak_icon, NULL, &sneaking_icon_rect);
     }
-
+    if (rand() % 10 < 2 && player.hunger && player.energy < 1000)
+    {
+        player.hunger--;
+        player.energy+=5;
+    }
+    if (rand() % 10 < 1 && player.thirst && player.energy < 1000)
+    {
+        player.thirst--;
+        player.energy+=5;
+    }
     if (player.energy > 1000) player.energy = 1000;   
+    if (player.energy < 0) 
+    {
+        player.energy = 0;
+        player.health -= rand() % 10;
+    }
+    if (player.hunger > 1000) player.hunger = 1000;
+    if (player.hunger < 0)
+    {
+        player.health -= rand() % 10;
+        player.hunger = 0;
+    }
+    if (player.health > 1000) player.health = 1000;
+    if (player.health < 0) 
+    {
+        player.health = 0;
+        printf("Death here\n");
+    }
+    if (player.thirst > 1000) player.thirst = 1000;
+    if (player.thirst < 0) 
+    {
+        player.health -= rand() % 10;
+        player.thirst = 0;
+    }
 
     char text[256];
      
@@ -575,6 +608,18 @@ void draw()
 
     sprintf(text, "Energy: %d", player.energy);
 	write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
+    ty +=25; 
+    sprintf(text, "Hunger: %d", player.hunger);
+	write_text(tx, ty, text, player.hunger < 100 ? Red : White, 15,30);
+    ty +=25; 
+    
+    sprintf(text, "Thirst: %d", player.thirst);
+	write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
+    ty +=25; 
+    
+    sprintf(text, "Health: %d", player.health);
+	write_text(tx, ty, text, player.health < 100 ? Red : White, 15,30);
+    ty +=25; 
     
     sprintf(text, "Player@%d, %d, %d", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
@@ -785,11 +830,14 @@ int main(int argi, char** agrs)
         }
 
         // keyboard handling for move
-        const Uint8 *currentKeyState = SDL_GetKeyboardState(NULL);
-        Uint64 tmp = move_interact(currentKeyState, last_time, &last_frame_press);
-        if (tmp > 0)
+        if (player.energy > 0 || rand() % 2)
         {
-            last_time = tmp;
+            const Uint8 *currentKeyState = SDL_GetKeyboardState(NULL);
+            Uint64 tmp = move_interact(currentKeyState, last_time, &last_frame_press);
+            if (tmp > 0)
+            {
+                last_time = tmp;
+            }
         }
         // printf("%d\n", last_frame_press);
 
