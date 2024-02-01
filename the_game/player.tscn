@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://bw0j2gsrxghld"]
+
+[ext_resource type="Texture2D" uid="uid://0s3cqajxbp3g" path="res://textures/playerr.png" id="1_whij1"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bg8r4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_whij1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xtogc"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = false
+properties/1/path = NodePath(".:id")
+properties/1/spawn = true
+properties/1/sync = true
+properties/1/watch = false
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_28sge"]
+properties/0/path = NodePath("InputSynchronizer:move_direction")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = false
+
+[node name="Player" type="PlayerCharacter"]
+position = Vector2(-2032, -2032)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(16, 16)
+sprite_frames = SubResource("SpriteFrames_bg8r4")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_xtogc")
+
+[node name="InputSynchronizer" type="PlayerInputSync" parent="."]
+replication_config = SubResource("SceneReplicationConfig_28sge")

@@ -2,6 +2,11 @@
 
 
 #include "world.h"
+#include "player.h"
+#include "master_node.h"
+#include "level_node.h"
+#include "player_input_sync.h"
+#include "terrain.h"
 // includes go here
 
 #include <gdextension_interface.h>
@@ -18,6 +23,11 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
 
     
 ClassDB::register_class<World>();
+    ClassDB::register_class<PlayerCharacter>();
+    ClassDB::register_class<MasterNode>();
+    ClassDB::register_class<LevelNode>();
+    ClassDB::register_class<PlayerInputSync>();
+    ClassDB::register_class<Terrain>();
     //     ClassDB::register_class<class_name>();
 
 }
