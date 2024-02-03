@@ -36,7 +36,7 @@ enum  biomes
 };
 
 
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 64
 #define WORLD_SIZE 256
 #define WORLD_CENTER WORLD_SIZE/2
 #define WORLD_SCALE 100.0

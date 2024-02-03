@@ -227,13 +227,13 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         for (int x = 0; x < CHUNK_SIZE; x++) 
         {
             int height = height_at(chunk_x, chunk_y, x, z);
-            printf("%3d ", height);
+            //printf("%3d ", height);
             for (int y = 0; y < CHUNK_SIZE; y++)
             {
                 chunk->table[z][y][x].tile = (y < height-1) ? TILE_DIRT : (y == height-1 ? TILE_GRASS : TILE_AIR);
             }
         }
-        printf("\n");
+//        printf("\n");
     }
     for (int i = 0; i < 10; i++)
     {
