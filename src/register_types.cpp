@@ -7,6 +7,7 @@
 #include "level_node.h"
 #include "player_input_sync.h"
 #include "terrain.h"
+#include "chunk_renderer.h"
 // includes go here
 
 #include <gdextension_interface.h>
@@ -28,6 +29,7 @@ ClassDB::register_class<World>();
     ClassDB::register_class<LevelNode>();
     ClassDB::register_class<PlayerInputSync>();
     ClassDB::register_class<Terrain>();
+    ClassDB::register_class<ChunkRenderer>();
     //     ClassDB::register_class<class_name>();
 
 }

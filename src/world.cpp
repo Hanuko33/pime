@@ -90,7 +90,7 @@ void World::refresh_chunk(int id, Dictionary p_map) {
 
 extern "C" {
 void notify_load_chunk(int map_x, int map_y) {
-    Dictionary chunk_map;
+/*    Dictionary chunk_map;
     for (int y = 0; y < CHUNK_SIZE; y++) {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             //UtilityFunctions::print(get_tile_at(map_x, map_y, x, y, 0));
@@ -102,6 +102,6 @@ void notify_load_chunk(int map_x, int map_y) {
     for (auto p : world_p->get_multiplayer()->get_peers()) {
         world_p->refresh_chunk(p, chunk_map);
     }
-
+*/
 }
 }

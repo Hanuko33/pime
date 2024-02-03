@@ -16,7 +16,7 @@ env = SConscript("godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/"])
 #env.Append(CXXFLAGS = '-g')
 #env.Append(CPPPATH=["game_gui/"])
-sources = Glob("src/*.cpp") + ["game_gui/world.c", "game_gui/player.c", "game_gui/dungeon.c", "game_gui/cave.c"]
+sources = Glob("src/*.cpp") + ["game_gui/world.c", "game_gui/player.c", "game_gui/OpenSimplex/OpenSimplex2F.c"]
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
