@@ -1,6 +1,5 @@
 #include <time.h>
 //#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_render.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "text.h"
@@ -294,19 +293,25 @@ void player_interact(int key )
             else
                 active_hotbar=9;
             break;
-        /*
-         *  dropping
-         * case SDLK_q:
-            if (active_hotbar >= 0)
+        case SDLK_q:
+            if (active_hotbar >= 0 && player.inventory[player.hotbar[active_hotbar]] > 0)
             {
-                printf("DEBUG\n");
-                if (get_item_at_ppos(&player).count > 0)
+                struct item* i = (struct item*) malloc(sizeof(struct item));
+                i->x = player.x;
+                i->y = player.y;
+                i->z = player.z;
+                i->count = player.inventory[player.hotbar[active_hotbar]];
+                i->id = (enum item_id)player.hotbar[active_hotbar];
+                set_item_at_ppos(i, &player);
+                player.inventory[player.hotbar[active_hotbar]] = 0;
+
+                /*if (get_item_at_ppos(&player).count > 0)
                 {
                     printf("%d\n", player.hotbar[active_hotbar]);
                     printf("DEBUG item placed\n");
-                }
+                }*/
             }
-            break;*/
+            break;
         case SDLK_TAB:
 			active_hotbar++;
 			if (active_hotbar==10) active_hotbar=-1;

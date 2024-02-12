@@ -328,6 +328,24 @@ struct item **get_item_at_ppos(struct Player * player)
     return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
 
+void set_item_at(struct item *item, int chunk_x, int chunk_y, int x, int y, int z) 
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (!world_table[chunk_y][chunk_x]->items[i])
+        {
+            world_table[chunk_y][chunk_x]->items[i] = item;
+            break;
+        }
+    }
+}
+
+void set_item_at_ppos(struct item *item, struct Player *player) 
+{
+    set_item_at(item, player->map_x, player->map_y, player->x, player->y, player->z);
+}
+
+
 enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     return world_table[chunk_y][chunk_x]->table[z][y][x].tile;
