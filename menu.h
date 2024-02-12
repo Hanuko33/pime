@@ -16,10 +16,12 @@ enum menu_actions
     MENU_LOUDER,
     MENU_QUIETER,
     MENU_MUSIC,
+    MENU_HELP_1,
+    MENU_HELP_2,
     MENU_ITEM=0x80,
 //  must be after other menus entries  
     MENU_MATERIAL=0x100,
-    MENU_WEAPON
+    MENU_FOOD
 };
 
 
@@ -36,6 +38,7 @@ struct menu_struct
 extern struct menu_struct menu_main;
 extern struct menu_struct menu_energy;
 extern struct menu_struct menu_help;
+extern struct menu_struct menu_help2;
 extern struct menu_struct menu_inventory;
 extern struct menu_struct * current_menu;
 

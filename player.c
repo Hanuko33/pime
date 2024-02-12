@@ -2,6 +2,7 @@
 #include "tiles.h"
 #include "time.h"
 #include "world.h"
+#include <stdlib.h>
 
 void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, int new_z)
 {
@@ -23,7 +24,7 @@ void check_and_move(struct Player * p, int new_map_x, int new_map_y, int new_x, 
     
     if (moved)
     { 
-        game_time.seconds += (p->running ? 15 : 30);
+        game_time.seconds += (p->running ? 15 : p-> sneaking ? 45 : 30);
         p->map_x = new_map_x;
         p->map_y = new_map_y;
         p->x = new_x;
@@ -62,13 +63,16 @@ void init_player(struct Player* player)
 	player->energy=250;
 	player->back_x=0;
 	player->back_y=0;
+    player->health=1000;
+    player->hunger=200;
+    player->thirst=200;
     player->map_x = WORLD_CENTER;
     player->map_y = WORLD_CENTER;
     //for (int i=0; i < IT_MAX; i++)
     //	player->inventory[i]=rand() % 10;
     player->inventory[IT_stone] = 10;
 
-    player->y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0)+1;
+    player->y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
 
 	for (int i=0; i < 10; i++)
         player->hotbar[i]=-1;

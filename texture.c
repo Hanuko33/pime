@@ -55,6 +55,7 @@ void load_textures()
     Texture.playerr = load_texture("textures/player/playerr.png");
     Texture.playerl = load_texture("textures/player/playerl.png");
     Texture.run_icon = load_texture("textures/gui/run_icon.png");
+    Texture.sneak_icon = load_texture("textures/gui/sneak_icon.png");
 
     add_tile_texture(TILE_AIR, "textures/game_tiles/world/air.png");
     add_tile_texture(TILE_STONE, "textures/game_tiles/world/stone.png");
@@ -78,6 +79,8 @@ void load_textures()
     add_items_texture(IT_stone, "textures/items/stone.png");
     add_items_texture(IT_log, "textures/items/log.png");
     add_items_texture(IT_sand, "textures/items/sand.png");
+    add_items_texture(IT_pumpkin, "textures/items/pumpkin.png");
+    add_items_texture(IT_watermelon, "textures/items/watermelon.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 

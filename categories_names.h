@@ -2,5 +2,5 @@
 const char * categories_names[CAT_MAX]=
 {
 "material",
-"weapon",
+"food",
 };

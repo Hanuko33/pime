@@ -10,9 +10,11 @@ struct menu_struct menu_music;
 struct menu_struct menu_main;
 struct menu_struct menu_energy;
 struct menu_struct menu_help;
+struct menu_struct menu_help2;
 struct menu_struct * current_menu;
 struct menu_struct menu_inventory_categories;
 struct menu_struct menu_inventory_material;
+struct menu_struct menu_inventory_food;
 
 void load(char with_player);
 void save(char with_player);
@@ -49,15 +51,17 @@ void show_menu()
         game_size = window_height;
 
     int menu_opt_size = game_size/10;
-    int mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
+    int mody;
     int mody2;
 
     if (current_menu->options % 2)
     {
-        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2)+menu_opt_size);
+        mody = (game_size/2)-(menu_opt_size*(current_menu->options/2)+menu_opt_size/2);
+        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2)+menu_opt_size/2);
     }
     else
     {
+        mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
         mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
     }
 
@@ -81,42 +85,59 @@ void show_menu()
 
 void create_menus()
 {
-    create_menu(&menu_main, 7);
+    create_menu(&menu_main, 4);
         add_entry(&menu_main, "Exit", MENU_EXIT);
-        add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
-        add_entry(&menu_main, "Save", MENU_SAVE);
-        add_entry(&menu_main, "Load", MENU_LOAD);
+        //add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
+        //add_entry(&menu_main, "Save", MENU_SAVE);
+        //add_entry(&menu_main, "Load", MENU_LOAD);
         add_entry(&menu_main, "Help", MENU_HELP);
-        add_entry(&menu_main, "Cancel", MENU_CANCEL);
         add_entry(&menu_main, "Change music volume", MENU_MUSIC);
+        add_entry(&menu_main, "Cancel", MENU_CANCEL);
 
-    create_menu(&menu_energy, 2);
+    create_menu(&menu_energy, 3);
         add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
         add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
+        add_entry(&menu_energy, "Cancel", MENU_CANCEL);
 
-    create_menu(&menu_help, 7);
+    create_menu(&menu_help, 9);
         add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
         add_entry(&menu_help, "m - energy", MENU_CANCEL);
         add_entry(&menu_help, "arrows - moves", MENU_CANCEL);
-        add_entry(&menu_help, "w, a, s, d - moves", MENU_CANCEL);
-        add_entry(&menu_help, "r - switch running", MENU_CANCEL);
-        add_entry(&menu_help, "e, ENTER - interact", MENU_CANCEL);
+        add_entry(&menu_help, "w,a,s,d - moves", MENU_CANCEL);
+        add_entry(&menu_help, "ctrl - run", MENU_CANCEL);
+        add_entry(&menu_help, "shift - sneak", MENU_CANCEL);
+        add_entry(&menu_help, "e,ENTER - pickup", MENU_CANCEL);
         add_entry(&menu_help, "i - inventory", MENU_CANCEL);
+        add_entry(&menu_help, "N E X T", MENU_HELP_2);
 
-    create_menu(&menu_music, 2);
+    create_menu(&menu_help2, 6);
+        add_entry(&menu_help2, "P R E V I O U S", MENU_HELP_1);
+        add_entry(&menu_help2, "= - use item in hotbar", MENU_CANCEL);
+        add_entry(&menu_help2, "1234567890 - hotbar", MENU_CANCEL);
+        add_entry(&menu_help2, "TAB - hotbar next", MENU_CANCEL);
+        add_entry(&menu_help2, "` - hotbar previous", MENU_CANCEL);
+        add_entry(&menu_help2, "Cancel", MENU_CANCEL);
+
+    create_menu(&menu_music, 3);
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
         add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
+        add_entry(&menu_music, "Cancel", MENU_CANCEL);
     
     create_menu(&menu_inventory_categories, CAT_MAX);
         for (int i=0; i < CAT_MAX; i++)
         {
             add_entry(&menu_inventory_categories, categories_names[i], MENU_MATERIAL | i);
         }
-    create_menu(&menu_inventory_material, IT_MAX);
-        for (int i=0; i < IT_MAX; i++)
+    create_menu(&menu_inventory_material, 3);
+        for (int i=0; i < 3; i++)
         {
             add_entry(&menu_inventory_material, items_names[i], MENU_ITEM | i);
 //            player.inventory[i];
+        }
+    create_menu(&menu_inventory_food, 2);
+        for (int i=3; i < 5; i++)
+        {
+            add_entry(&menu_inventory_food, items_names[i], MENU_ITEM | i);
         }
         
 }
@@ -202,8 +223,15 @@ int interact(enum menu_actions a)
             current_menu=&menu_music;
             return 0;
         case MENU_REGAIN:
-            player.energy+=100;
+            player.hunger+=100;
             break;
+
+        case MENU_HELP_2:
+            current_menu=&menu_help2;
+            return 0;
+        case MENU_HELP_1:
+            current_menu=&menu_help;
+            return 0;
 
         case MENU_BOOST:
             player.energy=1000;
@@ -231,17 +259,20 @@ int interact(enum menu_actions a)
         case MENU_MATERIAL: 
             current_menu=&menu_inventory_material;
             return 0;   
+        case MENU_FOOD:
+            current_menu=&menu_inventory_food;
+            return 0;
 
         case MENU_LOUDER:
             Mix_Volume(0, Mix_Volume(0, -1)+5);
             Mix_Volume(1, Mix_Volume(1, -1)+5);
             printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
-            break;
+            return 0;
         case MENU_QUIETER:
             Mix_Volume(0, Mix_Volume(0, -1)-5);
             Mix_Volume(1, Mix_Volume(1, -1)-5);
             printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
-            break;
+            return 0;
     }
     return 1;
 }
