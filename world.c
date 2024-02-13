@@ -235,7 +235,18 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         }
 //        printf("\n");
     }
-    for (int i = 0; i < 10; i++)
+
+    for (int i = 0; i < 128; i++)
+    {
+        struct object *o = (struct object *)malloc(sizeof(struct object));
+        o->type = OBJECT_NULL;
+        o->x = rand() % 16;
+        o->z = rand() % 16;
+        o->y = height_at(chunk_x, chunk_y, o->x, o->z);
+
+        chunk->objects[i] = o;
+    }
+    for (int i = 0; i < 19; i++)
     {
         struct object *o = (struct object *)malloc(sizeof(struct object));
         o->type = OBJECT_TREE;
@@ -245,7 +256,7 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
 
         chunk->objects[i] = o;
     }
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 4; i++)
     {
         struct item *o = (struct item *)malloc(sizeof(struct item));
         int ranint = rand() % 4;
@@ -311,6 +322,7 @@ char traversable_tiles[TILE_MAX_NUM] =
 struct item **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     // TODO: change items array to list
+   
     for (int i = 0; i < 10; i++)
     {
         if (world_table[chunk_y][chunk_x]->items[i] &&
@@ -331,7 +343,7 @@ struct item **get_item_at_ppos(struct Player * player)
 
 void set_item_at(struct item *item, int chunk_x, int chunk_y, int x, int y, int z) 
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 128; i++)
     {
         if (!world_table[chunk_y][chunk_x]->items[i])
         {

@@ -64,8 +64,8 @@ void init_player(struct Player* player)
 	player->back_x=0;
 	player->back_y=0;
     player->health=1000;
-    player->hunger=200;
-    player->thirst=200;
+    player->hunger=50;
+    player->thirst=50;
     player->map_x = WORLD_CENTER;
     player->map_y = WORLD_CENTER;
     //for (int i=0; i < IT_MAX; i++)

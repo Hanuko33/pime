@@ -52,8 +52,8 @@ typedef struct {
     enum biomes biome;
     chunk_table table;
     // TODO: change objects and items arrays to lists
-    struct object* objects[10];
-    struct item* items[10];
+    struct object* objects[128];
+    struct item* items[128];
 } chunk;
 
 

@@ -286,10 +286,10 @@ void player_interact(int key)
                 i->x = player.x;
                 i->y = player.y;
                 i->z = player.z;
-                i->count = player.inventory[player.hotbar[active_hotbar]];
+                i->count += 1;
                 i->id = (enum item_id)player.hotbar[active_hotbar];
                 set_item_at_ppos(i, &player);
-                player.inventory[player.hotbar[active_hotbar]] = 0;
+                player.inventory[player.hotbar[active_hotbar]]--;
 
                 /*if (get_item_at_ppos(&player).count > 0)
                 {
@@ -508,7 +508,7 @@ void draw()
     }
     // render objects
     // TODO: change object array to list
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 128; i++)
     {
         struct object * o = world_table[player.map_y][player.map_x]->objects[i];
         SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
@@ -520,7 +520,7 @@ void draw()
     }
     // render items
     // TODO: change items array to list
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 128; i++)
     {
         struct item * o = world_table[player.map_y][player.map_x]->items[i];
         if (o) 
