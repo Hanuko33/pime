@@ -572,12 +572,12 @@ void draw()
     int icon_size = game_size/10;
     if (player.running)
     {
-        SDL_Rect running_icon_rect = {(game_size-(icon_size*1.1)), 0, icon_size, icon_size};
+        SDL_Rect running_icon_rect = {(int)(game_size-(icon_size*1.1)), 0, icon_size, icon_size};
         SDL_RenderCopy(renderer, Texture.run_icon, NULL, &running_icon_rect);
     }
     if (player.sneaking)
     {
-        SDL_Rect sneaking_icon_rect = {(game_size-(icon_size*1.1)), 0, icon_size, icon_size};
+        SDL_Rect sneaking_icon_rect = {(int)(game_size-(icon_size*1.1)), 0, icon_size, icon_size};
         SDL_RenderCopy(renderer, Texture.sneak_icon, NULL, &sneaking_icon_rect);
     }
 

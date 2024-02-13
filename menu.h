@@ -42,7 +42,7 @@ extern struct menu_struct menu_help2;
 extern struct menu_struct menu_inventory;
 extern struct menu_struct * current_menu;
 
-int interact();
+int interact(enum menu_actions a);
 void show_menu();
 void create_menus();
 int  menu_interact(int key);

@@ -22,9 +22,9 @@ void save(char with_player);
 void create_menu(struct menu_struct * m, int opt)
 {
     m->options=opt;
-    m->entries=calloc(opt, sizeof(char*));
+    m->entries=(const char**)calloc(opt, sizeof(char*));
     m->added=0;
-    m->actions=calloc(opt, sizeof(enum menu_actions));
+    m->actions=(menu_actions*)calloc(opt, sizeof(enum menu_actions));
 }
 
 void add_entry(struct menu_struct *m, const char * e, enum menu_actions a)
@@ -126,18 +126,18 @@ void create_menus()
     create_menu(&menu_inventory_categories, CAT_MAX);
         for (int i=0; i < CAT_MAX; i++)
         {
-            add_entry(&menu_inventory_categories, categories_names[i], MENU_MATERIAL | i);
+            add_entry(&menu_inventory_categories, categories_names[i], (menu_actions)(MENU_MATERIAL | i));
         }
     create_menu(&menu_inventory_material, 3);
         for (int i=0; i < 3; i++)
         {
-            add_entry(&menu_inventory_material, items_names[i], MENU_ITEM | i);
+            add_entry(&menu_inventory_material, items_names[i], (menu_actions)(MENU_ITEM | i));
 //            player.inventory[i];
         }
     create_menu(&menu_inventory_food, 2);
         for (int i=3; i < 5; i++)
         {
-            add_entry(&menu_inventory_food, items_names[i], MENU_ITEM | i);
+            add_entry(&menu_inventory_food, items_names[i], (menu_actions)(MENU_ITEM | i));
         }
         
 }
