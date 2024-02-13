@@ -231,9 +231,10 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
             for (int y = 0; y < CHUNK_SIZE; y++)
             {
                 chunk->table[z][y][x].tile = (y < height-1) ? TILE_DIRT : (y == height-1 ? TILE_GRASS : TILE_AIR);
+                chunk->table[z][y][x].weight = 4 + rand() % 9;
             }
         }
-//        printf("\n");
+        //printf("\n");
     }
 
     for (int i = 0; i < 128; i++)
