@@ -246,7 +246,7 @@ void player_interact(int key)
             {
                 player.inventory[IT_watermelon]--;
                 player.hunger+=50;
-                player.thirst+=20;
+                player.thirst+=100;
             }
             break;
         case SDLK_1:
@@ -352,7 +352,6 @@ void player_interact(int key)
             if (get_tile_at_ppos(&player) == TILE_DUNG_DOOR)
             {
                 save(0);
-                game_time.minutes++;
                 if (player.in == LOC_DUNGEON)
                 {
                     Mix_Pause(1);
@@ -373,7 +372,6 @@ void player_interact(int key)
             if (get_tile_at_ppos(&player) == TILE_CAVE_DOOR)
             {
                 save(0);
-                game_time.minutes++;
                 if (player.in == LOC_CAVE)
                 {
                     Mix_Pause(1);
@@ -571,40 +569,44 @@ void draw()
         SDL_Rect sneaking_icon_rect = {(game_size-(icon_size*1.1)), 0, icon_size, icon_size};
         SDL_RenderCopy(renderer, Texture.sneak_icon, NULL, &sneaking_icon_rect);
     }
-    if (rand() % 10 < 2 && player.hunger && player.energy < 1000)
+
+    if (rand() % 10 < 2 && player.hunger && player.thirst && player.energy < 1000)
     {
-        player.hunger--;
-        player.energy+=5;
+        player.hunger-=rand() % 2+1;
+        player.thirst-=rand() % 2+1;
+        player.energy+=rand() % 2+1;
     }
-    if (rand() % 10 < 1 && player.thirst && player.energy < 1000)
-    {
-        player.thirst--;
-        player.energy+=5;
-    }
-    if (player.energy > 1000) player.energy = 1000;   
     if (player.energy < 0) 
     {
         player.energy = 0;
         player.health -= rand() % 10;
     }
-    if (player.hunger > 1000) player.hunger = 1000;
-    if (player.hunger < 0)
-    {
-        player.health -= rand() % 10;
-        player.hunger = 0;
-    }
-    if (player.health > 1000) player.health = 1000;
+    
     if (player.health < 0) 
     {
         player.health = 0;
         printf("Death here\n");
     }
-    if (player.thirst > 1000) player.thirst = 1000;
-    if (player.thirst < 0) 
+
+    if (player.hunger > 100 && player.energy > 100 && player.thirst > 100 && player.health < 1000)
     {
-        player.health -= rand() % 10;
-        player.thirst = 0;
+        if (rand() % 2)
+        {
+            player.hunger-=rand() % 9+1;
+            player.thirst-=rand() % 9+1;
+            player.energy-=rand() % 9+1;
+
+            player.health+=rand() % 2+1;
+        }
     }
+    
+    if (player.thirst < 0) player.thirst = 0;
+    if (player.hunger < 0) player.hunger = 0;
+    
+    if (player.energy > 1000) player.energy = 1000;   
+    if (player.hunger > 1000) player.hunger = 1000;
+    if (player.thirst > 1000) player.thirst = 1000;
+    if (player.health > 1000) player.health = 1000;
 
     char text[256];
      
@@ -632,8 +634,8 @@ void draw()
 			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2));
 	write_text(tx, ty+25, text, White,15,30);
 
-    sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
-    write_text(tx, ty+50, text, White,15,30);
+    //sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
+    //write_text(tx, ty+50, text, White,15,30);
             
     
     struct item ** ip = get_item_at_ppos(&player);
