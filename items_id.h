@@ -4,6 +4,7 @@ enum item_id
 IT_stone,
 IT_log,
 IT_sand,
+IT_stick,
 IT_pumpkin,
 IT_watermelon,
 IT_MAX,

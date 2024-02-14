@@ -128,14 +128,14 @@ void create_menus()
         {
             add_entry(&menu_inventory_categories, categories_names[i], (menu_actions)(MENU_MATERIAL | i));
         }
-    create_menu(&menu_inventory_material, 3);
-        for (int i=0; i < 3; i++)
+    create_menu(&menu_inventory_material, 4);
+        for (int i=0; i < 4; i++)
         {
             add_entry(&menu_inventory_material, items_names[i], (menu_actions)(MENU_ITEM | i));
 //            player.inventory[i];
         }
     create_menu(&menu_inventory_food, 2);
-        for (int i=3; i < 5; i++)
+        for (int i=4; i < 6; i++)
         {
             add_entry(&menu_inventory_food, items_names[i], (menu_actions)(MENU_ITEM | i));
         }
