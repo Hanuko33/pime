@@ -15,6 +15,7 @@ struct menu_struct * current_menu;
 struct menu_struct menu_inventory_categories;
 struct menu_struct menu_inventory_material;
 struct menu_struct menu_inventory_food;
+struct menu_struct menu_inventory_tools;
 
 void load(char with_player);
 void save(char with_player);
@@ -139,6 +140,11 @@ void create_menus()
         {
             add_entry(&menu_inventory_food, items_names[i], (menu_actions)(MENU_ITEM | i));
         }
+    create_menu(&menu_inventory_tools, 1);
+        for (int i=6; i < 7; i++)
+        {
+            add_entry(&menu_inventory_tools, items_names[i], (menu_actions)(MENU_ITEM | i));
+        }
         
 }
                 
@@ -261,6 +267,9 @@ int interact(enum menu_actions a)
             return 0;   
         case MENU_FOOD:
             current_menu=&menu_inventory_food;
+            return 0;
+        case MENU_TOOLS:
+            current_menu=&menu_inventory_tools;
             return 0;
 
         case MENU_LOUDER:

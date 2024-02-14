@@ -82,6 +82,7 @@ void load_textures()
     add_items_texture(IT_pumpkin, "textures/items/pumpkin.png");
     add_items_texture(IT_watermelon, "textures/items/watermelon.png");
     add_items_texture(IT_stick, "textures/items/stick.png");
+    add_items_texture(IT_pickaxe, "textures/items/pickaxe.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 

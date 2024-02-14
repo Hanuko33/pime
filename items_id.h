@@ -7,5 +7,6 @@ IT_sand,
 IT_stick,
 IT_pumpkin,
 IT_watermelon,
+IT_pickaxe,
 IT_MAX,
 };

@@ -21,7 +21,8 @@ enum menu_actions
     MENU_ITEM=0x80,
 //  must be after other menus entries  
     MENU_MATERIAL=0x100,
-    MENU_FOOD
+    MENU_FOOD,
+    MENU_TOOLS
 };
 
 

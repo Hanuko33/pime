@@ -7,4 +7,5 @@ const char * items_names[IT_MAX]=
 "stick",
 "pumpkin",
 "watermelon",
+"pickaxe",
 };

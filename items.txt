@@ -4,3 +4,4 @@ sand
 stick
 pumpkin
 watermelon
+pickaxe
