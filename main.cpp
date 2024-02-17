@@ -31,7 +31,7 @@ char force_screen=1;
 #define DISABLE_MUSIC 1
 
 // DON'T MOVE THIS
-struct Player player;
+Player player;
 
 void save(char with_player)
 {
@@ -430,24 +430,24 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     {
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
-            move_player(&player, 0, 1);
+            player.move(0, 1);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
-            move_player(&player, 0, -1);
+            player.move(0, -1);
             *last_frame_press=1;
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
             player.going_right=1;
-            move_player(&player, 1, 0);
+            player.move(1, 0);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
             player.going_right=0;
-            move_player(&player, -1, 0);
+            player.move(-1, 0);
             *last_frame_press=1;
         }
         if (last_frame_press)
@@ -793,7 +793,8 @@ int main(int argi, char** agrs)
 
     srand (time(NULL));
     generator();
-    init_player(&player);
+    
+	player.y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
@@ -884,10 +885,10 @@ int main(int argi, char** agrs)
                     }
                }
            }
-           if (dst_map_x > player.map_x) move_player(&player, 1, 0);
-           if (dst_map_x < player.map_x) move_player(&player, -1, 0);
-           if (dst_map_y > player.map_y) move_player(&player, 0, 1);
-           if (dst_map_y < player.map_y) move_player(&player, 0, -1);
+           if (dst_map_x > player.map_x) player.move(1, 0);
+           if (dst_map_x < player.map_x) player.move(-1, 0);
+           if (dst_map_y > player.map_y) player.move(0, 1);
+           if (dst_map_y < player.map_y) player.move(0, -1);
          } else {
                 dst_map_x=player.map_x;
                 dst_map_y=player.map_y;

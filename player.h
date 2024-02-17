@@ -9,8 +9,11 @@ enum location
     LOC_CAVE
 };
 
-struct Player
+class Player
 {
+	void check_and_move(int new_map_x, int new_map_y, int new_x, int new_z);
+
+public:
     int map_y;
     int map_x;
     int z;
@@ -28,10 +31,11 @@ struct Player
     int health;
     //int inventory[IT_MAX]; 
     int hotbar[10];
+	void move(int x, int z);
+	Player();
+
 };
 
-void move_player(struct Player* player, int x, int z);
-void init_player(struct Player* player);
 
 
 #endif
