@@ -258,16 +258,8 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     }
     for (int i = 0; i < 4; i++)
     {
-        struct item *o = (struct item *)malloc(sizeof(struct item));
-        int ranint = rand() % 5;
-        switch (ranint)
-        {
-            case 0: o->id = IT_stone; break;
-            case 1: o->id = IT_pumpkin; break;
-            case 2: o->id = IT_watermelon; break;
-            case 3: o->id = IT_log; break;
-            case 4: o->id = IT_stick; break;
-        }
+        int b = rand() % BASE_ELEMENTS;
+        Element *o = new Element(&base_elements[b]);
         o->count = rand() % 2 +1;
         o->x = rand() % 16;
         o->z = rand() % 16;
@@ -326,7 +318,7 @@ char traversable_tiles[TILE_MAX_NUM] =
     1,//0, //TILE_CAVE_WALL,
 };
 
-struct item **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
+Element **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     // TODO: change items array to list
    
@@ -343,12 +335,12 @@ struct item **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
     //return world_table[chunk_y][chunk_x]->table[z][y][x].item;
     return NULL;
 }
-struct item **get_item_at_ppos(struct Player * player)
+Element **get_item_at_ppos(struct Player * player)
 {
     return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
 
-void set_item_at(struct item *item, int chunk_x, int chunk_y, int x, int y, int z) 
+void set_item_at(Element *item, int chunk_x, int chunk_y, int x, int y, int z) 
 {
     for (int i = 0; i < 128; i++)
     {
@@ -360,7 +352,7 @@ void set_item_at(struct item *item, int chunk_x, int chunk_y, int x, int y, int 
     }
 }
 
-void set_item_at_ppos(struct item *item, struct Player *player) 
+void set_item_at_ppos(Element *item, struct Player *player) 
 {
     set_item_at(item, player->map_x, player->map_y, player->x, player->y, player->z);
 }

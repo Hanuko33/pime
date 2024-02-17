@@ -14,7 +14,7 @@ struct textures
 };
 
 extern SDL_Texture * tiles_textures[TILE_MAX_NUM];
-extern SDL_Texture * items_textures[IT_MAX];
+extern SDL_Texture * items_textures[BASE_ELEMENTS];
 extern SDL_Texture * objects_textures[OBJECT_MAX];
 extern SDL_Texture * up_mask;
 extern SDL_Texture * down_mask;

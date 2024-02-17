@@ -1,7 +1,7 @@
 #include "menu.h"
 #include "window.h"
 #include "music.h"
-#include "items.h"
+#include "alchemist/elements.h"
 
 extern struct Player player;
 extern int active_hotbar;
@@ -123,7 +123,7 @@ void create_menus()
         add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
         add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
         add_entry(&menu_music, "Cancel", MENU_CANCEL);
-    
+#if 0    
     create_menu(&menu_inventory_categories, CAT_MAX);
         for (int i=0; i < CAT_MAX; i++)
         {
@@ -145,7 +145,7 @@ void create_menus()
         {
             add_entry(&menu_inventory_tools, items_names[i], (menu_actions)(MENU_ITEM | i));
         }
-        
+#endif   
 }
                 
 void menu_go_down()

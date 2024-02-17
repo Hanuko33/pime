@@ -1,7 +1,0 @@
-stone
-log
-sand
-stick
-pumpkin
-watermelon
-pickaxe

@@ -70,7 +70,7 @@ void init_player(struct Player* player)
     player->map_y = WORLD_CENTER;
     //for (int i=0; i < IT_MAX; i++)
     //	player->inventory[i]=rand() % 10;
-    player->inventory[IT_stone] = 10;
+    //player->inventory[IT_stone] = 10;
 
     player->y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
 

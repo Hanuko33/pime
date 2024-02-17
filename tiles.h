@@ -1,7 +1,7 @@
 #ifndef TILES_H
 #define TILES_H
 
-#include "items.h"
+#include "alchemist/elements.h"
 #include "object.h"
 
 enum  game_tiles
@@ -53,7 +53,7 @@ typedef struct {
     chunk_table table;
     // TODO: change objects and items arrays to lists
     struct object* objects[128];
-    struct item* items[128];
+    Element * items[128];
 } chunk;
 
 

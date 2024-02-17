@@ -237,7 +237,7 @@ void player_interact(int key)
             force_screen ^= 1;
             update_window_size();
             break;
-        case SDLK_EQUALS:
+/*        case SDLK_EQUALS:
             if (player.hotbar[active_hotbar] == IT_pumpkin && player.inventory[IT_pumpkin] && player.hunger < 1000)
             {
                 player.inventory[IT_pumpkin]--;
@@ -250,7 +250,7 @@ void player_interact(int key)
                 player.thirst+=100;
             }
             break;
-        case SDLK_1:
+  */      case SDLK_1:
             active_hotbar=0;
             break;
         case SDLK_2:
@@ -280,7 +280,8 @@ void player_interact(int key)
         case SDLK_0:
             active_hotbar=9;
             break;
-        case SDLK_q:
+#if 0
+		case SDLK_q:
             if (active_hotbar >= 0 && player.inventory[player.hotbar[active_hotbar]] > 0)
             {
                 struct item* i = (struct item*) malloc(sizeof(struct item));
@@ -299,7 +300,8 @@ void player_interact(int key)
                 }*/
             }
             break;
-        case SDLK_BACKQUOTE:
+#endif
+		case SDLK_BACKQUOTE:
             active_hotbar--;
             if (active_hotbar==-1) active_hotbar=9;
             break;
@@ -327,8 +329,13 @@ void player_interact(int key)
         case SDLK_F5:
             auto_explore^=1;
         break;
+		case SDLK_F4:
+            Element ** item_pointer = get_item_at_ppos(&player);
+            if (item_pointer)
+                (*item_pointer)->show();
+		break;
                     
-
+#if 0
         case SDLK_RETURN:
         case SDLK_e:
         {
@@ -391,6 +398,7 @@ void player_interact(int key)
             }
             break;
         }
+#endif		
     }
 }
 
@@ -522,14 +530,14 @@ void draw()
     // TODO: change items array to list
     for (int i = 0; i < 128; i++)
     {
-        struct item * o = world_table[player.map_y][player.map_x]->items[i];
+        Element * o = world_table[player.map_y][player.map_x]->items[i];
         if (o) 
         {
             SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             int dy = o->y - player.y;
             if (heightmap[o->x][o->z]+1 == dy)
             {
-                SDL_RenderCopy(renderer, items_textures[o->id], NULL, &img_rect);
+                SDL_RenderCopy(renderer, items_textures[o->base->id], NULL, &img_rect);
             }
         }
     }
@@ -650,10 +658,10 @@ void draw()
     //write_text(tx, ty+50, text, White,15,30);
             
     
-    struct item ** ip = get_item_at_ppos(&player);
+    Element ** ip = get_item_at_ppos(&player);
     if (ip) {
-        struct item * item = *ip;
-        sprintf(text, "Items: %s %d", items_names[item->id], item->count);
+        Element * item = *ip;
+        sprintf(text, "Items: %s %d", item->base->name, item->count);
         write_text(tx, ty+75, text, White,15,30);
     }
 
@@ -669,8 +677,8 @@ void draw()
         {
 			SDL_Texture *texture = items_textures[player.hotbar[i]];
             SDL_RenderCopy(renderer, texture, NULL, &rect);
-			sprintf(text, "%d", player.inventory[player.hotbar[i]]);
-		    write_text(rect.x + 3 , rect.y+40, text, Gray, 10,20);
+			//sprintf(text, "%d", player.inventory[player.hotbar[i]]);
+		    //write_text(rect.x + 3 , rect.y+40, text, Gray, 10,20);
 		}
 		if (i == active_hotbar) {
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -790,7 +798,6 @@ int main(int argi, char** agrs)
 	if (init_window()) return 1;
     if (load_font()) return 1;
 
-    init_items();
     load_textures();
     create_menus();
     map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WORLD_SIZE, WORLD_SIZE);

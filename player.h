@@ -1,6 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "items.h"
+#include "alchemist/elements.h"
 
 enum location
 {
@@ -26,7 +26,7 @@ struct Player
     int thirst;
     int hunger;
     int health;
-    int inventory[IT_MAX]; 
+    //int inventory[IT_MAX]; 
     int hotbar[10];
 };
 

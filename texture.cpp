@@ -6,7 +6,7 @@
 
 struct textures Texture;
 SDL_Texture * tiles_textures[TILE_MAX_NUM];
-SDL_Texture * items_textures[IT_MAX];
+SDL_Texture * items_textures[BASE_ELEMENTS];
 SDL_Texture * objects_textures[OBJECT_MAX];
 SDL_Texture * up_mask;
 SDL_Texture * down_mask;
@@ -40,7 +40,7 @@ void add_tile_texture(enum game_tiles id, const char * file)
     tiles_textures[id]=load_texture(file);
 };
 
-void add_items_texture(enum item_id id, const char * file)
+void add_items_texture(int id, const char * file)
 {
     items_textures[id]=load_texture(file);
 };
@@ -76,13 +76,15 @@ void load_textures()
     add_tile_texture(TILE_CAVE_FLOOR,"textures/game_tiles/cave/cave_floor.png");
     add_tile_texture(TILE_CAVE_WALL,"textures/game_tiles/cave/cave_wall.png");
 
-    add_items_texture(IT_stone, "textures/items/stone.png");
-    add_items_texture(IT_log, "textures/items/log.png");
-    add_items_texture(IT_sand, "textures/items/sand.png");
-    add_items_texture(IT_pumpkin, "textures/items/pumpkin.png");
-    add_items_texture(IT_watermelon, "textures/items/watermelon.png");
-    add_items_texture(IT_stick, "textures/items/stick.png");
-    add_items_texture(IT_pickaxe, "textures/items/pickaxe.png");
+    add_items_texture(0, "textures/items/stone.png");
+    add_items_texture(1, "textures/items/log.png");
+    add_items_texture(2, "textures/items/sand.png");
+    add_items_texture(3, "textures/items/pumpkin.png");
+    add_items_texture(4, "textures/items/watermelon.png");
+    add_items_texture(5, "textures/items/stick.png");
+    add_items_texture(6, "textures/items/water.png");
+
+//    add_items_texture(6, "textures/items/pickaxe.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 
