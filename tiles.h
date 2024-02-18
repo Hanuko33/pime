@@ -52,7 +52,7 @@ typedef struct {
     chunk_table table;
     // TODO: change objects and items arrays to lists
     struct object* objects[128];
-    Element * items[128];
+    InventoryElement * items[128];
 } chunk;
 
 

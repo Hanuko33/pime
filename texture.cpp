@@ -7,6 +7,7 @@
 struct textures Texture;
 SDL_Texture * tiles_textures[TILE_MAX_NUM];
 SDL_Texture * items_textures[BASE_ELEMENTS];
+SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * objects_textures[OBJECT_MAX];
 SDL_Texture * up_mask;
 SDL_Texture * down_mask;
@@ -44,6 +45,12 @@ void add_items_texture(int id, const char * file)
 {
     items_textures[id]=load_texture(file);
 };
+
+void add_ing_texture(int id, const char * file)
+{
+    ing_textures[id]=load_texture(file);
+};
+
 
 void add_object_texture(enum object_types id, const char * file)
 {
@@ -84,7 +91,8 @@ void load_textures()
     add_items_texture(5, "textures/items/stick.png");
     add_items_texture(6, "textures/items/water.png");
 
-//    add_items_texture(6, "textures/items/pickaxe.png");
+    add_ing_texture(ING_AX_BLADE, "textures/items/ax_blade.png");
+    add_ing_texture(ING_AX_HANDLE, "textures/items/ax_handle.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 

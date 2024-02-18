@@ -260,9 +260,11 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     {
         int b = rand() % BASE_ELEMENTS;
         Element *o = new Element(&base_elements[b]);
-        o->x = rand() % 16;
-        o->z = rand() % 16;
-        o->y = height_at(chunk_x, chunk_y, o->x, o->z);
+        int x = rand() % 16;
+        int z = rand() % 16;
+
+        o->set_posittion(x, 0, x);
+        o->set_posittion(x, height_at(chunk_x, chunk_y, x, z), z);
 
         chunk->items[i] = o;
     }
@@ -317,28 +319,33 @@ char traversable_tiles[TILE_MAX_NUM] =
     1,//0, //TILE_CAVE_WALL,
 };
 
-Element **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
+InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     // TODO: change items array to list
    
     for (int i = 0; i < 128; i++)
     {
-        if (world_table[chunk_y][chunk_x]->items[i] &&
-            world_table[chunk_y][chunk_x]->items[i]->x == x &&
-            world_table[chunk_y][chunk_x]->items[i]->y == y &&
-            world_table[chunk_y][chunk_x]->items[i]->z == z) 
+        InventoryElement *el = world_table[chunk_y][chunk_x]->items[i];
+        if (el)
         {
-            return &world_table[chunk_y][chunk_x]->items[i];
+            int el_x, el_y, el_z;
+            el->get_posittion(&el_x, &el_y, &el_z);
+
+            if (el_x == x && el_y == y && el_z == z )
+            {
+                return &world_table[chunk_y][chunk_x]->items[i];
+            }
         }
     }
     return NULL;
 }
-Element **get_item_at_ppos(struct Player * player)
+
+InventoryElement **get_item_at_ppos(struct Player * player)
 {
     return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
 
-void set_item_at(Element *item, int chunk_x, int chunk_y, int x, int y, int z) 
+void set_item_at(InventoryElement *item, int chunk_x, int chunk_y, int x, int y, int z) 
 {
     for (int i = 0; i < 128; i++)
     {
@@ -350,7 +357,7 @@ void set_item_at(Element *item, int chunk_x, int chunk_y, int x, int y, int z)
     }
 }
 
-void set_item_at_ppos(Element *item, struct Player *player) 
+void set_item_at_ppos(InventoryElement *item, struct Player *player) 
 {
     set_item_at(item, player->map_x, player->map_y, player->x, player->y, player->z);
 }

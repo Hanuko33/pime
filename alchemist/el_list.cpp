@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-ListElement::ListElement(Element *entry)
+ListElement::ListElement(InventoryElement *entry)
 {
 	el=entry;
 	next = NULL;
@@ -26,7 +26,7 @@ List::List(const char * n)
     head = NULL;
 }
 
-ListElement * List::find(Element * what)
+ListElement * List::find(InventoryElement * what)
 {
     ListElement * cur = head;
     while(cur) {
@@ -36,13 +36,13 @@ ListElement * List::find(Element * what)
     return NULL;
 }
 
-Element ** List::find_form(enum Form f, int *count)
+InventoryElement ** List::find_form(enum Form f, int *count)
 {
     ListElement * cur = head;
-	Element ** a = (Element**)calloc(nr_elements, sizeof(Element*));
+	InventoryElement ** a = (InventoryElement**)calloc(nr_elements, sizeof(InventoryElement*));
 	int c = 0;
     while(cur) {
-        if (cur->el->base->form == f) {
+        if (cur->el->get_form() == f) {
 			a[c] = cur->el;
 			c++;
 		}
@@ -68,7 +68,7 @@ void List::show()
     }
 }
 
-void List::add(Element *el)
+void List::add(InventoryElement *el)
 {
 	ListElement * entry = new ListElement(el);
     if (nr_elements) {
@@ -81,7 +81,7 @@ void List::add(Element *el)
     nr_elements++;
 }
 
-void List::remove(Element *el)
+void List::remove(InventoryElement *el)
 {
    ListElement * cur = head;
    ListElement * tmp;

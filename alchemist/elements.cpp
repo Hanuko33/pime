@@ -2,8 +2,23 @@
 
 #include "elements.h"
 #include "names.h"
+#include "../texture.h"
 
 BaseElement base_elements[BASE_ELEMENTS];
+
+const char * Ingredient_name[]=
+{
+    "Ax_blade",
+    "Ax_handle",
+
+    "Hammer_head",
+    "Hammer_handle",
+
+    "Knife_blade",
+    "Knife_handle",
+
+};
+
        
 Edible::Edible()
 {
@@ -131,4 +146,28 @@ void Element::show()
     base->show();
 }
 
+SDL_Texture * Element::get_texture()
+{
+    return items_textures[base->id]; 
+}
 
+Ingredient::Ingredient(InventoryElement * from, Ingredient_id i)
+{
+    el = from;
+    name = Ingredient_name[i];
+    id = i;
+}
+
+void Ingredient::show()
+{
+    printf("--- %s ---\n", name);
+    el->show();
+    printf("quality = %d\n", quality);
+    printf("resilience = %d\n", resilience);
+    printf("usage = %d\n", usage);
+}
+        
+SDL_Texture *Ingredient::get_texture() 
+{ 
+    return ing_textures[id]; 
+}

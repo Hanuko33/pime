@@ -30,7 +30,7 @@ public:
     int hunger;
     int health;
     List * inventory; 
-    Element * hotbar[10];
+    InventoryElement * hotbar[10];
 	void move(int x, int z);
 	Player();
 

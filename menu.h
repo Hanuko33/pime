@@ -20,6 +20,7 @@ enum menu_actions
     MENU_HELP_2,
     MENU_INV_SOLID,
     MENU_INV_LIGQUID,
+    MENU_CRAFT_AX_BLADE,
 //must be the last     
     MENU_ITEM=0x1000,
 };
@@ -50,6 +51,7 @@ extern Menu *menu_main;
 extern Menu *menu_energy;
 extern Menu *menu_help;
 extern Menu *menu_help2;
+extern Menu *menu_crafting;
 extern Menu *current_menu;
 
 int interact(enum menu_actions a);

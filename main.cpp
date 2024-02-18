@@ -229,16 +229,58 @@ void update_window_size()
 
 void put_element()
 {
-    Element * el = player.hotbar[active_hotbar];
+    InventoryElement * el = player.hotbar[active_hotbar];
     if (el) {
-        el->x = player.x;
-        el->y = player.y;
-        el->z = player.z;
+        el->set_posittion(player.x, player.y, player.z);
         set_item_at_ppos(el, &player);
         player.inventory->remove(el);
         player.hotbar[active_hotbar]=NULL;
-        printf("item %s placed\n", el->base->name);
+        printf("item %s placed\n", el->get_name());
     }
+}
+
+void use_tile()
+{
+    InventoryElement ** item_pointer = get_item_at_ppos(&player);
+    if (item_pointer)
+    {
+        InventoryElement * item = *item_pointer;
+        player.inventory->add(item);
+        printf("GOT ITEM: %s, new amount: %d\n", item->get_name(), 1); //player.inventory->get_count(item));
+        *item_pointer=NULL;																			  
+    }
+/*
+
+    if (get_tile_at_ppos(&player) == TILE_DUNG_DOOR)
+    {
+        save(0);
+        if (player.in == LOC_DUNGEON)
+        {
+            Mix_Pause(1); Mix_Resume(0);
+            player.in = LOC_WORLD; player.z = 0;
+        }
+        else
+        {
+            Mix_Pause(0); Mix_Resume(1);
+            player.in = LOC_DUNGEON; player.z = 1;
+        }
+        load(0); save(0);
+    }
+    if (get_tile_at_ppos(&player) == TILE_CAVE_DOOR)
+    {
+        save(0);
+        if (player.in == LOC_CAVE)
+        {
+            Mix_Pause(1); Mix_Resume(0);
+            player.in = LOC_WORLD; player.z = 0;
+        }
+        else
+        {
+            Mix_Pause(0); Mix_Resume(1);
+            player.in = LOC_CAVE; player.z = 2;
+        }
+        load(0); save(0);
+    }*/
 }
 
 void player_interact(int key)
@@ -302,7 +344,7 @@ void player_interact(int key)
         break;
 		case SDLK_F4:
 		{
-            Element ** item_pointer = get_item_at_ppos(&player);
+           	InventoryElement ** item_pointer = get_item_at_ppos(&player);
             if (item_pointer)
                 (*item_pointer)->show();
 		}
@@ -311,46 +353,7 @@ void player_interact(int key)
 
         case SDLK_RETURN:
         case SDLK_e:
-            Element ** item_pointer = get_item_at_ppos(&player);
-            if (item_pointer)
-            {
-                Element * item = *item_pointer;
-                player.inventory->add(item);
-                printf("GOT ITEM: %s, new amount: %d\n", item->base->name, 1); //player.inventory->get_count(item));
-				*item_pointer=NULL;																			  
-            }
-/*
-
-            if (get_tile_at_ppos(&player) == TILE_DUNG_DOOR)
-            {
-                save(0);
-                if (player.in == LOC_DUNGEON)
-                {
-                    Mix_Pause(1); Mix_Resume(0);
-                    player.in = LOC_WORLD; player.z = 0;
-                }
-                else
-                {
-                    Mix_Pause(0); Mix_Resume(1);
-                    player.in = LOC_DUNGEON; player.z = 1;
-                }
-                load(0); save(0);
-            }
-            if (get_tile_at_ppos(&player) == TILE_CAVE_DOOR)
-            {
-                save(0);
-                if (player.in == LOC_CAVE)
-                {
-                    Mix_Pause(1); Mix_Resume(0);
-                    player.in = LOC_WORLD; player.z = 0;
-                }
-                else
-                {
-                    Mix_Pause(0); Mix_Resume(1);
-                    player.in = LOC_CAVE; player.z = 2;
-                }
-                load(0); save(0);
-            }*/
+            use_tile();
             break;
     }
 }
@@ -483,14 +486,16 @@ void draw()
     // TODO: change items array to list
     for (int i = 0; i < 128; i++)
     {
-        Element * o = world_table[player.map_y][player.map_x]->items[i];
+        InventoryElement * o = world_table[player.map_y][player.map_x]->items[i];
         if (o) 
         {
-            SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-            int dy = o->y - player.y;
-            if (heightmap[o->x][o->z]+1 == dy)
+            int x, y, z;
+            o->get_posittion(&x, &y, &z);
+            SDL_Rect img_rect = {x * tile_dungeon_size, z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            int dy = y - player.y;
+            if (heightmap[x][z]+1 == dy)
             {
-                SDL_RenderCopy(renderer, items_textures[o->base->id], NULL, &img_rect);
+                SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
             }
         }
     }
@@ -611,10 +616,10 @@ void draw()
     //write_text(tx, ty+50, text, White,15,30);
             
     
-    Element ** ip = get_item_at_ppos(&player);
+    InventoryElement ** ip = get_item_at_ppos(&player);
     if (ip) {
-        Element * item = *ip;
-        sprintf(text, "Item: %s", item->base->name);
+        InventoryElement * item = *ip;
+        sprintf(text, "Item: %s", item->get_name());
         write_text(tx, ty+75, text, White,15,30);
     }
 
@@ -628,7 +633,7 @@ void draw()
 
 		if (player.hotbar[i])
         {
-			SDL_Texture *texture = items_textures[player.hotbar[i]->base->id];
+			SDL_Texture *texture = player.hotbar[i]->get_texture();
             SDL_RenderCopy(renderer, texture, NULL, &rect);
 			//sprintf(text, "%d", player.inventory[player.hotbar[i]]);
 		    //write_text(rect.x + 3 , rect.y+40, text, Gray, 10,20);

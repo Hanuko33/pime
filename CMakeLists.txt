@@ -16,6 +16,7 @@ add_executable(game_gui
 	alchemist/elements.cpp
 	alchemist/names.cpp
 	alchemist/el_list.cpp
+    alchemist/ax_blade.cpp
 	OpenSimplex/OpenSimplex2F.c
 	)
 
