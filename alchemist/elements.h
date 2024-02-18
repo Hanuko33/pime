@@ -60,7 +60,6 @@ class Element
         unsigned int height;
         unsigned int volume; //lenght*width*height
     
-		int count;
 		int x, y, z;
 
         Element(BaseElement *b);

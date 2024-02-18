@@ -1,6 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "alchemist/elements.h"
+#include "alchemist/el_list.h"
 
 enum location
 {
@@ -29,8 +29,8 @@ public:
     int thirst;
     int hunger;
     int health;
-    //int inventory[IT_MAX]; 
-    int hotbar[10];
+    List * inventory; 
+    Element * hotbar[10];
 	void move(int x, int z);
 	Player();
 

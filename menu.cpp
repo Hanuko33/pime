@@ -6,39 +6,54 @@
 extern struct Player player;
 extern int active_hotbar;
 
-struct menu_struct menu_music;
-struct menu_struct menu_main;
-struct menu_struct menu_energy;
-struct menu_struct menu_help;
-struct menu_struct menu_help2;
-struct menu_struct * current_menu;
-struct menu_struct menu_inventory_categories;
-struct menu_struct menu_inventory_material;
-struct menu_struct menu_inventory_food;
-struct menu_struct menu_inventory_tools;
+Menu *menu_music;
+Menu *menu_main;
+Menu *menu_energy;
+Menu *menu_help;
+Menu *menu_help2;
+Menu *current_menu;
+Menu *menu_inventory_categories;
+Menu *menu_inventory;
 
 void load(char with_player);
 void save(char with_player);
 
-void create_menu(struct menu_struct * m, int opt)
+Menu::Menu(int opt)
 {
-    m->options=opt;
-    m->entries=(const char**)calloc(opt, sizeof(char*));
-    m->added=0;
-    m->actions=(menu_actions*)calloc(opt, sizeof(enum menu_actions));
+    options=opt;
+	menu_pos=0;
+    added=0;
+    entries=(const char**)calloc(opt, sizeof(char*));
+    actions=(menu_actions*)calloc(opt, sizeof(enum menu_actions));
+    values=(int*)calloc(opt, sizeof(int));
 }
 
-void add_entry(struct menu_struct *m, const char * e, enum menu_actions a)
+void Menu::add(const char * e, enum menu_actions a)
 {
-    m->entries[m->added] = e;
-    m->actions[m->added] = a;
-    m->added++;
+    entries[added] = e;
+    actions[added] = a;
+    added++;
 }
 
-void show_menu()
+void Menu::add(const char * e, enum menu_actions a, int val)
 {
-    if (!current_menu) return;
+    entries[added] = e;
+    actions[added] = a;
+	values[added] = val;
+    added++;
+}
 
+int Menu::get_val(int v)
+{
+	for (int i=0; i < added; i++)
+	{
+		if (actions[i] == v) return values[i];
+	}
+	return 0;
+}
+
+void Menu::show()
+{
     int window_width;
     int window_height;  
     int i;
@@ -55,15 +70,15 @@ void show_menu()
     int mody;
     int mody2;
 
-    if (current_menu->options % 2)
+    if (options % 2)
     {
-        mody = (game_size/2)-(menu_opt_size*(current_menu->options/2)+menu_opt_size/2);
-        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2)+menu_opt_size/2);
+        mody = (game_size/2)-(menu_opt_size*(options/2)+menu_opt_size/2);
+        mody2 = (game_size/2)+(menu_opt_size*(options/2)+menu_opt_size/2);
     }
     else
     {
-        mody = (game_size/2)-(menu_opt_size*(current_menu->options/2));
-        mody2 = (game_size/2)+(menu_opt_size*(current_menu->options/2));
+        mody = (game_size/2)-(menu_opt_size*(options/2));
+        mody2 = (game_size/2)+(menu_opt_size*(options/2));
     }
 
     int modx = (game_size/2)-(0.4*game_size);
@@ -73,93 +88,96 @@ void show_menu()
     SDL_SetRenderDrawColor(renderer, 0, 0, 1, 100);
     SDL_RenderFillRect(renderer, &rect);
     
-    int mody3 = mody+(((current_menu->menu_pos+1)*menu_opt_size)-(menu_opt_size));
-    int mody4 = mody+((current_menu->menu_pos+1)*menu_opt_size);
+    int mody3 = mody+(((menu_pos+1)*menu_opt_size)-(menu_opt_size));
+    int mody4 = mody+((menu_pos+1)*menu_opt_size);
     
     SDL_Rect rect2 = {modx, mody3, modx2-modx, mody4-mody3};
     SDL_SetRenderDrawColor(renderer, 150, 150, 150, 100);
     SDL_RenderFillRect(renderer, &rect2);
     
-    for (i=0; i < current_menu->options; i++)
-        write_text(modx, mody + i * menu_opt_size, current_menu->entries[i], White, game_size/27, menu_opt_size);
+    for (i=0; i < options; i++)
+        write_text(modx, mody + i * menu_opt_size, entries[i], White, game_size/27, menu_opt_size);
 }
 
 void create_menus()
 {
-    create_menu(&menu_main, 4);
-        add_entry(&menu_main, "Exit", MENU_EXIT);
-        //add_entry(&menu_main, "Save & Exit", MENU_SAVE_EXIT);
-        //add_entry(&menu_main, "Save", MENU_SAVE);
-        //add_entry(&menu_main, "Load", MENU_LOAD);
-        add_entry(&menu_main, "Help", MENU_HELP);
-        add_entry(&menu_main, "Change music volume", MENU_MUSIC);
-        add_entry(&menu_main, "Cancel", MENU_CANCEL);
+    menu_main = new Menu(4);
+    menu_main->add("Exit", MENU_EXIT);
+        //add("Save & Exit", MENU_SAVE_EXIT);
+        //add("Save", MENU_SAVE);
+        //add("Load", MENU_LOAD);
+   	menu_main->add("Help", MENU_HELP);
+    menu_main->add("Change music volume", MENU_MUSIC);
+    menu_main->add("Cancel", MENU_CANCEL);
 
-    create_menu(&menu_energy, 3);
-        add_entry(&menu_energy, "Regain 100 energy", MENU_REGAIN);
-        add_entry(&menu_energy, "Set the energy to 1000", MENU_BOOST);
-        add_entry(&menu_energy, "Cancel", MENU_CANCEL);
+    menu_energy = new Menu(3);
+    menu_energy->add("Regain 100 energy", MENU_REGAIN);
+    menu_energy->add("Set the energy to 1000", MENU_BOOST);
+    menu_energy->add("Cancel", MENU_CANCEL);
 
-    create_menu(&menu_help, 9);
-        add_entry(&menu_help, "ESC - game menu", MENU_CANCEL);
-        add_entry(&menu_help, "m - energy", MENU_CANCEL);
-        add_entry(&menu_help, "arrows - moves", MENU_CANCEL);
-        add_entry(&menu_help, "w,a,s,d - moves", MENU_CANCEL);
-        add_entry(&menu_help, "ctrl - run", MENU_CANCEL);
-        add_entry(&menu_help, "shift - sneak", MENU_CANCEL);
-        add_entry(&menu_help, "e,ENTER - pickup", MENU_CANCEL);
-        add_entry(&menu_help, "i - inventory", MENU_CANCEL);
-        add_entry(&menu_help, "N E X T", MENU_HELP_2);
+    menu_help = new Menu(9);
+    menu_help->add("ESC - game menu", MENU_CANCEL);
+    menu_help->add("m - energy", MENU_CANCEL);
+    menu_help->add("arrows - moves", MENU_CANCEL);
+    menu_help->add("w,a,s,d - moves", MENU_CANCEL);
+    menu_help->add("ctrl - run", MENU_CANCEL);
+    menu_help->add("shift - sneak", MENU_CANCEL);
+    menu_help->add("e,ENTER - pickup", MENU_CANCEL);
+    menu_help->add("i - inventory", MENU_CANCEL);
+    menu_help->add("N E X T", MENU_HELP_2);
 
-    create_menu(&menu_help2, 6);
-        add_entry(&menu_help2, "P R E V I O U S", MENU_HELP_1);
-        add_entry(&menu_help2, "= - use item in hotbar", MENU_CANCEL);
-        add_entry(&menu_help2, "1234567890 - hotbar", MENU_CANCEL);
-        add_entry(&menu_help2, "TAB - hotbar next", MENU_CANCEL);
-        add_entry(&menu_help2, "` - hotbar previous", MENU_CANCEL);
-        add_entry(&menu_help2, "Cancel", MENU_CANCEL);
+    menu_help2 = new Menu(6);
+    menu_help2->add("P R E V I O U S", MENU_HELP_1);
+    menu_help2->add("= - use item in hotbar", MENU_CANCEL);
+	menu_help2->add("1234567890 - hotbar", MENU_CANCEL);
+	menu_help2->add("TAB - hotbar next", MENU_CANCEL);
+	menu_help2->add("` - hotbar previous", MENU_CANCEL);
+	menu_help2->add("Cancel", MENU_CANCEL);
 
-    create_menu(&menu_music, 3);
-        add_entry(&menu_music, "+5 Volume", MENU_LOUDER);
-        add_entry(&menu_music, "-5 Volume", MENU_QUIETER);
-        add_entry(&menu_music, "Cancel", MENU_CANCEL);
-#if 0    
-    create_menu(&menu_inventory_categories, CAT_MAX);
-        for (int i=0; i < CAT_MAX; i++)
-        {
-            add_entry(&menu_inventory_categories, categories_names[i], (menu_actions)(MENU_MATERIAL | i));
-        }
-    create_menu(&menu_inventory_material, 4);
-        for (int i=0; i < 4; i++)
-        {
-            add_entry(&menu_inventory_material, items_names[i], (menu_actions)(MENU_ITEM | i));
-//            player.inventory[i];
-        }
-    create_menu(&menu_inventory_food, 2);
-        for (int i=4; i < 6; i++)
-        {
-            add_entry(&menu_inventory_food, items_names[i], (menu_actions)(MENU_ITEM | i));
-        }
-    create_menu(&menu_inventory_tools, 1);
-        for (int i=6; i < 7; i++)
-        {
-            add_entry(&menu_inventory_tools, items_names[i], (menu_actions)(MENU_ITEM | i));
-        }
-#endif   
+    menu_music = new Menu(3);
+    menu_music->add("+5 Volume", MENU_LOUDER);
+    menu_music->add("-5 Volume", MENU_QUIETER);
+    menu_music->add("Cancel", MENU_CANCEL);
+    
+    menu_inventory_categories = new Menu(2);
+    menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
+    menu_inventory_categories->add("Liquid form", MENU_INV_LIGQUID, Form_liquid);
 }
                 
-void menu_go_down()
+Menu * create_inv_menu(int v)
 {
-    current_menu->menu_pos++;
-    if (current_menu->menu_pos == current_menu->options)
-        current_menu->menu_pos = 0;
+
+	printf("szukam %d\n", v);
+	int c=0;
+	Element ** el = player.inventory->find_form((Form) v, &c);
+	if (el) {
+		printf("found %d elements\n", c);
+
+		if (menu_inventory) delete menu_inventory;
+		menu_inventory = new Menu(c);
+		
+		for (int i=0; i < c; i++)
+		{
+			printf("%s\n", el[i]->base->name);
+			menu_inventory->add(el[i]->base->name, MENU_CANCEL);
+		}
+		return menu_inventory;
+	}
+	return NULL;
 }
 
-void menu_go_up()
+void Menu::go_down()
 {
-    current_menu->menu_pos--;
-    if (current_menu->menu_pos < 0 )
-        current_menu->menu_pos = current_menu->options - 1;
+    menu_pos++;
+    if (menu_pos == options)
+        menu_pos = 0;
+}
+
+void Menu::go_up()
+{
+    menu_pos--;
+    if (menu_pos < 0 )
+        menu_pos = options - 1;
 }
 
 int menu_interact(int key)
@@ -168,30 +186,32 @@ int menu_interact(int key)
     {
        case SDLK_ESCAPE:
        {
-            if (current_menu) current_menu=NULL; else current_menu=&menu_main;
+            if (current_menu) current_menu=NULL; else current_menu=menu_main;
             return 1;
        }
        case SDLK_m:
        { 
-           if (!current_menu) current_menu=&menu_energy; else if (current_menu ==  &menu_energy) current_menu=NULL;
+           if (!current_menu) current_menu=menu_energy; else if (current_menu ==  menu_energy) current_menu=NULL;
            return 1;
        }
        case SDLK_i:
        {
-            if (!current_menu) current_menu=&menu_inventory_categories; else if (current_menu == &menu_inventory_categories) current_menu=NULL;
+			player.inventory->show();
+            if (!current_menu) current_menu=menu_inventory_categories; 
+			else if (current_menu == menu_inventory_categories) current_menu=NULL;
             return 1;
        }
 
        case SDLK_DOWN:
        case SDLK_s:
        {
-            if (current_menu)  menu_go_down();
+            if (current_menu)  current_menu->go_down();
             break;
        }
        case SDLK_w:
        case SDLK_UP:
        {
-            if (current_menu)  menu_go_up();
+            if (current_menu)  current_menu->go_up();
             break;
        }
 
@@ -215,28 +235,28 @@ int menu_interact(int key)
 int handle_item(int i)
 {
 	if (active_hotbar >=0) {
-		player.hotbar[active_hotbar]=i;
+//		player.hotbar[active_hotbar]=i;
 	}
 	return 1;
 }	
 
 int interact(enum menu_actions a)
 {
-    if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
+//    if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
     switch(a)
     {
         case MENU_MUSIC:
-            current_menu=&menu_music;
+            current_menu=menu_music;
             return 0;
         case MENU_REGAIN:
             player.hunger+=100;
             break;
 
         case MENU_HELP_2:
-            current_menu=&menu_help2;
+            current_menu=menu_help2;
             return 0;
         case MENU_HELP_1:
-            current_menu=&menu_help;
+            current_menu=menu_help;
             return 0;
 
         case MENU_BOOST:
@@ -259,18 +279,13 @@ int interact(enum menu_actions a)
             break;
 
         case MENU_HELP: 
-            current_menu=&menu_help;
+            current_menu=menu_help;
             return 0;   
         
-        case MENU_MATERIAL: 
-            current_menu=&menu_inventory_material;
+        case MENU_INV_SOLID: 
+        case MENU_INV_LIGQUID: 
+             current_menu=create_inv_menu(menu_inventory_categories->get_val(a));
             return 0;   
-        case MENU_FOOD:
-            current_menu=&menu_inventory_food;
-            return 0;
-        case MENU_TOOLS:
-            current_menu=&menu_inventory_tools;
-            return 0;
 
         case MENU_LOUDER:
             Mix_Volume(0, Mix_Volume(0, -1)+5);

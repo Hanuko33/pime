@@ -18,30 +18,35 @@ enum menu_actions
     MENU_MUSIC,
     MENU_HELP_1,
     MENU_HELP_2,
-    MENU_ITEM=0x80,
-//  must be after other menus entries  
-    MENU_MATERIAL=0x100,
-    MENU_FOOD,
-    MENU_TOOLS
+    MENU_INV_SOLID,
+    MENU_INV_LIGQUID,
+    MENU_ITEM,
 };
 
 
-struct menu_struct
+class Menu
 {
+public:	
     int options;
     int menu_pos;
     int added;
     const char ** entries;
     enum menu_actions * actions;
+	int *values;
+	Menu(int opt);
+	void add(const char * e, enum menu_actions a);
+	void add(const char * e, enum menu_actions a, int val);
+	int get_val(int v);
+	void show();
+	void go_down();
+	void go_up();
 };
 
-//extern enum menu_types in_menu;
-extern struct menu_struct menu_main;
-extern struct menu_struct menu_energy;
-extern struct menu_struct menu_help;
-extern struct menu_struct menu_help2;
-extern struct menu_struct menu_inventory;
-extern struct menu_struct * current_menu;
+extern Menu *menu_main;
+extern Menu *menu_energy;
+extern Menu *menu_help;
+extern Menu *menu_help2;
+extern Menu *current_menu;
 
 int interact(enum menu_actions a);
 void show_menu();

@@ -68,12 +68,10 @@ Player::Player()
     thirst=50;
     map_x = WORLD_CENTER;
     map_y = WORLD_CENTER;
-    //for (int i=0; i < IT_MAX; i++)
-    //	inventory[i]=rand() % 10;
-    //inventory[IT_stone] = 10;
+    inventory = new List("inventory");
 
-    y = 0;
+	y = 0;
 
 	for (int i=0; i < 10; i++)
-        hotbar[i]=-1;
+        hotbar[i]=NULL;
 }

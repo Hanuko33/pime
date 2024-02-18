@@ -260,7 +260,6 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     {
         int b = rand() % BASE_ELEMENTS;
         Element *o = new Element(&base_elements[b]);
-        o->count = rand() % 2 +1;
         o->x = rand() % 16;
         o->z = rand() % 16;
         o->y = height_at(chunk_x, chunk_y, o->x, o->z);
@@ -322,7 +321,7 @@ Element **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     // TODO: change items array to list
    
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 128; i++)
     {
         if (world_table[chunk_y][chunk_x]->items[i] &&
             world_table[chunk_y][chunk_x]->items[i]->x == x &&
@@ -332,7 +331,6 @@ Element **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
             return &world_table[chunk_y][chunk_x]->items[i];
         }
     }
-    //return world_table[chunk_y][chunk_x]->table[z][y][x].item;
     return NULL;
 }
 Element **get_item_at_ppos(struct Player * player)

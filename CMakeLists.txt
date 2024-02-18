@@ -15,6 +15,7 @@ add_executable(game_gui
 	notifier.cpp 
 	alchemist/elements.cpp
 	alchemist/names.cpp
+	alchemist/el_list.cpp
 	OpenSimplex/OpenSimplex2F.c
 	)
 
