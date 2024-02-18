@@ -21,6 +21,6 @@ add_executable(game_gui
 
 target_link_libraries(game_gui
     SDL2 SDL2_image SDL2_ttf SDL2_mixer
-    ${SDL_LDFLAGS} 
+    ${SDL_LDFLAGS} ${SDL2_MIXER_LDFLAGS}
     -lm 
 )

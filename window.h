@@ -14,5 +14,5 @@ int init_window();
 void clear_window();
 unsigned int color(int r, int g, int b, int a);
 #define GAME_WINDOW 512
-#define PANEL_WINDOW 350
+#define PANEL_WINDOW 512
 #endif // WINDOW_H

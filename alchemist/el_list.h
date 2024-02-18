@@ -7,12 +7,11 @@ class ListElement
 {
 public:	
     Element * el; 
-	int count;
     ListElement * next;
 
 	void add(ListElement * entry);
 	void show();
-	ListElement(Element *entry, int c);
+	ListElement(Element *entry);
 };
     
 

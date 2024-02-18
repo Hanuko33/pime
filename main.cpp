@@ -10,7 +10,7 @@
 #include "window.h"
 #include "music.h"
 #include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL2_framerate.h>
+//#include <SDL2/SDL2_framerate.h>
 #include "dungeon.h"
 #include "cave.h"
 #include "texture.h"
@@ -227,6 +227,20 @@ void update_window_size()
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
 }
 
+void put_element()
+{
+    Element * el = player.hotbar[active_hotbar];
+    if (el) {
+        el->x = player.x;
+        el->y = player.y;
+        el->z = player.z;
+        set_item_at_ppos(el, &player);
+        player.inventory->remove(el);
+        player.hotbar[active_hotbar]=NULL;
+        printf("item %s placed\n", el->base->name);
+    }
+}
+
 void player_interact(int key)
 {
     if (menu_interact(key)) return;
@@ -250,64 +264,22 @@ void player_interact(int key)
                 player.thirst+=100;
             }
             break;
-  */      case SDLK_1:
-            active_hotbar=0;
-            break;
-        case SDLK_2:
-            active_hotbar=1;
-            break;
-        case SDLK_3:
-            active_hotbar=2;
-            break;
-        case SDLK_4:
-            active_hotbar=3;
-            break;
-        case SDLK_5:
-            active_hotbar=4;
-            break;
-        case SDLK_6:
-            active_hotbar=5;
-            break;
-        case SDLK_7:
-            active_hotbar=6;
-            break;
-        case SDLK_8:
-            active_hotbar=7;
-            break;
-        case SDLK_9:
-            active_hotbar=8;
-            break;
-        case SDLK_0:
-            active_hotbar=9;
-            break;
-#if 0
-		case SDLK_q:
-            if (active_hotbar >= 0 && player.inventory[player.hotbar[active_hotbar]] > 0)
-            {
-                struct item* i = (struct item*) malloc(sizeof(struct item));
-                i->x = player.x;
-                i->y = player.y;
-                i->z = player.z;
-                i->id = (enum item_id)player.hotbar[active_hotbar];
-                set_item_at_ppos(i, &player);
-                player.inventory[player.hotbar[active_hotbar]]--;
+  */    case SDLK_1: active_hotbar=0; break;
+        case SDLK_2: active_hotbar=1; break;
+        case SDLK_3: active_hotbar=2; break;
+        case SDLK_4: active_hotbar=3; break;
+        case SDLK_5: active_hotbar=4; break;
+        case SDLK_6: active_hotbar=5; break;
+        case SDLK_7: active_hotbar=6; break;
+        case SDLK_8: active_hotbar=7; break;
+        case SDLK_9: active_hotbar=8; break;
+        case SDLK_0: active_hotbar=9; break;
 
-                /*if (get_item_at_ppos(&player).count > 0)
-                {
-                    printf("%d\n", player.hotbar[active_hotbar]);
-                    printf("DEBUG item placed\n");
-                }*/
-            }
-            break;
-#endif
-		case SDLK_BACKQUOTE:
-            active_hotbar--;
-            if (active_hotbar==-1) active_hotbar=9;
-            break;
-        case SDLK_TAB:
-			active_hotbar++;
-			if (active_hotbar==10) active_hotbar=0;
-			break;
+		case SDLK_q: put_element(); break;
+
+		case SDLK_BACKQUOTE: active_hotbar--; if (active_hotbar==-1) active_hotbar=9; break;
+        case SDLK_TAB: active_hotbar++; if (active_hotbar==10) active_hotbar=0; break;
+
         case SDLK_F1:
             generator();
             player.z = 0;

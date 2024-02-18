@@ -2,10 +2,9 @@
 #include <cstdlib>
 #include <cstdio>
 
-ListElement::ListElement(Element *entry, int c)
+ListElement::ListElement(Element *entry)
 {
 	el=entry;
-	count = c;
 	next = NULL;
 }
 
@@ -59,7 +58,6 @@ Element ** List::find_form(enum Form f, int *count)
 	}
 }
 
-
 void List::show()
 {
     ListElement * cur = head;
@@ -72,7 +70,7 @@ void List::show()
 
 void List::add(Element *el)
 {
-	ListElement * entry = new ListElement(el, 1);
+	ListElement * entry = new ListElement(el);
     if (nr_elements) {
         tail->add(entry);
         tail = entry;
@@ -98,14 +96,16 @@ void List::remove(Element *el)
    }
    while(cur)
    {	   
+       if (!cur->next) break;
         if (cur->next->el == el)
         {
+            tmp=cur->next;
             cur->next = cur->next->next;
             if (tail->el == el)
             {
                 tail = cur;
             }
-            free(cur->next);
+            free(tmp);
             nr_elements--;
             return;
         }

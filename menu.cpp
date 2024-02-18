@@ -2,6 +2,7 @@
 #include "window.h"
 #include "music.h"
 #include "alchemist/elements.h"
+#include "texture.h"
 
 extern struct Player player;
 extern int active_hotbar;
@@ -26,6 +27,8 @@ Menu::Menu(int opt)
     entries=(const char**)calloc(opt, sizeof(char*));
     actions=(menu_actions*)calloc(opt, sizeof(enum menu_actions));
     values=(int*)calloc(opt, sizeof(int));
+    el=(Element**)calloc(opt, sizeof(Element*));
+    show_texture=false;
 }
 
 void Menu::add(const char * e, enum menu_actions a)
@@ -37,11 +40,18 @@ void Menu::add(const char * e, enum menu_actions a)
 
 void Menu::add(const char * e, enum menu_actions a, int val)
 {
-    entries[added] = e;
-    actions[added] = a;
 	values[added] = val;
-    added++;
+    add(e, a);
 }
+
+void Menu::add(const char * e, enum menu_actions a, Element * p_el)
+{
+    int i=a & ~ MENU_ITEM; 
+    el[i] = p_el;
+    add(e, a);
+    show_texture=true;
+}
+
 
 int Menu::get_val(int v)
 {
@@ -95,8 +105,21 @@ void Menu::show()
     SDL_SetRenderDrawColor(renderer, 150, 150, 150, 100);
     SDL_RenderFillRect(renderer, &rect2);
     
-    for (i=0; i < options; i++)
-        write_text(modx, mody + i * menu_opt_size, entries[i], White, game_size/27, menu_opt_size);
+    for (i=0; i < options; i++){
+        if (show_texture) {
+        SDL_Rect rect;
+		rect.x = modx;
+		rect.y = mody + i * menu_opt_size;
+		rect.w = 32;
+		rect.h = 32;
+
+		SDL_Texture *texture = items_textures[el[i]->base->id];
+        SDL_RenderCopy(renderer, texture, NULL, &rect);
+        write_text(rect.x+32, rect.y, entries[i], White, game_size/27, menu_opt_size);
+        } 
+        else 
+            write_text(modx, mody+i * menu_opt_size, entries[i], White, game_size/27, menu_opt_size);
+    }
 }
 
 void create_menus()
@@ -159,8 +182,9 @@ Menu * create_inv_menu(int v)
 		for (int i=0; i < c; i++)
 		{
 			printf("%s\n", el[i]->base->name);
-			menu_inventory->add(el[i]->base->name, MENU_CANCEL);
+			menu_inventory->add(el[i]->base->name, (menu_actions)(MENU_ITEM+i), el[i]);
 		}
+        free(el);
 		return menu_inventory;
 	}
 	return NULL;
@@ -235,14 +259,19 @@ int menu_interact(int key)
 int handle_item(int i)
 {
 	if (active_hotbar >=0) {
-//		player.hotbar[active_hotbar]=i;
+        Element *el=menu_inventory->el[i];
+		for (int h=0; h< 10; h++)
+        {
+            if (player.hotbar[h] == el) return 0;
+        };
+        player.hotbar[active_hotbar]=menu_inventory->el[i];
 	}
 	return 1;
 }	
 
 int interact(enum menu_actions a)
 {
-//    if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
+    if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
     switch(a)
     {
         case MENU_MUSIC:

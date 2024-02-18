@@ -20,7 +20,8 @@ enum menu_actions
     MENU_HELP_2,
     MENU_INV_SOLID,
     MENU_INV_LIGQUID,
-    MENU_ITEM,
+//must be the last     
+    MENU_ITEM=0x1000,
 };
 
 
@@ -33,9 +34,12 @@ public:
     const char ** entries;
     enum menu_actions * actions;
 	int *values;
+    Element ** el;
+    bool show_texture;
 	Menu(int opt);
 	void add(const char * e, enum menu_actions a);
 	void add(const char * e, enum menu_actions a, int val);
+    void add(const char * e, enum menu_actions a, Element * p_el);
 	int get_val(int v);
 	void show();
 	void go_down();
