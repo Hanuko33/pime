@@ -20,7 +20,10 @@ enum menu_actions
     MENU_HELP_2,
     MENU_INV_SOLID,
     MENU_INV_LIGQUID,
-    MENU_CRAFT_AX_BLADE,
+    MENU_INV_GAS,
+    MENU_CRAFT_AXE_BLADE,
+    MENU_CRAFT_AXE_HANDLE,
+    MENU_CRAFT_AXE,
 //must be the last     
     MENU_ITEM=0x1000,
 };
@@ -29,6 +32,7 @@ enum menu_actions
 class Menu
 {
 public:	
+    const char *name;
     int options;
     int menu_pos;
     int added;
@@ -37,7 +41,7 @@ public:
 	int *values;
     Element ** el;
     bool show_texture;
-	Menu(int opt);
+	Menu(const char *n, int opt);
 	void add(const char * e, enum menu_actions a);
 	void add(const char * e, enum menu_actions a, int val);
     void add(const char * e, enum menu_actions a, Element * p_el);

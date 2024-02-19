@@ -1,9 +1,13 @@
 #ifndef __ELEMENTS__H
 #define __ELEMENTS__H
 
-#include <cstdio>
+#ifdef STUB_SDL
+typedef void * SDL_Texture;
+#else
 #include <SDL2/SDL.h>
+#endif
 
+#include <cstdio>
 class Edible
 {
     public:
@@ -35,9 +39,20 @@ enum Form
     Form_gas,
 };
 
+extern const char * Form_name[];
+
+enum Class_id
+{
+    Class_Base=1,
+    Class_Element,
+    Class_Ingredient,
+    Class_Product
+};
+
 class BaseElement
 {
     public:
+    static const Class_id c_id=Class_Base;
         char * name;
         int id; //texture id
         unsigned int density;
@@ -54,20 +69,26 @@ class InventoryElement
 {
 	int x, y, z;
     public:
-        InventoryElement() {}
+        Form req_form;
+
+        InventoryElement() { req_form = Form_none; }
         virtual void show() {}
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
+        virtual const char * get_form_name() { return NULL; }
         virtual int get_id() {return -1; }
         virtual SDL_Texture * get_texture() { return NULL;}
+        virtual bool craft() { return false; }
         void set_posittion(int _x, int _y, int _z) { x=_x; y=_y; z=_z; }
         void get_posittion(int *_x, int *_y, int *_z) { *_x=x; *_y=y; *_z=z; }
 };
+
 
 class Element : public InventoryElement
 {
     BaseElement * base;
     public:
+    static const Class_id c_id=Class_Element;
         unsigned int sharpness;
         unsigned int smoothness;
         unsigned int mass; //density*volume
@@ -81,14 +102,15 @@ class Element : public InventoryElement
         Element(BaseElement *b);
         Form get_form() {return base->form; }
         const char * get_name() {return base->name; }
+        const char * get_form_name() { return Form_name[base->form]; }
         int get_id() {return base->id; }
         SDL_Texture * get_texture();
 };
 
 enum Ingredient_id
 {
-    ING_AX_BLADE,
-    ING_AX_HANDLE,
+    ING_AXE_BLADE,
+    ING_AXE_HANDLE,
 
     ING_HAMMER_HEAD,
     ING_HAMMER_HANDLE,
@@ -98,26 +120,68 @@ enum Ingredient_id
     
 };
 
+enum Product_id
+{
+    PROD_AXE,
+    PROD_HAMMER,
+    PROD_KNIFE
+};
+
 extern const char * Ingredient_name[];
+extern const char * Product_name[];
 
 class Ingredient : public InventoryElement
 {
     const char * name;
     public:
+    static const Class_id c_id=Class_Ingredient;
         int quality; //[0..100] slaby..najlepszy
         int resilience; // [0..100] wytrzymały..słaby
         int usage; // [0..100] łatwy..trudny
+
         Ingredient_id id;
         InventoryElement * el;
-
-        Ingredient(InventoryElement * from, Ingredient_id i);
-        void show();
+        
         Form get_form() {return el->get_form(); }
         const char * get_name() {return name; }
+        const char * get_form_name() { return Form_name[el->get_form()]; }
         int get_id() {return id; }
+        bool craft();
+        Ingredient(InventoryElement * from, Ingredient_id i, Form f);
+        void show();
         SDL_Texture * get_texture();
 };
 
+class Product : public InventoryElement
+{
+    const char * name;
+    void init(Product_id i, int c, Form f);
+    public:
+    static const Class_id c_id=Class_Product;
+        int quality; //[0..100] slaby..najlepszy
+        int resilience; // [0..100] wytrzymały..słaby
+        int usage; // [0..100] łatwy..trudny
+
+        Product_id id;
+        
+        int ing_count;
+        InventoryElement ** ings;
+        
+        Form get_form(); 
+        const char * get_name() {return name; }
+        int get_id() {return id; }
+        const char * get_form_name();
+
+        Product(InventoryElement * el1, InventoryElement *el2, Product_id i, Form f);
+        Product(InventoryElement ** from, int count, Product_id i, Form f);
+       
+        bool craft();
+        virtual bool check_ing() { return false; }
+        void show();
+        SDL_Texture * get_texture();
+
+
+};
 class Being : public Element
 {
     public:
@@ -125,8 +189,14 @@ class Being : public Element
         unsigned int max_age;
         void grow() {}
 };
-#define BASE_ELEMENTS 7
+#define BASE_ELEMENTS 50
+#define SOLID_ELEMENTS 4
+#define FOOD_ELEMENTS 2
+#define LIQUID_ELEMENTS 1
+#define GAS_ELEMENTS 1
 #define ING_ELEMENTS 2
+#define PROD_ELEMENTS 1
+
 extern BaseElement base_elements[BASE_ELEMENTS];
 
 void init_elements();

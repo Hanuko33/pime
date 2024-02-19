@@ -12,12 +12,18 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(game_gui 
 	window.cpp music.cpp text.cpp time.cpp 
 	texture.cpp dungeon.cpp cave.cpp main.cpp menu.cpp world.cpp player.cpp 
-	notifier.cpp 
-	alchemist/elements.cpp
+	notifier.cpp craft.cpp 
+
+    alchemist/elements.cpp
 	alchemist/names.cpp
 	alchemist/el_list.cpp
-    alchemist/ax_blade.cpp
-	OpenSimplex/OpenSimplex2F.c
+
+    alchemist/axe_blade.cpp
+    alchemist/axe_handle.cpp
+    
+    alchemist/axe.cpp
+
+    OpenSimplex/OpenSimplex2F.c
 	)
 
 target_link_libraries(game_gui

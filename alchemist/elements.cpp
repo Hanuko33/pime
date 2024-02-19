@@ -6,6 +6,14 @@
 
 BaseElement base_elements[BASE_ELEMENTS];
 
+const char * Form_name[]
+{
+    "nothing",
+    "solid form",
+    "liquid",
+    "gas"
+};
+
 const char * Ingredient_name[]=
 {
     "Ax_blade",
@@ -17,6 +25,13 @@ const char * Ingredient_name[]=
     "Knife_blade",
     "Knife_handle",
 
+};
+
+const char * Product_name[]=
+{
+    "Axe",
+    "Hammer",
+    "Knife",
 };
 
        
@@ -77,11 +92,8 @@ void Solid::show()
 
 }
 
-int base_id;
 BaseElement::BaseElement()
 {
-    id=base_id;
-	base_id++;
     transparency=rand() % 256;
     solid=NULL;
     int f = rand() % 100;
@@ -90,28 +102,32 @@ BaseElement::BaseElement()
             form = Form_solid;
             solid=new Solid;
             density=50 + rand() % 2000;
+            id=rand() % SOLID_ELEMENTS;
     } else {
         if (f < 90) { //30%
             form = Form_liquid;
             density=500 + rand() % 500;
+            id=rand() % LIQUID_ELEMENTS;
         } 
         else { //10%
             form = Form_gas;
             density=1;
+            id=rand() % GAS_ELEMENTS;
         }
     }
 
     edible = NULL;
-    if (rand() % 100 < 10) // 10 % food
+    if (rand() % 100 < 30) // 10 % food
     {
         edible=new Edible;
+        id=rand() % FOOD_ELEMENTS;
     }
     name = get_name(5 - form);
 }
 
 void BaseElement::show()
 {
-    printf("   *** BaseElement ***\n");
+    printf("   *** BaseElement -> %d ***\n", c_id);
     printf("   density = %u\n", density);
     printf("   transparency = %u\n", transparency);
     printf("   form = %u\n", form);
@@ -139,7 +155,7 @@ Element::Element(BaseElement *b)
 
 void Element::show()
 {
-    printf("\n*** Element: %s ***\n", base->name);
+    printf("\n*** Element -> %d: %s ***\n", c_id, base->name);
     printf("sharpness = %u\n", sharpness);
     printf("smoothness = %u\n", smoothness);
     printf("mass = %u: l=%u w=%u h=%u \n", mass, length, width, height);
@@ -148,26 +164,127 @@ void Element::show()
 
 SDL_Texture * Element::get_texture()
 {
-    return items_textures[base->id]; 
+    if (base->edible) return food_textures[base->id];
+
+    switch (base->form)
+    {
+        case Form_solid: return items_textures[base->id]; break;
+        case Form_liquid: return liquid_textures[base->id]; break;
+        case Form_gas: return gas_textures[base->id]; break;
+    }
+    return NULL;
 }
 
-Ingredient::Ingredient(InventoryElement * from, Ingredient_id i)
+Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
 {
     el = from;
     name = Ingredient_name[i];
     id = i;
+    req_form = f;
+}
+        
+bool Ingredient::craft()
+{
+    if (req_form != get_form()) return false;
+
+    quality = rand() % 100;
+    resilience = rand() % 100;
+    usage = rand() % 100;
+    return true;
 }
 
 void Ingredient::show()
 {
-    printf("--- %s ---\n", name);
-    el->show();
+    printf("\nvvv %s ->%d vvv\n", name, c_id);
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
     printf("usage = %d\n", usage);
+    el->show();
+    printf("^^^ %s ^^^\n", name);
 }
         
 SDL_Texture *Ingredient::get_texture() 
 { 
     return ing_textures[id]; 
+}
+
+void Product::init(Product_id i, int c, Form f)
+{
+    name = Product_name[i];
+    id = i;
+    ing_count=c;
+    req_form=f;
+}
+
+Product::Product(InventoryElement * el1, InventoryElement *el2, Product_id i, Form f)
+{
+    ings = (InventoryElement**) calloc(2, sizeof(InventoryElement));
+    ings[0]=el1;
+    ings[1]=el2;
+    init(i, 2, f);
+}
+
+Product::Product(InventoryElement ** from, int count, Product_id i, Form f)
+{
+    ings = from;
+    init(i, count, f);
+}
+
+bool Product::craft()
+{
+    for (int i=0; i < ing_count; i++)
+    {
+        if (req_form != ings[i]->get_form()) return false;
+    }
+    if (!check_ing()) return false;
+
+    quality = rand() % 100;
+    resilience = rand() % 100;
+    usage = rand() % 100;
+    return true;
+}
+
+void Product::show()
+{
+    printf("\n!!! %s -> %d!!!\n", name, c_id);
+    printf("quality = %d\n", quality);
+    printf("resilience = %d\n", resilience);
+    printf("usage = %d\n", usage);
+
+    for (int i=0; i < ing_count; i++)
+    {
+        ings[i]->show();
+    }
+    printf("iii %s iii\n", name);
+}
+        
+SDL_Texture *Product::get_texture() 
+{ 
+    return prod_textures[id]; 
+}
+        
+Form Product::get_form()
+{
+    int solid=0;
+    int liq=0;
+    int gas=0;
+
+    for (int i=0; i < ing_count; i++)
+    {
+        switch (ings[i]->get_form())
+        {
+            case Form_solid: solid++; break;
+            case Form_liquid: liq++; break;
+            case Form_gas: gas++; break;
+        }
+    }
+    if (solid) return Form_solid;
+    if (gas == ing_count) return Form_gas;
+    if (liq) return Form_liquid;
+    return Form_none;
+}
+
+const char * Product::get_form_name() 
+{ 
+    return Form_name[get_form()]; 
 }

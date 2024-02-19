@@ -3,11 +3,11 @@
 #include "music.h"
 #include "alchemist/elements.h"
 #include "texture.h"
-#include "alchemist/ax_blade.h"
 #include "world.h"
+#include "craft.h"
 
 
-extern struct Player player;
+extern class Player player;
 extern int active_hotbar;
 
 Menu *menu_music;
@@ -23,8 +23,9 @@ Menu *menu_crafting;
 void load(char with_player);
 void save(char with_player);
 
-Menu::Menu(int opt)
+Menu::Menu(const char *n, int opt)
 {
+    name = n;
     options=opt;
 	menu_pos=0;
     added=0;
@@ -83,7 +84,7 @@ void Menu::show()
     int menu_opt_size = game_size/10;
     int mody;
     int mody2;
-
+   
     if (options % 2)
     {
         mody = (game_size/2)-(menu_opt_size*(options/2)+menu_opt_size/2);
@@ -99,15 +100,20 @@ void Menu::show()
     int modx2 = (game_size/2)+(0.4*game_size);
    
     SDL_Rect rect = {modx, mody, modx2-modx, mody2-mody};
-    SDL_SetRenderDrawColor(renderer, 0, 0, 1, 100);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 100);
     SDL_RenderFillRect(renderer, &rect);
     
     int mody3 = mody+(((menu_pos+1)*menu_opt_size)-(menu_opt_size));
     int mody4 = mody+((menu_pos+1)*menu_opt_size);
     
     SDL_Rect rect2 = {modx, mody3, modx2-modx, mody4-mody3};
-    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 100);
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 100);
     SDL_RenderFillRect(renderer, &rect2);
+    
+    SDL_Rect rect3 = {modx, mody - menu_opt_size, modx2-modx, mody4-mody3};
+    SDL_SetRenderDrawColor(renderer, 150, 0, 150, 100);
+    SDL_RenderFillRect(renderer, &rect3);
+    write_text(modx, mody - menu_opt_size, name, Yellow, game_size/27, menu_opt_size);
     
     for (i=0; i < options; i++){
         if (show_texture) {
@@ -128,7 +134,7 @@ void Menu::show()
 
 void create_menus()
 {
-    menu_main = new Menu(4);
+    menu_main = new Menu("Main", 4);
     menu_main->add("Exit", MENU_EXIT);
         //add("Save & Exit", MENU_SAVE_EXIT);
         //add("Save", MENU_SAVE);
@@ -137,12 +143,12 @@ void create_menus()
     menu_main->add("Change music volume", MENU_MUSIC);
     menu_main->add("Cancel", MENU_CANCEL);
 
-    menu_energy = new Menu(3);
+    menu_energy = new Menu("Energy", 3);
     menu_energy->add("Regain 100 energy", MENU_REGAIN);
     menu_energy->add("Set the energy to 1000", MENU_BOOST);
     menu_energy->add("Cancel", MENU_CANCEL);
 
-    menu_help = new Menu(9);
+    menu_help = new Menu("Help", 9);
     menu_help->add("ESC - game menu", MENU_CANCEL);
     menu_help->add("m - energy", MENU_CANCEL);
     menu_help->add("arrows - moves", MENU_CANCEL);
@@ -153,7 +159,7 @@ void create_menus()
     menu_help->add("i - inventory", MENU_CANCEL);
     menu_help->add("N E X T", MENU_HELP_2);
 
-    menu_help2 = new Menu(6);
+    menu_help2 = new Menu("Help", 6);
     menu_help2->add("P R E V I O U S", MENU_HELP_1);
     menu_help2->add("= - use item in hotbar", MENU_CANCEL);
 	menu_help2->add("1234567890 - hotbar", MENU_CANCEL);
@@ -161,17 +167,21 @@ void create_menus()
 	menu_help2->add("` - hotbar previous", MENU_CANCEL);
 	menu_help2->add("Cancel", MENU_CANCEL);
 
-    menu_music = new Menu(3);
+    menu_music = new Menu("Music", 3);
     menu_music->add("+5 Volume", MENU_LOUDER);
     menu_music->add("-5 Volume", MENU_QUIETER);
     menu_music->add("Cancel", MENU_CANCEL);
     
-    menu_inventory_categories = new Menu(2);
+    menu_inventory_categories = new Menu("Inventory", 3);
     menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
     menu_inventory_categories->add("Liquid form", MENU_INV_LIGQUID, Form_liquid);
+    menu_inventory_categories->add("Gas form", MENU_INV_GAS, Form_gas);
         
-    menu_crafting = new Menu(2);
-    menu_crafting->add("Craft ax blade", MENU_CRAFT_AX_BLADE);
+    menu_crafting = new Menu("Crafting", 4);
+    menu_crafting->add("Axe blade (1 ing.)", MENU_CRAFT_AXE_BLADE);
+    menu_crafting->add("Axe handle (1 ing.)", MENU_CRAFT_AXE_HANDLE);
+    menu_crafting->add("Axe (2 ing.)", MENU_CRAFT_AXE);
+
     menu_crafting->add("Cancel", MENU_CANCEL);
 }
                 
@@ -185,7 +195,7 @@ Menu * create_inv_menu(int v)
 		printf("found %d elements\n", c);
 
 		if (menu_inventory) delete menu_inventory;
-		menu_inventory = new Menu(c);
+		menu_inventory = new Menu("Inventory", c);
 	    Element ** el=(Element**) i_el;
 		for (int i=0; i < c; i++)
 		{
@@ -282,21 +292,22 @@ int handle_item(int i)
 	return 1;
 }	
 
-void craft_ax_blade()
+int craft(menu_actions a)
 {
-    InventoryElement * el = player.hotbar[active_hotbar];
-    if (el) {
-        printf("crafting: axe blade from %s\n", el->get_name());
-    
-        AxBlade * ax_blade=new AxBlade(el);
-        ax_blade->show();
-        ax_blade->set_posittion(player.x, player.y,  player.z);
-        set_item_at_ppos(ax_blade, &player);
-        player.inventory->remove(el);
-
-        player.hotbar[active_hotbar]=NULL;
+    InventoryElement * el=NULL;
+    sprintf(status_line, "Starting crafting");
+    switch(a) { 
+        case MENU_CRAFT_AXE_BLADE: el = craft_axe_blade(); break;
+        case MENU_CRAFT_AXE_HANDLE: el = craft_axe_handle(); break;
+        case MENU_CRAFT_AXE: el = craft_axe(); break;
     }
+    if (el) {
+        set_item_at_ppos(el, &player);
+        status_code = 1;
+    } else status_code = 0;
     current_menu=NULL;
+
+    return 1;
 }
 
 int interact(enum menu_actions a)
@@ -343,8 +354,9 @@ int interact(enum menu_actions a)
         
         case MENU_INV_SOLID: 
         case MENU_INV_LIGQUID: 
+        case MENU_INV_GAS:
              current_menu=create_inv_menu(menu_inventory_categories->get_val(a));
-            return 0;   
+          return 0;   
 
         case MENU_LOUDER:
             Mix_Volume(0, Mix_Volume(0, -1)+5);
@@ -357,7 +369,12 @@ int interact(enum menu_actions a)
             printf("%d\n%d\n", Mix_Volume(1, -1), Mix_Volume(0, -1));
             return 0;
         
-        case MENU_CRAFT_AX_BLADE: craft_ax_blade() ; return 1;
+        case MENU_CRAFT_AXE_BLADE: 
+        case MENU_CRAFT_AXE_HANDLE: 
+        case MENU_CRAFT_AXE: 
+            return craft(a);
     }
     return 1;
 }
+
+

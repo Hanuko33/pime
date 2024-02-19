@@ -11,6 +11,11 @@ TTF_Font* font;
 SDL_Color White = {255, 255, 255};
 SDL_Color Gray = {200, 200, 200};
 SDL_Color Red = {255, 0, 0};
+SDL_Color Cyan = {255, 0, 255};
+SDL_Color Yellow = {255, 255, 0};
+
+char status_line[256];
+int status_code;
 
 int load_font()
 {

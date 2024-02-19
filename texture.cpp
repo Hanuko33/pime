@@ -6,8 +6,12 @@
 
 struct textures Texture;
 SDL_Texture * tiles_textures[TILE_MAX_NUM];
-SDL_Texture * items_textures[BASE_ELEMENTS];
+SDL_Texture * items_textures[SOLID_ELEMENTS];
+SDL_Texture * food_textures[FOOD_ELEMENTS];
+SDL_Texture * liquid_textures[LIQUID_ELEMENTS];
+SDL_Texture * gas_textures[GAS_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
+SDL_Texture * prod_textures[PROD_ELEMENTS];
 SDL_Texture * objects_textures[OBJECT_MAX];
 SDL_Texture * up_mask;
 SDL_Texture * down_mask;
@@ -46,9 +50,29 @@ void add_items_texture(int id, const char * file)
     items_textures[id]=load_texture(file);
 };
 
+void add_food_texture(int id, const char * file)
+{
+    food_textures[id]=load_texture(file);
+};
+
+void add_liquid_texture(int id, const char * file)
+{
+    liquid_textures[id]=load_texture(file);
+};
+
+void add_gas_texture(int id, const char * file)
+{
+    gas_textures[id]=load_texture(file);
+};
+
 void add_ing_texture(int id, const char * file)
 {
     ing_textures[id]=load_texture(file);
+};
+
+void add_prod_texture(int id, const char * file)
+{
+    prod_textures[id]=load_texture(file);
 };
 
 
@@ -86,13 +110,19 @@ void load_textures()
     add_items_texture(0, "textures/items/stone.png");
     add_items_texture(1, "textures/items/log.png");
     add_items_texture(2, "textures/items/sand.png");
-    add_items_texture(3, "textures/items/pumpkin.png");
-    add_items_texture(4, "textures/items/watermelon.png");
-    add_items_texture(5, "textures/items/stick.png");
-    add_items_texture(6, "textures/items/water.png");
+    add_items_texture(3, "textures/items/stick.png");
 
-    add_ing_texture(ING_AX_BLADE, "textures/items/ax_blade.png");
-    add_ing_texture(ING_AX_HANDLE, "textures/items/ax_handle.png");
+    add_food_texture(0, "textures/items/pumpkin.png");
+    add_food_texture(1, "textures/items/watermelon.png");
+
+    add_liquid_texture(0, "textures/items/water.png");
+
+    add_gas_texture(0, "textures/items/gas.png");
+
+    add_ing_texture(ING_AXE_BLADE, "textures/items/axe_blade.png");
+    add_ing_texture(ING_AXE_HANDLE, "textures/items/axe_handle.png");
+    
+    add_prod_texture(PROD_AXE, "textures/items/axe.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 

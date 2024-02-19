@@ -31,6 +31,7 @@ public:
     int health;
     List * inventory; 
     InventoryElement * hotbar[10];
+    int craftbar[10];
 	void move(int x, int z);
 	Player();
 

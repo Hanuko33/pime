@@ -19,7 +19,7 @@ int  init_window()
 	}
     SDL_SetWindowTitle(main_window, "game_window");
     SDL_SetWindowPosition(main_window, 0,0);
-    SDL_SetWindowSize(main_window, GAME_WINDOW+PANEL_WINDOW, GAME_WINDOW);
+    SDL_SetWindowSize(main_window, GAME_WINDOW+PANEL_WINDOW, GAME_WINDOW + STATUS_LINE);
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_ShowWindow(main_window);

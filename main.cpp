@@ -223,7 +223,7 @@ void update_window_size()
     }
     if (tile_size<48) tile_size = 48;
 
-    SDL_SetWindowSize(main_window, (tile_size * CHUNK_SIZE) + PANEL_WINDOW, tile_size * CHUNK_SIZE);
+    SDL_SetWindowSize(main_window, (tile_size * CHUNK_SIZE) + PANEL_WINDOW, tile_size * CHUNK_SIZE + STATUS_LINE);
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
 }
 
@@ -244,10 +244,11 @@ void use_tile()
     InventoryElement ** item_pointer = get_item_at_ppos(&player);
     if (item_pointer)
     {
-        InventoryElement * item = *item_pointer;
-        player.inventory->add(item);
-        printf("GOT ITEM: %s, new amount: %d\n", item->get_name(), 1); //player.inventory->get_count(item));
-        *item_pointer=NULL;																			  
+       InventoryElement * item = *item_pointer;
+       player.inventory->add(item);
+       sprintf(status_line, "GOT ITEM: %s", item->get_name()); //player.inventory->get_count(item));
+       *item_pointer=NULL;																			 
+       status_code = 1; 
     }
 /*
 
@@ -321,6 +322,9 @@ void player_interact(int key)
 
 		case SDLK_BACKQUOTE: active_hotbar--; if (active_hotbar==-1) active_hotbar=9; break;
         case SDLK_TAB: active_hotbar++; if (active_hotbar==10) active_hotbar=0; break;
+		
+        case SDLK_MINUS: player.craftbar[active_hotbar]=0;  break;
+        case SDLK_EQUALS: player.craftbar[active_hotbar]=1;  break;
 
         case SDLK_F1:
             generator();
@@ -619,7 +623,7 @@ void draw()
     InventoryElement ** ip = get_item_at_ppos(&player);
     if (ip) {
         InventoryElement * item = *ip;
-        sprintf(text, "Item: %s", item->get_name());
+        sprintf(text, "Item: %s (%s)", item->get_form_name(), item->get_name());
         write_text(tx, ty+75, text, White,15,30);
     }
 
@@ -633,15 +637,27 @@ void draw()
 
 		if (player.hotbar[i])
         {
-			SDL_Texture *texture = player.hotbar[i]->get_texture();
+            InventoryElement * item = player.hotbar[i];
+			SDL_Texture *texture = item->get_texture();
             SDL_RenderCopy(renderer, texture, NULL, &rect);
-			//sprintf(text, "%d", player.inventory[player.hotbar[i]]);
-		    //write_text(rect.x + 3 , rect.y+40, text, Gray, 10,20);
+            if (i == active_hotbar) {
+                sprintf(text, "%s (%s)", item->get_form_name(), item->get_name() );
+	    	    write_text(tx + 3 , rect.y+40, text, Yellow, 10,20);
+            }
 		}
 		if (i == active_hotbar) {
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		} else
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+		} else  {
 			SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+        }
+
+        if (player.craftbar[i])
+		    if (i == active_hotbar) {
+			    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+            } else 
+			    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+
 		SDL_RenderDrawRect(renderer, &rect);
     
 	}
@@ -675,7 +691,7 @@ void draw()
                 }
             }
             else
-            pixels[y * WORLD_SIZE + x] = 0xff000000;
+                pixels[y * WORLD_SIZE + x] = 0xff202020;
         }
     }
     
@@ -716,16 +732,19 @@ void draw()
     window_rec.w = WORLD_SIZE;
     window_rec.h = WORLD_SIZE;
     window_rec.x = width + 10;
-    window_rec.y = window_height - WORLD_SIZE - 10 ;
+    window_rec.y = window_height - WORLD_SIZE - STATUS_LINE;
 
     SDL_RenderCopy(renderer, map, NULL, &window_rec);
+   
+    sprintf(text, "%s: %s", status_line, status_code ? "OK" : "Failed"); 
+    write_text(5, window_height - 32, text, White, 15, 30);
 
     if (current_menu) current_menu->show();
 }
 
 
 
-int main(int argi, char** agrs)
+int main()
 {
     struct stat statbuf;
     int ret = stat("textures", &statbuf);
@@ -737,7 +756,6 @@ int main(int argi, char** agrs)
             return 2;
         }
     }
-
     
     ret = stat("world", &statbuf);
     if (ret)
@@ -779,7 +797,9 @@ int main(int argi, char** agrs)
     int last_frame_press=0;
 
     Uint64 last_time = 0;
-    
+   
+    sprintf(status_line, "Welcome in game!");
+    status_code = 1;
     for (;;)
     {   
         SDL_Event event;
