@@ -630,10 +630,10 @@ void draw()
 	for (int i=0; i < 10; i++)
 	{
 		SDL_Rect rect;
-		rect.x = tx+32*i;
+		rect.x = tx+48*i;
 		rect.y = ty+155;
-		rect.w = 32;
-		rect.h = 32;
+		rect.w = 48;
+		rect.h = 48;
 
 		if (player.hotbar[i])
         {
@@ -642,7 +642,7 @@ void draw()
             SDL_RenderCopy(renderer, texture, NULL, &rect);
             if (i == active_hotbar) {
                 sprintf(text, "%s (%s)", item->get_form_name(), item->get_name() );
-	    	    write_text(tx + 3 , rect.y+40, text, Yellow, 10,20);
+	    	    write_text(tx + 3 , rect.y+50, text, Yellow, 10,20);
             }
 		}
 		if (i == active_hotbar) {
