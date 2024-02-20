@@ -341,7 +341,7 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
     return NULL;
 }
 
-InventoryElement **get_item_at_ppos(struct Player * player)
+InventoryElement **get_item_at_ppos(Player * player)
 {
     return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
@@ -358,7 +358,7 @@ void set_item_at(InventoryElement *item, int chunk_x, int chunk_y, int x, int y,
     }
 }
 
-void set_item_at_ppos(InventoryElement *item, struct Player *player) 
+void set_item_at_ppos(InventoryElement *item, Player *player) 
 {
     set_item_at(item, player->map_x, player->map_y, player->x, player->y, player->z);
 }
@@ -369,7 +369,7 @@ enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)
     return world_table[chunk_y][chunk_x]->table[z][y][x].tile;
 }
 
-enum game_tiles get_tile_at_ppos(struct Player *player)
+enum game_tiles get_tile_at_ppos(Player *player)
 {
     return get_tile_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
