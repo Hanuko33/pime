@@ -246,7 +246,7 @@ void use_tile()
     {
        InventoryElement * item = *item_pointer;
        player.inventory->add(item);
-       sprintf(status_line, "GOT ITEM: %s", item->get_name()); //player.inventory->get_count(item));
+       sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
        *item_pointer=NULL;																			 
        status_code = 1; 
     }

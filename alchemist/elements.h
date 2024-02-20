@@ -70,8 +70,8 @@ class InventoryElement
 	int x, y, z;
     public:
         Form req_form;
-
-        InventoryElement() { req_form = Form_none; }
+        bool known;
+        InventoryElement() { req_form = Form_none; known = false; }
         virtual void show() {}
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
@@ -101,7 +101,7 @@ class Element : public InventoryElement
 
         Element(BaseElement *b);
         Form get_form() {return base->form; }
-        const char * get_name() {return base->name; }
+        const char * get_name() {return known ? base->name : "unknown"; }
         const char * get_form_name() { return Form_name[base->form]; }
         int get_id() {return base->id; }
         SDL_Texture * get_texture();
