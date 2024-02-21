@@ -107,13 +107,13 @@ void load_textures()
     add_tile_texture(TILE_CAVE_FLOOR,"textures/game_tiles/cave/cave_floor.png");
     add_tile_texture(TILE_CAVE_WALL,"textures/game_tiles/cave/cave_wall.png");
 
-    add_items_texture(0, "textures/items/stone.png");
-    add_items_texture(1, "textures/items/log.png");
-    add_items_texture(2, "textures/items/sand.png");
-    add_items_texture(3, "textures/items/stick.png");
+    add_items_texture(ID_STONE, "textures/items/stone.png");
+    add_items_texture(ID_LOG, "textures/items/log.png");
+    add_items_texture(ID_SAND, "textures/items/sand.png");
+    add_items_texture(ID_STICK, "textures/items/stick.png");
 
-    add_food_texture(0, "textures/items/pumpkin.png");
-    add_food_texture(1, "textures/items/watermelon.png");
+    add_food_texture(ID_PUMPKIN, "textures/items/pumpkin.png");
+    add_food_texture(ID_WATERMELON, "textures/items/watermelon.png");
 
     add_liquid_texture(0, "textures/items/water.png");
 

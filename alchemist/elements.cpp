@@ -4,6 +4,7 @@
 #include "names.h"
 #include "../texture.h"
 
+bool fantasy_game;
 BaseElement base_elements[BASE_ELEMENTS];
 
 const char * Form_name[]
@@ -16,8 +17,8 @@ const char * Form_name[]
 
 const char * Ingredient_name[]=
 {
-    "Ax_blade",
-    "Ax_handle",
+    "Axe_blade",
+    "Axe_handle",
 
     "Hammer_head",
     "Hammer_handle",
@@ -34,7 +35,20 @@ const char * Product_name[]=
     "Knife",
 };
 
-       
+const char * items_name[]=
+{
+    "Stone",
+    "Log",
+    "Sand",
+    "Stick",
+};
+
+const char * food_name[]=
+{
+    "Pumpkin",
+    "Watermelon"
+};
+
 Edible::Edible()
 {
    caloric=rand() % 1000;
@@ -96,6 +110,16 @@ BaseElement::BaseElement()
 {
     transparency=rand() % 256;
     solid=NULL;
+    if (fantasy_game) 
+        init_fantasy();
+    else
+        init_real();
+}
+
+void BaseElement::init_fantasy()
+{
+    name = get_name(5 - form);
+
     int f = rand() % 100;
 
     if (f < 60) { //60%
@@ -122,7 +146,23 @@ BaseElement::BaseElement()
         edible=new Edible;
         id=rand() % FOOD_ELEMENTS;
     }
-    name = get_name(5 - form);
+}
+
+void BaseElement::init_real()
+{
+    form = Form_solid;
+    solid=new Solid;
+    density=50 + rand() % 2000;
+    id=rand() % SOLID_ELEMENTS;
+    name=items_name[id];
+    
+    edible = NULL;
+    if (rand() % 100 < 30) // 10 % food
+    {
+        edible=new Edible;
+        id=rand() % FOOD_ELEMENTS;
+        name=food_name[id];
+    }
 }
 
 void BaseElement::show()

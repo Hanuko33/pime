@@ -22,13 +22,12 @@
 #include "time.h"
 #include "world.h"
 #include "tiles.h"
+#include <termios.h>
 
 SDL_Texture *map;
 int auto_explore;
 int active_hotbar=0;
 char force_screen=1;
-
-#define DISABLE_MUSIC 1
 
 // DON'T MOVE THIS
 Player player;
@@ -246,7 +245,10 @@ void use_tile()
     {
        InventoryElement * item = *item_pointer;
        player.inventory->add(item);
-       sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
+       if (fantasy_game)
+           sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
+       else
+           sprintf(status_line, "got item: %s", item->get_name()); //player.inventory->get_count(item));
        *item_pointer=NULL;																			 
        status_code = 1; 
     }
@@ -593,21 +595,22 @@ void draw()
     int tx=width+10;
     int ty=10;
 
-    sprintf(text, "Energy: %d", player.energy);
-	write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
-    ty +=25; 
-    sprintf(text, "Hunger: %d", player.hunger);
-	write_text(tx, ty, text, player.hunger < 100 ? Red : White, 15,30);
-    ty +=25; 
-    
-    sprintf(text, "Thirst: %d", player.thirst);
-	write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
-    ty +=25; 
-    
-    sprintf(text, "Health: %d", player.health);
-	write_text(tx, ty, text, player.health < 100 ? Red : White, 15,30);
-    ty +=25; 
-    
+    if (!fantasy_game) {
+        sprintf(text, "Energy: %d", player.energy);
+        write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
+        ty +=25; 
+        sprintf(text, "Hunger: %d", player.hunger);
+        write_text(tx, ty, text, player.hunger < 100 ? Red : White, 15,30);
+        ty +=25; 
+        
+        sprintf(text, "Thirst: %d", player.thirst);
+        write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
+        ty +=25; 
+        
+        sprintf(text, "Health: %d", player.health);
+        write_text(tx, ty, text, player.health < 100 ? Red : White, 15,30);
+        ty +=25; 
+    }
     sprintf(text, "Player@(%d, %d, %d)->%d", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
 			player.y,
@@ -623,7 +626,10 @@ void draw()
     InventoryElement ** ip = get_item_at_ppos(&player);
     if (ip) {
         InventoryElement * item = *ip;
-        sprintf(text, "Item: %s (%s)", item->get_form_name(), item->get_name());
+        if (fantasy_game) 
+            sprintf(text, "Item: %s (%s)", item->get_form_name(), item->get_name());
+        else
+            sprintf(text, "Item: %s",item->get_name());
         write_text(tx, ty+75, text, White,15,30);
     }
 
@@ -641,7 +647,10 @@ void draw()
 			SDL_Texture *texture = item->get_texture();
             SDL_RenderCopy(renderer, texture, NULL, &rect);
             if (i == active_hotbar) {
-                sprintf(text, "%s (%s)", item->get_form_name(), item->get_name() );
+                if (fantasy_game)
+                    sprintf(text, "%s (%s)", item->get_form_name(), item->get_name() );
+                else 
+                    sprintf(text, "%s", item->get_name() );
 	    	    write_text(tx + 3 , rect.y+50, text, Yellow, 10,20);
             }
 		}
@@ -742,6 +751,41 @@ void draw()
     if (current_menu) current_menu->show();
 }
 
+void intro()
+{
+    int a;
+    struct termios state, new_state;
+    tcgetattr(0, &state);
+    new_state=state;
+    new_state.c_lflag &= ~(ECHO | ICANON |ECHOE| ISIG);
+    new_state.c_cc[VMIN] = 1;
+    tcsetattr(0, TCSANOW, &new_state);
+
+    printf("Do you want music y/n? ");
+    a=getchar();
+    if (a=='y')
+    {
+        printf("\nInitializing music\n");
+        if (init_music()) ;
+        load_music();
+
+        Mix_PlayChannel(0, music.music_one, 99999); 
+        Mix_PlayChannel(1, music.music_two, 99999);
+        Mix_Volume(0, 0);
+        Mix_Volume(1, 0);
+        Mix_Pause(1);
+    } else printf("\nGame without music\n");
+
+    printf("Game mode:\nr - more real gameplay\nf - more fantasy gameplay? ");
+    a=getchar();
+    if (a == 'f') {
+        fantasy_game=true;
+        printf("\nEnabling fantasy gameplay\n");
+    } else printf("\nEnabling real gameplay\n");
+
+    tcflush(0, TCIFLUSH);
+    tcsetattr(0, TCSANOW, &state);
+}
 
 
 int main()
@@ -768,6 +812,8 @@ int main()
     }
 
     srand (time(NULL));
+    
+    intro();
     generator();
     
 	player.y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
@@ -779,17 +825,6 @@ int main()
     create_menus();
     map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WORLD_SIZE, WORLD_SIZE);
 
-#ifndef DISABLE_MUSIC
-	if (init_music()) return 1;
-    load_music();
-
-    Mix_PlayChannel(0, music.music_one, 99999); 
-    Mix_PlayChannel(1, music.music_two, 99999);
-    Mix_Volume(0, 0);
-    Mix_Volume(1, 0);
-    Mix_Pause(1);
-#endif
-
     load(1);
     
     int dst_map_x=player.map_x;
@@ -800,6 +835,7 @@ int main()
    
     sprintf(status_line, "Welcome in game!");
     status_code = 1;
+
     for (;;)
     {   
         SDL_Event event;

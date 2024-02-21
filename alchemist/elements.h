@@ -8,6 +8,9 @@ typedef void * SDL_Texture;
 #endif
 
 #include <cstdio>
+
+extern bool fantasy_game;
+
 class Edible
 {
     public:
@@ -53,7 +56,7 @@ class BaseElement
 {
     public:
     static const Class_id c_id=Class_Base;
-        char * name;
+        const char * name;
         int id; //texture id
         unsigned int density;
         unsigned char transparency;
@@ -62,6 +65,8 @@ class BaseElement
         Solid *solid;
         
         BaseElement(); 
+        void init_real();
+        void init_fantasy();
         void show();
 };        
 
@@ -101,10 +106,27 @@ class Element : public InventoryElement
 
         Element(BaseElement *b);
         Form get_form() {return base->form; }
-        const char * get_name() {return known ? base->name : "unknown"; }
+        const char * get_name() {
+            if (!fantasy_game) return base->name;
+            return known ? base->name : "unknown"; 
+        }
         const char * get_form_name() { return Form_name[base->form]; }
         int get_id() {return base->id; }
         SDL_Texture * get_texture();
+};
+
+enum Item_id
+{
+    ID_STONE,
+    ID_LOG,
+    ID_SAND,
+    ID_STICK
+};
+
+enum Food_id
+{
+    ID_PUMPKIN,
+    ID_WATERMELON
 };
 
 enum Ingredient_id
@@ -129,6 +151,8 @@ enum Product_id
 
 extern const char * Ingredient_name[];
 extern const char * Product_name[];
+extern const char * items_name[];
+extern const char * food_name[];
 
 class Ingredient : public InventoryElement
 {
