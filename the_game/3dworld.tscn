@@ -1,7 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://cwvg72307ycu7"]
+[gd_scene load_steps=8 format=3 uid="uid://cwvg72307ycu7"]
 
-[ext_resource type="Script" path="res://player.gd" id="2_7eam0"]
-[ext_resource type="Script" path="res://camera.gd" id="3_rs6hb"]
+[ext_resource type="Script" path="res://camera.gd" id="1_vpny3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i5q0q"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -20,20 +19,13 @@ glow_enabled = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2uehy"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1ms3y"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_dw8bp"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_0ivd3"]
-
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_854eq"]
-points = PackedVector3Array(1.01587, 0.015873, 1.01587, -1.01587, -0.015873, -1.01587, -1.01587, 0.015873, -1.01587, 1.01587, -0.015873, -1.01587, -1.01587, -0.015873, 1.01587, -1.01587, 0.015873, 1.01587, 1.01587, 0.015873, -1.01587, 1.01587, -0.015873, 1.01587)
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_awfv0"]
+properties/0/path = NodePath("PlayerInputSync:move_direction")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = false
 
 [node name="Node3D" type="Node3D"]
-
-[node name="Camera3D2" type="Camera3D" parent="."]
-transform = Transform3D(0.00694289, 0.925216, -0.379377, 2.15424e-10, 0.379386, 0.925238, 0.999976, -0.00642383, 0.00263404, 17.2384, 97.2476, 55.0195)
-script = ExtResource("3_rs6hb")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_2b5nk")
@@ -44,11 +36,11 @@ shadow_enabled = true
 
 [node name="Terrain" type="Terrain" parent="."]
 
-[node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 97, 55)
+[node name="Player" type="PlayerCharacter" parent="."]
+speed = 6.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 16, 55)
 wall_min_slide_angle = 1.39626
 floor_max_angle = 1.39626
-script = ExtResource("2_7eam0")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
 transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
@@ -58,21 +50,11 @@ mesh = SubResource("PrismMesh_mr7v7")
 shape = SubResource("BoxShape3D_2uehy")
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 0.493942, 0.869495, 0, -0.869495, 0.493942, 0, 18.67, 9.88)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00334, 0)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.58219, 0)
+[node name="InputSynchronizer" type="PlayerInputSync" parent="Player"]
+action = -827876848
+replication_config = SubResource("SceneReplicationConfig_awfv0")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_1ms3y")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-mesh = SubResource("BoxMesh_dw8bp")
-
-[node name="StaticBody3D2" type="StaticBody3D" parent="."]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D2"]
-mesh = SubResource("PlaneMesh_0ivd3")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
-shape = SubResource("ConvexPolygonShape3D_854eq")
+[node name="FreeLookCamera" type="Camera3D" parent="."]
+script = ExtResource("1_vpny3")

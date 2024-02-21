@@ -1,12 +1,10 @@
 #include "world.h"
 //#include "../game_gui/world.c"
 //#include "../game_gui/player.c"
-extern "C" {
 #include "../game_gui/world.h"
 #include "../game_gui/notifier.h"
 #include "../game_gui/dungeon.h"
 #include "../game_gui/cave.h"
-}
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/multiplayer_api.hpp>
 #include <godot_cpp/classes/multiplayer_peer.hpp>
@@ -88,7 +86,6 @@ void World::refresh_chunk(int id, Dictionary p_map) {
 
 }
 
-extern "C" {
 void notify_load_chunk(int map_x, int map_y) {
 /*    Dictionary chunk_map;
     for (int y = 0; y < CHUNK_SIZE; y++) {
@@ -103,5 +100,4 @@ void notify_load_chunk(int map_x, int map_y) {
         world_p->refresh_chunk(p, chunk_map);
     }
 */
-}
 }

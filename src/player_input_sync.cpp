@@ -3,6 +3,7 @@
 #include <godot_cpp/classes/multiplayer_api.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/scene_replication_config.hpp>
+#include <godot_cpp/classes/engine.hpp>
 
 using namespace godot;
 
@@ -53,7 +54,9 @@ void PlayerInputSync::_ready() {
 }
 
 void PlayerInputSync::_process(double delta) {
-    move_direction = input->get_vector("ui_left", "ui_right", "ui_up", "ui_down");
+    if (Engine::get_singleton()->is_editor_hint())
+        return;
+    move_direction = input->get_vector("move_left", "move_right", "move_forward", "move_back");
 //    UtilityFunctions::print(get_multiplayer()->is_server(), get_parent(), this, attack_direction);
 /*    attack_direction = parent->get_global_mouse_position() - parent->get_position();
     move_direction = Vector2(0, 0);

@@ -7,6 +7,10 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 
+#include "../game_gui/world.h"
+
+#include "chunk_renderer.h"
+
 namespace godot {
 
 class Terrain : public Node3D {
@@ -25,6 +29,10 @@ public:
     void generate_chunk(int x, int y);
     int foo_x;
     int foo_z;
+    ChunkRenderer* chunks[WORLD_SIZE][WORLD_SIZE];
+
+    void mine(Dictionary& result);
+    void place(Dictionary& result);
 
     
 protected:

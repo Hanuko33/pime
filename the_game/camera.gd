@@ -28,10 +28,28 @@ var _e = false
 var _shift = false
 var _alt = false
 
+func _ready():
+	#foo.call_deferred()
+	pass
+	
+
+func foo():
+	make_current()
+	
+var boo = false;
+
 func _input(event):
 	# Receives mouse motion
 	if event is InputEventMouseMotion:
 		_mouse_position = event.relative
+		
+	if event.is_action_pressed("boo"):
+		boo = !boo
+		if boo:
+			foo()
+		else:
+			$"../Player/Camera3D".make_current()
+		
 	
 	# Receives mouse button input
 	if event is InputEventMouseButton:
@@ -46,13 +64,13 @@ func _input(event):
 	# Receives key input
 	if event is InputEventKey:
 		match event.keycode:
-			KEY_W:
+			KEY_UP:
 				_w = event.pressed
-			KEY_S:
+			KEY_DOWN:
 				_s = event.pressed
-			KEY_A:
+			KEY_LEFT:
 				_a = event.pressed
-			KEY_D:
+			KEY_RIGHT:
 				_d = event.pressed
 			KEY_Q:
 				_q = event.pressed
@@ -111,6 +129,7 @@ func _update_mouselook():
 		# Prevents looking up/down too far
 		pitch = clamp(pitch, -90 - _total_pitch, 90 - _total_pitch)
 		_total_pitch += pitch
+		#get_parent().rotation = Vector3(0, 0, 0)
 	
 		rotate_y(deg_to_rad(-yaw))
 		rotate_object_local(Vector3(1,0,0), deg_to_rad(-pitch))

@@ -1,7 +1,7 @@
-class_name Goo
-extends Terrain
+class_name Goo extends Terrain
 
 func _ready():
+#	super()
 	print("Goo ready")
 
 func goo():

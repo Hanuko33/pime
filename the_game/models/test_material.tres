@@ -3,5 +3,5 @@
 [ext_resource type="Texture2D" uid="uid://b18nh8nwqis8v" path="res://textures/grass.png" id="1_jlxf5"]
 
 [resource]
-albedo_color = Color(0.298039, 0.298039, 0.298039, 1)
+albedo_color = Color(0.309804, 0.309804, 0.309804, 1)
 albedo_texture = ExtResource("1_jlxf5")
