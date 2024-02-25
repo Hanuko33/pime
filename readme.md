@@ -1,3 +1,5 @@
+# OUTDATED, TO BE UPDATED
+
 # Game\_gui 
 This is a game made with sdl2 and c
 

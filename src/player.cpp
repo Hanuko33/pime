@@ -10,7 +10,7 @@
 #include <godot_cpp/classes/physics_ray_query_parameters3d.hpp>
 #include <godot_cpp/classes/physics_direct_space_state3d.hpp>
 
-#include "../game_gui/tiles.h"
+#include "tiles.h"
 //#include "../game_gui/world.h"
 
 #include "terrain.h"
@@ -30,15 +30,32 @@ void PlayerCharacter::_bind_methods() {
 }
 
 PlayerCharacter::PlayerCharacter() {
-    player.x = player.y = player.z = 0;
-    player.map_x = WORLD_CENTER;
-    player.map_y = WORLD_CENTER;
+    x = y = z = 0;
+    map_x = WORLD_CENTER;
+    map_y = WORLD_CENTER;
 
     input_sync = nullptr;
     id = 1;
     move_direction = Vector2i(0, 0);
     speed = 10;
     total_pitch = 0;
+
+	energy=250;
+	back_x=0;
+	back_y=0;
+    health=1000;
+    hunger=50;
+    thirst=50;
+    map_x = WORLD_CENTER;
+    map_y = WORLD_CENTER;
+    inventory = new InvList("inventory");
+
+	for (int i=0; i < 10; i++)
+    {
+        hotbar[i]=NULL;
+        craftbar[i]=0;
+    }
+
 }
 
 PlayerCharacter::~PlayerCharacter() {

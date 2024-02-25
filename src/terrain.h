@@ -7,9 +7,10 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 
-#include "../game_gui/world.h"
-
 #include "chunk_renderer.h"
+#include "tiles.h"
+#include "player.h"
+#include "OpenSimplex/OpenSimplex2F.h"
 
 namespace godot {
 
@@ -33,6 +34,26 @@ public:
 
     void mine(Dictionary& result);
     void place(Dictionary& result);
+
+    // game_gui properties
+    struct OpenSimplex2F_context *simplex_context;
+
+    chunk * world_table[WORLD_SIZE][WORLD_SIZE];
+
+    enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z);
+    enum game_tiles get_tile_at_ppos(PlayerCharacter *player);
+
+    InventoryElement ** get_item_at_ppos(PlayerCharacter *player);
+    InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z);
+
+    void set_item_at(InventoryElement * item, int chunk_x, int chunk_y, int x, int y, int z);
+    void set_item_at_ppos(InventoryElement * item, PlayerCharacter* player);
+
+    void generator();
+    void generate_chunk2(chunk* chunk, int chunk_x, int chunk_y);
+    char load_chunk(int x, int y);
+    int height_at(int chunk_x, int chunk_y, int x, int y);
+
 
     
 protected:

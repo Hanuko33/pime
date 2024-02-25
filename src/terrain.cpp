@@ -1,5 +1,8 @@
 #include "terrain.h"
+#include "OpenSimplex/OpenSimplex2F.h"
 #include "chunk_renderer.h"
+#include "notifier.h"
+#include "player.h"
 
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/rendering_device.hpp>
@@ -15,6 +18,7 @@
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/input.hpp>
+#include <godot_cpp/classes/random_number_generator.hpp>
 
 using namespace godot;
 
@@ -204,3 +208,155 @@ void Terrain::place(Dictionary &result) {
 
     UtilityFunctions::print(chunk->chunk_x, chunk->chunk_z);
 }
+
+void Terrain::generator()
+{
+    //OpenSimplex2F(time(NULL), &simplex_context);
+    RandomNumberGenerator rng;
+    OpenSimplex2F(rng.randi(), &simplex_context);
+
+    load_chunk(WORLD_CENTER, WORLD_CENTER);
+}
+
+int Terrain::height_at(int chunk_x, int chunk_y, int x, int y)
+{
+    return 1 + 
+        (OpenSimplex2F_noise2(simplex_context, 
+                (chunk_x * CHUNK_SIZE + x) / WORLD_SCALE, 
+                (chunk_y * CHUNK_SIZE + y) / WORLD_SCALE) + 1) *
+        (CHUNK_SIZE - 2) / 2.0;
+}
+
+void Terrain::generate_chunk2(chunk *chunk, int chunk_x, int chunk_y)  
+{
+    for (int z = 0; z < CHUNK_SIZE; z++) 
+    {
+        for (int x = 0; x < CHUNK_SIZE; x++) 
+        {
+            int height = height_at(chunk_x, chunk_y, x, z);
+            //printf("%3d ", height);
+            for (int y = 0; y < CHUNK_SIZE; y++)
+            {
+                chunk->table[z][y][x].tile = (y < height-1) ? TILE_DIRT : (y == height-1 ? TILE_GRASS : TILE_AIR);
+                chunk->table[z][y][x].weight = 4 + rand() % 9;
+            }
+        }
+        //printf("\n");
+    }
+
+    for (int i = 0; i < 128; i++)
+    {
+        struct object *o = (struct object *)malloc(sizeof(struct object));
+        o->type = OBJECT_NULL;
+        o->x = rand() % 16;
+        o->z = rand() % 16;
+        o->y = height_at(chunk_x, chunk_y, o->x, o->z);
+
+        chunk->objects[i] = o;
+    }
+    for (int i = 0; i < 19; i++)
+    {
+        struct object *o = (struct object *)malloc(sizeof(struct object));
+        o->type = OBJECT_TREE;
+        o->x = rand() % 16;
+        o->z = rand() % 16;
+        o->y = height_at(chunk_x, chunk_y, o->x, o->z);
+
+        chunk->objects[i] = o;
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        int b = rand() % BASE_ELEMENTS;
+        Element *o = new Element(&base_elements[b]);
+        int x = rand() % 16;
+        int z = rand() % 16;
+
+        o->set_posittion(x, 0, x);
+        o->set_posittion(x, height_at(chunk_x, chunk_y, x, z), z);
+
+        chunk->items[i] = o;
+    }
+
+    /*enum biomes random_biome = (enum biomes) (rand() % 4);
+    chunk->biome = random_biome;
+
+    switch (random_biome)
+    {
+        case BIOME_FOREST: create_biome_forest(chunk); break;
+        case BIOME_DESERT: create_biome_desert(chunk); break;
+        case BIOME_SWEET_TREE: create_biome_sweet_tree(chunk); break;
+        case BIOME_LAKE: create_biome_lake(chunk); break;
+    }*/
+}
+
+char Terrain::load_chunk(int x, int y)
+{
+    if (x >= 0 && x < WORLD_SIZE && y >= 0 && y < WORLD_SIZE) 
+    {
+        if (world_table[y][x] == NULL) 
+        {
+            chunk* c = (chunk*) calloc(1, sizeof(chunk));
+//            printf("load %d %d\n", x, y);
+            generate_chunk2(c, x, y);
+            world_table[y][x] = c;
+            notify_load_chunk(x, y);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+InventoryElement** Terrain::get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
+{
+    // TODO: change items array to list
+   
+    for (int i = 0; i < 128; i++)
+    {
+        InventoryElement *el = world_table[chunk_y][chunk_x]->items[i];
+        if (el)
+        {
+            int el_x, el_y, el_z;
+            el->get_posittion(&el_x, &el_y, &el_z);
+
+            if (el_x == x && el_y == y && el_z == z )
+            {
+                return &world_table[chunk_y][chunk_x]->items[i];
+            }
+        }
+    }
+    return NULL;
+}
+
+InventoryElement** Terrain::get_item_at_ppos(PlayerCharacter * player)
+{
+    return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
+}
+
+void Terrain::set_item_at(InventoryElement *item, int chunk_x, int chunk_y, int x, int y, int z) 
+{
+    for (int i = 0; i < 128; i++)
+    {
+        if (!world_table[chunk_y][chunk_x]->items[i])
+        {
+            world_table[chunk_y][chunk_x]->items[i] = item;
+            break;
+        }
+    }
+}
+
+void Terrain::set_item_at_ppos(InventoryElement *item, PlayerCharacter *player) 
+{
+    set_item_at(item, player->map_x, player->map_y, player->x, player->y, player->z);
+}
+
+enum game_tiles Terrain::get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)
+{
+    return world_table[chunk_y][chunk_x]->table[z][y][x].tile;
+}
+
+enum game_tiles Terrain::get_tile_at_ppos(PlayerCharacter *player)
+{
+    return get_tile_at(player->map_x, player->map_y, player->x, player->y, player->z);
+}
+
+

@@ -7,7 +7,7 @@
 #include <godot_cpp/classes/static_body3d.hpp>
 #include "godot_cpp/classes/concave_polygon_shape3d.hpp"
 
-#include "../game_gui/world.h"
+#include "terrain.h"
 
 #pragma optimize false
 using namespace godot;
@@ -49,6 +49,8 @@ void ChunkRenderer::_ready() {
 }
 
 void ChunkRenderer::render_self() {
+    Terrain *terrain = get_node<Terrain>("..");
+
     Ref<ArrayMesh> array_mesh = get_mesh();
 
     PackedVector3Array verts;
@@ -62,24 +64,24 @@ void ChunkRenderer::render_self() {
             for (int x = 0; x < CHUNK_SIZE-1; x++)
             {
                 int corners[8][4] = {
-                    { x, y, z, world_table[chunk_z][chunk_x]->table[z][y][x].tile },
-                    { x+1, y, z, world_table[chunk_z][chunk_x]->table[z][y][x+1].tile },
-                    { x+1, y, z+1, world_table[chunk_z][chunk_x]->table[z+1][y][x+1].tile },
-                    { x, y, z+1, world_table[chunk_z][chunk_x]->table[z+1][y][x].tile },
-                    { x, y+1, z, world_table[chunk_z][chunk_x]->table[z][y+1][x].tile },
-                    { x+1, y+1, z, world_table[chunk_z][chunk_x]->table[z][y+1][x+1].tile },
-                    { x+1, y+1, z+1, world_table[chunk_z][chunk_x]->table[z+1][y+1][x+1].tile },
-                    { x, y+1, z+1, world_table[chunk_z][chunk_x]->table[z+1][y+1][x].tile }
+                    { x, y, z, terrain->world_table[chunk_z][chunk_x]->table[z][y][x].tile },
+                    { x+1, y, z, terrain->world_table[chunk_z][chunk_x]->table[z][y][x+1].tile },
+                    { x+1, y, z+1, terrain->world_table[chunk_z][chunk_x]->table[z+1][y][x+1].tile },
+                    { x, y, z+1, terrain->world_table[chunk_z][chunk_x]->table[z+1][y][x].tile },
+                    { x, y+1, z, terrain->world_table[chunk_z][chunk_x]->table[z][y+1][x].tile },
+                    { x+1, y+1, z, terrain->world_table[chunk_z][chunk_x]->table[z][y+1][x+1].tile },
+                    { x+1, y+1, z+1, terrain->world_table[chunk_z][chunk_x]->table[z+1][y+1][x+1].tile },
+                    { x, y+1, z+1, terrain->world_table[chunk_z][chunk_x]->table[z+1][y+1][x].tile }
                 };
                 int weights[8] = {
-                    world_table[chunk_z][chunk_x]->table[z][y][x].weight,
-                    world_table[chunk_z][chunk_x]->table[z][y][x+1].weight,
-                    world_table[chunk_z][chunk_x]->table[z+1][y][x+1].weight,
-                    world_table[chunk_z][chunk_x]->table[z+1][y][x].weight,
-                    world_table[chunk_z][chunk_x]->table[z][y+1][x].weight,
-                    world_table[chunk_z][chunk_x]->table[z][y+1][x+1].weight,
-                    world_table[chunk_z][chunk_x]->table[z+1][y+1][x+1].weight,
-                    world_table[chunk_z][chunk_x]->table[z+1][y+1][x].weight
+                    terrain->world_table[chunk_z][chunk_x]->table[z][y][x].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z][y][x+1].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z+1][y][x+1].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z+1][y][x].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z][y+1][x].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z][y+1][x+1].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z+1][y+1][x+1].weight,
+                    terrain->world_table[chunk_z][chunk_x]->table[z+1][y+1][x].weight
 
                 };
                 marching_cube(corners, weights, verts, normals);
@@ -88,29 +90,29 @@ void ChunkRenderer::render_self() {
     }
 
     int x_offset, chunk_offset;
-    if (world_table[chunk_z][chunk_x+1]) {
+    if (terrain->world_table[chunk_z][chunk_x+1]) {
         cubes_on_z_edge(CHUNK_SIZE-1, chunk_x, verts, normals);
     }
-    if (world_table[chunk_z+1][chunk_x]) {
+    if (terrain->world_table[chunk_z+1][chunk_x]) {
         cubes_on_x_edge(CHUNK_SIZE-1, chunk_z, verts, normals);
     }
-    /*if (world_table[chunk_z][chunk_x-1]) {
+    /*if (terrain->world_table[chunk_z][chunk_x-1]) {
         cubes_on_z_edge(-1, chunk_x-1, verts, normals);
     }
-    if (world_table[chunk_z-1][chunk_x]) {
+    if (terrain->world_table[chunk_z-1][chunk_x]) {
         cubes_on_x_edge(-1, chunk_z-1, verts, normals);
     }*/
 
-    if (world_table[chunk_z+1][chunk_x+1] && world_table[chunk_z+1][chunk_x] && world_table[chunk_z][chunk_x+1]) {
+    if (terrain->world_table[chunk_z+1][chunk_x+1] && terrain->world_table[chunk_z+1][chunk_x] && terrain->world_table[chunk_z][chunk_x+1]) {
         cube_on_corner(chunk_x, chunk_z, 1, 1, verts, normals);
     }
-    /*if (world_table[chunk_z-1][chunk_x-1] && world_table[chunk_z-1][chunk_x] && world_table[chunk_z][chunk_x-1]) {
+    /*if (terrain->world_table[chunk_z-1][chunk_x-1] && terrain->world_table[chunk_z-1][chunk_x] && terrain->world_table[chunk_z][chunk_x-1]) {
         cube_on_corner(chunk_x-1, chunk_z-1, -1, -1, verts, normals);
     }
-    if (world_table[chunk_z-1][chunk_x+1] && world_table[chunk_z-1][chunk_x] && world_table[chunk_z][chunk_x+1]) {
+    if (terrain->world_table[chunk_z-1][chunk_x+1] && terrain->world_table[chunk_z-1][chunk_x] && terrain->world_table[chunk_z][chunk_x+1]) {
         cube_on_corner(chunk_x, chunk_z-1, 1, -1, verts, normals);
     }
-    if (world_table[chunk_z+1][chunk_x-1] && world_table[chunk_z+1][chunk_x] && world_table[chunk_z][chunk_x-1]) {
+    if (terrain->world_table[chunk_z+1][chunk_x-1] && terrain->world_table[chunk_z+1][chunk_x] && terrain->world_table[chunk_z][chunk_x-1]) {
         cube_on_corner(chunk_x-1, chunk_z, -1, 1, verts, normals);
     }*/
    
@@ -145,29 +147,30 @@ void ChunkRenderer::render_self() {
 }
 
 void ChunkRenderer::cubes_on_z_edge(int x_offset, int chunk_offset, PackedVector3Array &verts, PackedVector3Array &normals) {
+    Terrain *terrain = get_node<Terrain>("..");
     for (int z = 0; z < CHUNK_SIZE-1; z++)
     {
         for (int y = 0; y < CHUNK_SIZE-1; y++)
         {
              int corners[8][4] = {
-                { x_offset, y, z, world_table[chunk_z][chunk_offset]->table[z][y][CHUNK_SIZE-1].tile },
-                { x_offset+1, y, z, world_table[chunk_z][chunk_offset+1]->table[z][y][0].tile },
-                { x_offset+1, y, z+1, world_table[chunk_z][chunk_offset+1]->table[z+1][y][0].tile },
-                { x_offset, y, z+1, world_table[chunk_z][chunk_offset]->table[z+1][y][CHUNK_SIZE-1].tile },
-                { x_offset, y+1, z, world_table[chunk_z][chunk_offset]->table[z][y+1][CHUNK_SIZE-1].tile },
-                { x_offset+1, y+1, z, world_table[chunk_z][chunk_offset+1]->table[z][y+1][0].tile },
-                { x_offset+1, y+1, z+1, world_table[chunk_z][chunk_offset+1]->table[z+1][y+1][0].tile },
-                { x_offset, y+1, z+1, world_table[chunk_z][chunk_offset]->table[z+1][y+1][CHUNK_SIZE-1].tile }
+                { x_offset, y, z, terrain->world_table[chunk_z][chunk_offset]->table[z][y][CHUNK_SIZE-1].tile },
+                { x_offset+1, y, z, terrain->world_table[chunk_z][chunk_offset+1]->table[z][y][0].tile },
+                { x_offset+1, y, z+1, terrain->world_table[chunk_z][chunk_offset+1]->table[z+1][y][0].tile },
+                { x_offset, y, z+1, terrain->world_table[chunk_z][chunk_offset]->table[z+1][y][CHUNK_SIZE-1].tile },
+                { x_offset, y+1, z, terrain->world_table[chunk_z][chunk_offset]->table[z][y+1][CHUNK_SIZE-1].tile },
+                { x_offset+1, y+1, z, terrain->world_table[chunk_z][chunk_offset+1]->table[z][y+1][0].tile },
+                { x_offset+1, y+1, z+1, terrain->world_table[chunk_z][chunk_offset+1]->table[z+1][y+1][0].tile },
+                { x_offset, y+1, z+1, terrain->world_table[chunk_z][chunk_offset]->table[z+1][y+1][CHUNK_SIZE-1].tile }
             };
              int weights[8] = {
-               world_table[chunk_z][chunk_offset]->table[z][y][CHUNK_SIZE-1].weight,
-                world_table[chunk_z][chunk_offset+1]->table[z][y][0].weight,
-                world_table[chunk_z][chunk_offset+1]->table[z+1][y][0].weight,
-                world_table[chunk_z][chunk_offset]->table[z+1][y][CHUNK_SIZE-1].weight,
-                world_table[chunk_z][chunk_offset]->table[z][y+1][CHUNK_SIZE-1].weight,
-                world_table[chunk_z][chunk_offset+1]->table[z][y+1][0].weight,
-                world_table[chunk_z][chunk_offset+1]->table[z+1][y+1][0].weight,
-                world_table[chunk_z][chunk_offset]->table[z+1][y+1][CHUNK_SIZE-1].weight
+               terrain->world_table[chunk_z][chunk_offset]->table[z][y][CHUNK_SIZE-1].weight,
+                terrain->world_table[chunk_z][chunk_offset+1]->table[z][y][0].weight,
+                terrain->world_table[chunk_z][chunk_offset+1]->table[z+1][y][0].weight,
+                terrain->world_table[chunk_z][chunk_offset]->table[z+1][y][CHUNK_SIZE-1].weight,
+                terrain->world_table[chunk_z][chunk_offset]->table[z][y+1][CHUNK_SIZE-1].weight,
+                terrain->world_table[chunk_z][chunk_offset+1]->table[z][y+1][0].weight,
+                terrain->world_table[chunk_z][chunk_offset+1]->table[z+1][y+1][0].weight,
+                terrain->world_table[chunk_z][chunk_offset]->table[z+1][y+1][CHUNK_SIZE-1].weight
              };
             marching_cube(corners, weights, verts, normals);
         }
@@ -175,29 +178,30 @@ void ChunkRenderer::cubes_on_z_edge(int x_offset, int chunk_offset, PackedVector
 }
 
 void ChunkRenderer::cubes_on_x_edge(int z_offset, int chunk_offset, PackedVector3Array &verts, PackedVector3Array &normals) {
+    Terrain *terrain = get_node<Terrain>("..");
     for (int x = 0; x < CHUNK_SIZE-1; x++)
     {
         for (int y = 0; y < CHUNK_SIZE-1; y++)
         {
             int corners[8][4] = {
-                { x, y, z_offset, world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x].tile },
-                { x+1, y, z_offset, world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x+1].tile },
-                { x+1, y, z_offset+1, world_table[chunk_offset+1][chunk_x]->table[0][y][x+1].tile },
-                { x, y, z_offset+1, world_table[chunk_offset+1][chunk_x]->table[0][y][x].tile },
-                { x, y+1, z_offset, world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x].tile },
-                { x+1, y+1, z_offset, world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x+1].tile },
-                { x+1, y+1, z_offset+1, world_table[chunk_offset+1][chunk_x]->table[0][y+1][x+1].tile },
-                { x, y+1, z_offset+1, world_table[chunk_offset+1][chunk_x]->table[0][y+1][x].tile }
+                { x, y, z_offset, terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x].tile },
+                { x+1, y, z_offset, terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x+1].tile },
+                { x+1, y, z_offset+1, terrain->world_table[chunk_offset+1][chunk_x]->table[0][y][x+1].tile },
+                { x, y, z_offset+1, terrain->world_table[chunk_offset+1][chunk_x]->table[0][y][x].tile },
+                { x, y+1, z_offset, terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x].tile },
+                { x+1, y+1, z_offset, terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x+1].tile },
+                { x+1, y+1, z_offset+1, terrain->world_table[chunk_offset+1][chunk_x]->table[0][y+1][x+1].tile },
+                { x, y+1, z_offset+1, terrain->world_table[chunk_offset+1][chunk_x]->table[0][y+1][x].tile }
             };
             int weights[8] = {
-                world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x].weight,
-                world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x+1].weight,
-                world_table[chunk_offset+1][chunk_x]->table[0][y][x+1].weight,
-                world_table[chunk_offset+1][chunk_x]->table[0][y][x].weight,
-                world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x].weight,
-                world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x+1].weight,
-                world_table[chunk_offset+1][chunk_x]->table[0][y+1][x+1].weight,
-                world_table[chunk_offset+1][chunk_x]->table[0][y+1][x].weight
+                terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x].weight,
+                terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x+1].weight,
+                terrain->world_table[chunk_offset+1][chunk_x]->table[0][y][x+1].weight,
+                terrain->world_table[chunk_offset+1][chunk_x]->table[0][y][x].weight,
+                terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x].weight,
+                terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y+1][x+1].weight,
+                terrain->world_table[chunk_offset+1][chunk_x]->table[0][y+1][x+1].weight,
+                terrain->world_table[chunk_offset+1][chunk_x]->table[0][y+1][x].weight
             };
             marching_cube(corners, weights, verts, normals);
         }
@@ -205,6 +209,7 @@ void ChunkRenderer::cubes_on_x_edge(int z_offset, int chunk_offset, PackedVector
 }
 
 void ChunkRenderer::cube_on_corner(int x, int z, int dx, int dz, PackedVector3Array &verts, PackedVector3Array &normals) {
+    Terrain *terrain = get_node<Terrain>("..");
     volatile int foo =x;
     volatile int boo = z;
     int pos_x = (dx == -1) ? -1 : CHUNK_SIZE-1;
@@ -214,24 +219,24 @@ void ChunkRenderer::cube_on_corner(int x, int z, int dx, int dz, PackedVector3Ar
     for (int y = 0; y < CHUNK_SIZE-1; y++)
     {
       int corners[8][4] = {
-            { pos_x, y, pos_z, world_table[z][x]->table[CHUNK_SIZE-1][y][CHUNK_SIZE-1].tile },
-            { pos_x+1, y, pos_z, world_table[z][x+1]->table[CHUNK_SIZE-1][y][0].tile },
-            { pos_x+1, y, pos_z+1, world_table[z + 1][x + 1]->table[0][y][0].tile },
-            { pos_x, y, pos_z+1, world_table[z+1][x]->table[0][y][CHUNK_SIZE-1].tile },
-            { pos_x, y+1, pos_z, world_table[z][x]->table[CHUNK_SIZE-1][y+1][CHUNK_SIZE-1].tile },
-            { pos_x+1, y+1, pos_z, world_table[z][x+1]->table[CHUNK_SIZE-1][y+1][0].tile },
-            { pos_x+1, y+1, pos_z+1, world_table[z + 1][x+1]->table[0][y+1][0].tile },
-            { pos_x, y+1, pos_z+1, world_table[z+1][x]->table[0][y+1][CHUNK_SIZE-1].tile }
+            { pos_x, y, pos_z, terrain->world_table[z][x]->table[CHUNK_SIZE-1][y][CHUNK_SIZE-1].tile },
+            { pos_x+1, y, pos_z, terrain->world_table[z][x+1]->table[CHUNK_SIZE-1][y][0].tile },
+            { pos_x+1, y, pos_z+1, terrain->world_table[z + 1][x + 1]->table[0][y][0].tile },
+            { pos_x, y, pos_z+1, terrain->world_table[z+1][x]->table[0][y][CHUNK_SIZE-1].tile },
+            { pos_x, y+1, pos_z, terrain->world_table[z][x]->table[CHUNK_SIZE-1][y+1][CHUNK_SIZE-1].tile },
+            { pos_x+1, y+1, pos_z, terrain->world_table[z][x+1]->table[CHUNK_SIZE-1][y+1][0].tile },
+            { pos_x+1, y+1, pos_z+1, terrain->world_table[z + 1][x+1]->table[0][y+1][0].tile },
+            { pos_x, y+1, pos_z+1, terrain->world_table[z+1][x]->table[0][y+1][CHUNK_SIZE-1].tile }
         };
       int weights[8] = {
-          world_table[z][x]->table[CHUNK_SIZE-1][y][CHUNK_SIZE-1].weight,
-            world_table[z][x+1]->table[CHUNK_SIZE-1][y][0].weight,
-            world_table[z + 1][x + 1]->table[0][y][0].weight,
-            world_table[z+1][x]->table[0][y][CHUNK_SIZE-1].weight,
-            world_table[z][x]->table[CHUNK_SIZE-1][y+1][CHUNK_SIZE-1].weight,
-            world_table[z][x+1]->table[CHUNK_SIZE-1][y+1][0].weight,
-            world_table[z + 1][x+1]->table[0][y+1][0].weight,
-            world_table[z+1][x]->table[0][y+1][CHUNK_SIZE-1].weight
+          terrain->world_table[z][x]->table[CHUNK_SIZE-1][y][CHUNK_SIZE-1].weight,
+            terrain->world_table[z][x+1]->table[CHUNK_SIZE-1][y][0].weight,
+            terrain->world_table[z + 1][x + 1]->table[0][y][0].weight,
+            terrain->world_table[z+1][x]->table[0][y][CHUNK_SIZE-1].weight,
+            terrain->world_table[z][x]->table[CHUNK_SIZE-1][y+1][CHUNK_SIZE-1].weight,
+            terrain->world_table[z][x+1]->table[CHUNK_SIZE-1][y+1][0].weight,
+            terrain->world_table[z + 1][x+1]->table[0][y+1][0].weight,
+            terrain->world_table[z+1][x]->table[0][y+1][CHUNK_SIZE-1].weight
       };
         marching_cube(corners, weights, verts, normals);
     }
@@ -291,8 +296,9 @@ void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], Packe
 
 void ChunkRenderer::spawn_objects() {
     // TODO: replace table with lists
+    Terrain *terrain = get_node<Terrain>("..");
     for (int i = 0; i < 10; i++) {
-        struct object * o = world_table[chunk_z][chunk_x]->objects[i];
+        struct object * o = terrain->world_table[chunk_z][chunk_x]->objects[i];
         if (o)
         switch (o->type) {
             case OBJECT_TREE:

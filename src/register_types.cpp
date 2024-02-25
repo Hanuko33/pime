@@ -1,7 +1,6 @@
 #include "register_types.h"
 
 
-#include "world.h"
 #include "player.h"
 #include "master_node.h"
 #include "level_node.h"
@@ -23,7 +22,6 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     }
 
     
-ClassDB::register_class<World>();
     ClassDB::register_class<PlayerCharacter>();
     ClassDB::register_class<MasterNode>();
     ClassDB::register_class<LevelNode>();

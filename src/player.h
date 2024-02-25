@@ -6,8 +6,8 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
 
-#include "../game_gui/player.h"
 #include "player_input_sync.h"
+#include "alchemist/el_list.h"
 
 namespace godot {
 
@@ -31,13 +31,33 @@ public:
     void _process(double delta) override;
     void _input(const Ref<InputEvent> &event) override;
 
-    Player player;
 
     float speed;
     float total_pitch;
     void set_speed(float p_speed);
     float get_speed();
-    
+
+    //Player player;
+    // game_gui properties
+    int map_y;
+    int map_x;
+    int z;
+    int y;
+    int x;
+	int back_y;
+	int back_x;
+    char running;
+    char sneaking;
+    char going_right;
+    int energy;
+    int thirst;
+    int hunger;
+    int health;
+    InvList * inventory; 
+    InventoryElement * hotbar[10];
+    int craftbar[10];
+
+
 protected:
     static void _bind_methods();
 
