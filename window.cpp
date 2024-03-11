@@ -1,18 +1,31 @@
 #include "window.h"
+#include <SDL2/SDL.h>
+#include <time.h>
 
 SDL_Renderer *renderer;
 SDL_Window *main_window;
 int window_width;
 int window_height;
 
+unsigned long get_time_usec()
+{
+    struct timespec t;
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+    return (t.tv_sec * 1000000 + t.tv_nsec / 1000);
+}
+
 int  init_window()
 {
 	Uint32 flags;
     flags = SDL_WINDOW_RESIZABLE|SDL_WINDOW_HIDDEN;
     //flags = SDL_WINDOW_HIDDEN;
+    unsigned long t1 = get_time_usec();
+    if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO) < 0) { fprintf(stderr, "\nUnable to initialize SDL:  %s\n", SDL_GetError()); }
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) { fprintf(stderr, "\nUnable to initialize SDL:  %s\n", SDL_GetError()); }
-
+    unsigned long t2 = get_time_usec();
+    printf("Time it took to initialize SDL2: %ldms\n", (t2 - t1)/1000);
+    
     if (SDL_CreateWindowAndRenderer(0, 0, flags, &main_window, &renderer) < 0) {
         SDL_Log("SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         return 1;
@@ -32,6 +45,10 @@ int  init_window()
     }
     TTF_Init();
 
+    
+    unsigned long t3 = get_time_usec();
+    printf("Time it took to initialize SDL2 modules (img, window, renderer): %ldms\n ", (t3 - t1)/1000);
+    
     return 0;
 }
 
