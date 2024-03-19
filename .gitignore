@@ -2,6 +2,5 @@
 .sconsign.dblite
 *.os
 compile_commands.json
-build.sh
 start.sh
 tags
