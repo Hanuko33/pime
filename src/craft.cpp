@@ -29,8 +29,7 @@ InventoryElement * craft_axe_blade()
 }
 
 InventoryElement * craft_axe_handle()
-{
-    InventoryElement * el = player.hotbar[active_hotbar];
+{    InventoryElement * el = player.hotbar[active_hotbar];
     if (el) {
         sprintf(status_line, "crafting: axe handle from %s", el->get_name());
     

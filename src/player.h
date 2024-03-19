@@ -8,6 +8,7 @@
 
 #include "player_input_sync.h"
 #include "alchemist/el_list.h"
+#include "item.h"
 
 namespace godot {
 
@@ -56,6 +57,16 @@ public:
     InvList * inventory; 
     InventoryElement * hotbar[10];
     int craftbar[10];
+
+    Item* left_hand;
+    Item* right_hand;
+
+    void pick_up(Item* item, Item** hand);
+    void drop();
+
+    void craft_axe_blade();
+    void craft_axe_handle();
+    void craft_axe();
 
 
 protected:

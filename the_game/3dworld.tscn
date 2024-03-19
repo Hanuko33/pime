@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cwvg72307ycu7"]
+[gd_scene load_steps=7 format=3 uid="uid://cwvg72307ycu7"]
 
+[ext_resource type="PackedScene" uid="uid://drmuk8ut21aja" path="res://player.tscn" id="1_i01nf"]
 [ext_resource type="Script" path="res://camera.gd" id="1_vpny3"]
+[ext_resource type="PackedScene" uid="uid://baxite7eykf50" path="res://rock.tscn" id="2_f1yfg"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i5q0q"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -15,16 +17,6 @@ sky = SubResource("Sky_1m5sj")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="PrismMesh" id="PrismMesh_mr7v7"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_2uehy"]
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_awfv0"]
-properties/0/path = NodePath("PlayerInputSync:move_direction")
-properties/0/spawn = true
-properties/0/sync = true
-properties/0/watch = false
-
 [node name="Node3D" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -36,25 +28,14 @@ shadow_enabled = true
 
 [node name="Terrain" type="Terrain" parent="."]
 
-[node name="Player" type="PlayerCharacter" parent="."]
-speed = 6.0
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 16, 55)
-wall_min_slide_angle = 1.39626
-floor_max_angle = 1.39626
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
-transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
-mesh = SubResource("PrismMesh_mr7v7")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-shape = SubResource("BoxShape3D_2uehy")
-
-[node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00334, 0)
-
-[node name="InputSynchronizer" type="PlayerInputSync" parent="Player"]
-action = -827876848
-replication_config = SubResource("SceneReplicationConfig_awfv0")
+[node name="Player" parent="." instance=ExtResource("1_i01nf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 20, 11)
 
 [node name="FreeLookCamera" type="Camera3D" parent="."]
 script = ExtResource("1_vpny3")
+
+[node name="Item" parent="." instance=ExtResource("2_f1yfg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 16, 10)
+
+[node name="Item2" parent="." instance=ExtResource("2_f1yfg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 16, 9)

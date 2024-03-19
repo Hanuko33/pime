@@ -189,9 +189,9 @@ void Terrain::place(Dictionary &result) {
     Vector3i pos = posf.round();
     pos.x += WORLD_CENTER*CHUNK_SIZE;
     pos.z += WORLD_CENTER*CHUNK_SIZE;
-    ChunkRenderer* chunk = chunks[pos.z/CHUNK_SIZE][pos.x/CHUNK_SIZE];
     int chunk_z = pos.z/CHUNK_SIZE;
     int chunk_x = pos.x/CHUNK_SIZE;
+    ChunkRenderer* chunk = chunks[chunk_z][chunk_x];
     int z_pos = pos.z%CHUNK_SIZE;
     int x_pos = pos.x%CHUNK_SIZE;
     world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = TILE_DIRT;

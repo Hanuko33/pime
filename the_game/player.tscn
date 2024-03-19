@@ -1,45 +1,30 @@
-[gd_scene load_steps=5 format=3 uid="uid://bw0j2gsrxghld"]
+[gd_scene load_steps=4 format=3 uid="uid://drmuk8ut21aja"]
 
-[ext_resource type="Texture2D" uid="uid://0s3cqajxbp3g" path="res://textures/playerr.png" id="1_whij1"]
+[sub_resource type="PrismMesh" id="PrismMesh_mr7v7"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_bg8r4"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_whij1")
-}],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}]
+[sub_resource type="BoxShape3D" id="BoxShape3D_2uehy"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xtogc"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/sync = true
-properties/0/watch = false
-properties/1/path = NodePath(".:id")
-properties/1/spawn = true
-properties/1/sync = true
-properties/1/watch = false
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_28sge"]
-properties/0/path = NodePath("InputSynchronizer:move_direction")
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_awfv0"]
+properties/0/path = NodePath("PlayerInputSync:move_direction")
 properties/0/spawn = true
 properties/0/sync = true
 properties/0/watch = false
 
 [node name="Player" type="PlayerCharacter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2032, -2032, 0)
+speed = 6.0
+wall_min_slide_angle = 1.39626
+floor_max_angle = 1.39626
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(16, 16)
-sprite_frames = SubResource("SpriteFrames_bg8r4")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
+mesh = SubResource("PrismMesh_mr7v7")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_2uehy")
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_xtogc")
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00334, 0)
 
 [node name="InputSynchronizer" type="PlayerInputSync" parent="."]
-replication_config = SubResource("SceneReplicationConfig_28sge")
+action = -827876848
+replication_config = SubResource("SceneReplicationConfig_awfv0")

@@ -43,6 +43,8 @@ void LevelNode::_exit_tree() {
 
 void LevelNode::add_player(int id) {
     Ref<PackedScene> loaded = ResourceLoader::get_singleton()->load("res://player.tscn");
+    if (!loaded.is_valid())
+        return;
     PlayerCharacter* character = Object::cast_to<PlayerCharacter>(loaded->instantiate());
     character->set_id(id);
     //Ref<RandomNumberGenerator> rng = memnew(RandomNumberGenerator);

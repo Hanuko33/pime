@@ -40,7 +40,7 @@ void ChunkRenderer::_ready() {
     //Ref<Material> mat = ResourceLoader::get_singleton()->load("res://models/new_material.tres");
     Ref<Material> mat = ResourceLoader::get_singleton()->load("res://models/test_material.tres");
     if (!mat.is_valid()) {
-        UtilityFunctions::print("gowno");
+        UtilityFunctions::print("no material");
     }
     set_material_overlay(mat);
 

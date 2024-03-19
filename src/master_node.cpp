@@ -21,7 +21,7 @@ void MasterNode::_ready() {
     //get_tree()->set_pause(true);
     Button* b = get_node<Button>("UI/VBoxContainer/HBoxContainer/Button");
     if (b) b->connect("button_down", Callable(this, "host_game"));
-    else UtilityFunctions::print("gowno");
+    else UtilityFunctions::print("no button in scene");
     UtilityFunctions::print(b);
     b = get_node<Button>("UI/VBoxContainer/HBoxContainer/Button2");
     if (b) b->connect("button_down", Callable(this, "join_game"));

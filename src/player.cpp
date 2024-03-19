@@ -9,12 +9,16 @@
 #include <godot_cpp/classes/world3d.hpp>
 #include <godot_cpp/classes/physics_ray_query_parameters3d.hpp>
 #include <godot_cpp/classes/physics_direct_space_state3d.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
+#include <godot_cpp/classes/packed_scene.hpp>
 
+#include "alchemist/axe.h"
+#include "alchemist/axe_handle.h"
 #include "tiles.h"
-//#include "../game_gui/world.h"
 
 #include "terrain.h"
 #include "player_input_sync.h"
+#include "alchemist/axe_blade.h"
 
 using namespace godot;
 
@@ -55,6 +59,7 @@ PlayerCharacter::PlayerCharacter() {
         hotbar[i]=NULL;
         craftbar[i]=0;
     }
+    left_hand = right_hand = nullptr;
 
 }
 
@@ -115,8 +120,18 @@ void PlayerCharacter::_process(double delta) {
 
 void PlayerCharacter::_input(const Ref<InputEvent> &event) {
     Ref<InputEventKey> key_ev = event;
-    if (key_ev.is_valid()) {
-        
+    if (key_ev.is_valid() && key_ev->is_pressed()) {
+        if (key_ev->get_keycode() == KEY_1)
+            craft_axe_blade();
+        else if (key_ev->get_keycode() == KEY_2)
+            craft_axe_handle();
+        else if (key_ev->get_keycode() == KEY_3)
+            craft_axe();
+        else if (key_ev->get_keycode() == KEY_5)
+            UtilityFunctions::print(right_hand->element->get_name());
+        else if (key_ev->get_keycode() == KEY_6)
+            UtilityFunctions::print(left_hand->element->get_name());
+
     }
     Ref<InputEventMouseMotion> motion = event;
     if (motion.is_valid()) {
@@ -147,8 +162,16 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
         UtilityFunctions::print(result["collider"], result["position"]);
         Node3D* node = Object::cast_to<Node3D>(result["collider"]);
         if (node) {
+            Item* item = Object::cast_to<Item>(node);
+            if (item) {
+                UtilityFunctions::print("foo");
+                pick_up(item, &left_hand);
+            }
+
             Terrain* terrain = Object::cast_to<Terrain>(node->get_parent()->get_parent());
-            terrain->mine(result);
+            if (terrain)
+                terrain->mine(result);
+
             /*ChunkRenderer* chunk = Object::cast_to<ChunkRenderer>(node->get_parent());
             if (chunk) {
                 Vector3 posf = result["position"];
@@ -178,15 +201,27 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
         UtilityFunctions::print(result["collider"], result["position"]);
         Node3D* node = Object::cast_to<Node3D>(result["collider"]);
         if (node) {
+            UtilityFunctions::print(node);
+            Item* item = Object::cast_to<Item>(node);
+            if (item) {
+                UtilityFunctions::print("foo");
+                pick_up(item, &right_hand);
+            }
             Terrain* terrain = Object::cast_to<Terrain>(node->get_parent()->get_parent());
-            terrain->place(result);
+            if (terrain)
+                terrain->place(result);
+        }
+        else {
+            UtilityFunctions::print("not node");
         }
     }
 }
 
 void PlayerCharacter::set_id(int p_id) {
     id = p_id;
-    get_node<PlayerInputSync>("InputSynchronizer")->set_multiplayer_authority(id);
+    PlayerInputSync* sync = get_node<PlayerInputSync>("InputSynchronizer");
+    if (sync)
+        set_multiplayer_authority(id);
 }
 
 int PlayerCharacter::get_id() const{
@@ -200,3 +235,106 @@ void PlayerCharacter::set_speed(float p_speed) {
 float PlayerCharacter::get_speed() {
     return speed;
 }
+
+void PlayerCharacter::pick_up(Item *item, Item** hand) {
+    UtilityFunctions::print("picking up");
+    if (!item->is_picked_up && *hand == nullptr) {
+        UtilityFunctions::print("picked_up");
+        item->is_picked_up = true;
+        item->set_freeze_enabled(true);
+        item->reparent(this);
+        //item->set_collision_mask_value(1, false);
+        //item->set_collision_mask_value(2, true);
+        item->get_node<CollisionShape3D>("Collision")->set_disabled(true);
+        if (hand == &right_hand)
+            item->set_position(Vector3(0.5, 0, -1));
+        else
+            item->set_position(Vector3(-0.5, 0, -1));
+        *hand = item;
+    }
+}
+
+void PlayerCharacter::drop() {
+
+}
+
+void PlayerCharacter::craft_axe_blade() {
+    if (!right_hand)
+        return;
+    InventoryElement * el = right_hand->element;
+    if (el) {
+        //sprintf(status_line, "crafting: axe blade from %s", el->get_name());
+        UtilityFunctions::print("crafting: axe blade from %s", el->get_name());
+    
+        AxeBlade * axe_blade=new AxeBlade(el);
+        if (axe_blade->craft()) {
+            axe_blade->show();
+            axe_blade->set_posittion(0, 0, 0);
+            right_hand->queue_free();
+            right_hand = nullptr;
+
+            Ref<PackedScene> loaded = ResourceLoader::get_singleton()->load("res://rock.tscn");
+            Item* blade = Object::cast_to<Item>(loaded->instantiate());
+            get_parent()->add_child(blade);
+            blade->set_position(get_position() + Vector3(2, 3, 0));
+            blade->element = axe_blade;
+            //pick_up(blade, &right_hand);
+        } else delete axe_blade;
+    }
+}
+
+void PlayerCharacter::craft_axe_handle() {
+    if (!right_hand)
+        return;
+    InventoryElement * el = right_hand->element;
+    if (el) {
+        UtilityFunctions::print("crafting: axe handle from %s", el->get_name());
+
+    
+        AxeHandle * axe_handle=new AxeHandle(el);
+        if (axe_handle->craft())
+        {
+            axe_handle->show();
+            axe_handle->set_posittion(0,0, 0);
+            right_hand->queue_free();
+            right_hand = nullptr;
+
+            Ref<PackedScene> loaded = ResourceLoader::get_singleton()->load("res://rock.tscn");
+            Item* blade = Object::cast_to<Item>(loaded->instantiate());
+            get_parent()->add_child(blade);
+            blade->set_position(get_position() + Vector3(2, 3, 0));
+            blade->element = axe_handle;
+            //pick_up(blade, &right_hand);
+        } else delete axe_handle;
+    }
+}
+
+void PlayerCharacter::craft_axe() {
+    if (!right_hand || !left_hand)
+        return;
+    InventoryElement *el1=right_hand->element, *el2=left_hand->element;
+    if (el1 && el2) 
+    {
+        UtilityFunctions::print("crafting: axe from %s and %s", el1->get_name(), el2->get_name());
+    
+        Axe * axe=new Axe(el1, el2);
+        if (axe->craft())
+        {
+            axe->show();
+            axe->set_posittion(0, 0, 0);
+            right_hand->queue_free();
+            left_hand->queue_free();
+            right_hand = nullptr;
+            left_hand = nullptr;
+
+            Ref<PackedScene> loaded = ResourceLoader::get_singleton()->load("res://rock.tscn");
+            Item* blade = Object::cast_to<Item>(loaded->instantiate());
+            get_parent()->add_child(blade);
+            blade->set_position(get_position() + Vector3(2, 3, 0));
+            blade->element = axe;
+            //pick_up(blade, &right_hand);
+        } else delete axe;
+    }
+}
+
+

@@ -7,6 +7,7 @@
 #include "player_input_sync.h"
 #include "terrain.h"
 #include "chunk_renderer.h"
+#include "item.h"
 // includes go here
 
 #include <gdextension_interface.h>
@@ -28,6 +29,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     ClassDB::register_class<PlayerInputSync>();
     ClassDB::register_class<Terrain>();
     ClassDB::register_class<ChunkRenderer>();
+    ClassDB::register_class<Item>();
     //     ClassDB::register_class<class_name>();
 
 }
