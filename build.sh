@@ -1,3 +1,3 @@
 #!/bin/bash
 
-scons debug_symbols=yes platform=linux -j8
+scons debug_symbols=yes platform=linux -j `nproc`
