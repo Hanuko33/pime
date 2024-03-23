@@ -77,9 +77,13 @@ void PlayerCharacter::_ready() {
             get_node<Camera3D>("Camera3D")->make_current();
         }
         Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_CAPTURED);
+
+
+       if (!status_line_node) {
+           UtilityFunctions::print("playercharacter: setting status line node");
+           status_line_node = get_node<LineEdit>("/root/Node3D/Player/UI/StatusLine");
+          }
     }
-     UtilityFunctions::print("playercharacter: setting status line node");
-    if (!status_line_node) status_line_node = get_node<LineEdit>("/root/Node3D/UI/StatusLine");
 }
 
 void PlayerCharacter::_process(double delta) {
@@ -133,9 +137,15 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
         else if (key_ev->get_keycode() == KEY_3)
             craft_axe();
         else if (key_ev->get_keycode() == KEY_6)
-            status_line(String("in right hand: ") + String(right_hand->element->get_name()));
+        {
+            if (right_hand)
+                status_line(String("in right hand: ") + String(right_hand->element->get_name()));
+        }
         else if (key_ev->get_keycode() == KEY_5)
-             status_line(String("in left hand: ") + String(left_hand->element->get_name()));
+        {
+            if (left_hand)
+                status_line(String("in left hand: ") + String(left_hand->element->get_name()));
+        }
 
     }
     Ref<InputEventMouseMotion> motion = event;

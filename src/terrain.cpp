@@ -51,8 +51,11 @@ Terrain::~Terrain() {
 
 void Terrain::_ready() {
     if (!Engine::get_singleton()->is_editor_hint()) {
-        UtilityFunctions::print("terrain: setting status line node");
-    if (!status_line_node) status_line_node = get_node<LineEdit>("/root/Node3D/UI/StatusLine");
+
+    if (!status_line_node) {
+           UtilityFunctions::print("terrain: setting status line node");
+        status_line_node = get_node<LineEdit>("/root/Node3D/Player/UI/StatusLine");
+    }
 
     generator();
 //        generate_chunk(WORLD_CENTER, WORLD_CENTER);
