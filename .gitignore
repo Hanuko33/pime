@@ -5,3 +5,4 @@ compile_commands.json
 start.sh
 tags
 .qtc_clangd
+the_game/bin/libgdexample.linux.template_debug.x86_64.so
