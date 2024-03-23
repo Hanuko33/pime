@@ -11,6 +11,7 @@
 #include <godot_cpp/classes/physics_direct_space_state3d.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
+#include "status_line.h"
 
 #include "alchemist/axe.h"
 #include "alchemist/axe_handle.h"
@@ -19,8 +20,10 @@
 #include "terrain.h"
 #include "player_input_sync.h"
 #include "alchemist/axe_blade.h"
+#include "status_line.h"
 
 using namespace godot;
+
 
 void PlayerCharacter::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_id", "p_id"), &PlayerCharacter::set_id);
@@ -75,6 +78,8 @@ void PlayerCharacter::_ready() {
         }
         Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_CAPTURED);
     }
+     UtilityFunctions::print("playercharacter: setting status line node");
+    if (!status_line_node) status_line_node = get_node<LineEdit>("/root/Node3D/UI/StatusLine");
 }
 
 void PlayerCharacter::_process(double delta) {
@@ -127,14 +132,15 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             craft_axe_handle();
         else if (key_ev->get_keycode() == KEY_3)
             craft_axe();
-        else if (key_ev->get_keycode() == KEY_5)
-            UtilityFunctions::print(right_hand->element->get_name());
         else if (key_ev->get_keycode() == KEY_6)
-            UtilityFunctions::print(left_hand->element->get_name());
+            status_line(String("in right hand: ") + String(right_hand->element->get_name()));
+        else if (key_ev->get_keycode() == KEY_5)
+             status_line(String("in left hand: ") + String(left_hand->element->get_name()));
 
     }
     Ref<InputEventMouseMotion> motion = event;
     if (motion.is_valid()) {
+        status_line("motion is valid");
         float yaw = motion->get_relative().x * 0.5;
         float pitch = motion->get_relative().y * 0.5;
         pitch = Math::clamp(pitch, -90 - total_pitch, 90-total_pitch);
@@ -145,8 +151,30 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
         //rotate_object_local(Vector3(1, 0, 0), Math::deg_to_rad(-pitch));
 
     }
-    if (event->is_action_pressed("mine"))
+
+    if (event->is_action_pressed("move_forward"))
     {
+        status_line("move_forward");
+    }
+
+    if (event->is_action_pressed("move_back"))
+    {
+        status_line("move_back");
+    }
+
+    if (event->is_action_pressed("move_left"))
+    {
+        status_line("move_left");
+    }
+
+    if (event->is_action_pressed("move_right"))
+    {
+        status_line("move_right");
+    }
+
+    if (event->is_action_pressed("mine"))
+    {//right mouse
+        UtilityFunctions::print("mine");
         Ref<InputEventMouseButton> button = event;
         PhysicsDirectSpaceState3D* space_state = get_world_3d()->get_direct_space_state();
         //Ref<PhysicsRayQueryParameters3D> parameters = memnew(PhysicsRayQueryParameters3D);
@@ -164,7 +192,7 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
         if (node) {
             Item* item = Object::cast_to<Item>(node);
             if (item) {
-                UtilityFunctions::print("foo");
+                UtilityFunctions::print("get item");
                 pick_up(item, &left_hand);
             }
 
@@ -187,7 +215,8 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
         }
     }
     if (event->is_action_pressed("place"))
-    {
+    {//left mouse
+        UtilityFunctions::print("place");
         Ref<InputEventMouseButton> button = event;
         PhysicsDirectSpaceState3D* space_state = get_world_3d()->get_direct_space_state();
         Camera3D* camera = get_node<Camera3D>("Camera3D");
@@ -204,7 +233,7 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             UtilityFunctions::print(node);
             Item* item = Object::cast_to<Item>(node);
             if (item) {
-                UtilityFunctions::print("foo");
+                UtilityFunctions::print("get item");
                 pick_up(item, &right_hand);
             }
             Terrain* terrain = Object::cast_to<Terrain>(node->get_parent()->get_parent());
@@ -212,7 +241,7 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
                 terrain->place(result);
         }
         else {
-            UtilityFunctions::print("not node");
+            UtilityFunctions::print("not item");
         }
     }
 }
@@ -236,10 +265,10 @@ float PlayerCharacter::get_speed() {
     return speed;
 }
 
-void PlayerCharacter::pick_up(Item *item, Item** hand) {
-    UtilityFunctions::print("picking up");
+void PlayerCharacter::pick_up(Item *item, Item** hand) {    
+    status_line(String("picking up ") + String(item->element->get_name()));
     if (!item->is_picked_up && *hand == nullptr) {
-        UtilityFunctions::print("picked_up");
+        status_line(String("picked up ") + String(item->element->get_name()));
         item->is_picked_up = true;
         item->set_freeze_enabled(true);
         item->reparent(this);
@@ -264,7 +293,7 @@ void PlayerCharacter::craft_axe_blade() {
     InventoryElement * el = right_hand->element;
     if (el) {
         //sprintf(status_line, "crafting: axe blade from %s", el->get_name());
-        UtilityFunctions::print("crafting: axe blade from %s", el->get_name());
+        status_line(String("crafting: axe blade from ") + String(el->get_name()));
     
         AxeBlade * axe_blade=new AxeBlade(el);
         if (axe_blade->craft()) {
@@ -288,8 +317,7 @@ void PlayerCharacter::craft_axe_handle() {
         return;
     InventoryElement * el = right_hand->element;
     if (el) {
-        UtilityFunctions::print("crafting: axe handle from %s", el->get_name());
-
+        status_line(String("crafting: axe handle from ") + String(el->get_name()));
     
         AxeHandle * axe_handle=new AxeHandle(el);
         if (axe_handle->craft())
@@ -315,8 +343,8 @@ void PlayerCharacter::craft_axe() {
     InventoryElement *el1=right_hand->element, *el2=left_hand->element;
     if (el1 && el2) 
     {
-        UtilityFunctions::print("crafting: axe from %s and %s", el1->get_name(), el2->get_name());
-    
+        status_line(String("crafting: axe from ") + String(el1->get_name()) + " and "  +String(el2->get_name()));
+
         Axe * axe=new Axe(el1, el2);
         if (axe->craft())
         {

@@ -4,3 +4,4 @@
 compile_commands.json
 start.sh
 tags
+.qtc_clangd

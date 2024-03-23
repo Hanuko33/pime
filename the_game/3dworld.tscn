@@ -39,3 +39,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 16, 10)
 
 [node name="Item2" parent="." instance=ExtResource("2_f1yfg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 16, 9)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StatusLine" type="LineEdit" parent="UI"]
+layout_mode = 0
+offset_right = 67.0625
+offset_bottom = 31.0
+text = "status line"
+expand_to_text_length = true

@@ -28,6 +28,7 @@ public:
     PlayerCharacter();
     ~PlayerCharacter();
 
+    //void status_line(String s);
     void _ready() override;
     void _process(double delta) override;
     void _input(const Ref<InputEvent> &event) override;

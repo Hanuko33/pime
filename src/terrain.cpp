@@ -19,6 +19,7 @@
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/input.hpp>
 #include <godot_cpp/classes/random_number_generator.hpp>
+#include "status_line.h"
 
 using namespace godot;
 
@@ -50,8 +51,10 @@ Terrain::~Terrain() {
 
 void Terrain::_ready() {
     if (!Engine::get_singleton()->is_editor_hint()) {
+        UtilityFunctions::print("terrain: setting status line node");
+    if (!status_line_node) status_line_node = get_node<LineEdit>("/root/Node3D/UI/StatusLine");
 
-        generator();
+    generator();
 //        generate_chunk(WORLD_CENTER, WORLD_CENTER);
 
         //for (int y = 3; y >=0; y--) {
@@ -206,7 +209,7 @@ void Terrain::place(Dictionary &result) {
         chunks[chunk_z-1][chunk_x-1]->render_self();
     }
 
-    UtilityFunctions::print(chunk->chunk_x, chunk->chunk_z);
+    UtilityFunctions::print("chunk x=", chunk->chunk_x, " chunk z=",chunk->chunk_z);
 }
 
 void Terrain::generator()
