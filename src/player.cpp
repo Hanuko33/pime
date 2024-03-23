@@ -11,6 +11,8 @@
 #include <godot_cpp/classes/physics_direct_space_state3d.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
+#include <godot_cpp/classes/viewport.hpp>
+
 #include "status_line.h"
 
 #include "alchemist/axe.h"
@@ -127,6 +129,27 @@ void PlayerCharacter::_process(double delta) {
     }
 }
 
+void PlayerCharacter::_physics_process(double delta) {
+    if (Engine::get_singleton()->is_editor_hint())
+        return;
+    PhysicsDirectSpaceState3D* space_state = get_world_3d()->get_direct_space_state();
+    Camera3D* camera = get_node<Camera3D>("Camera3D");
+    
+    Vector3 from = camera->project_ray_origin(get_viewport()->get_mouse_position());
+    Vector3 to = from + camera->project_ray_normal(get_viewport()->get_mouse_position())* 100;
+    Ref<PhysicsRayQueryParameters3D> parameters = PhysicsRayQueryParameters3D::create(from, to);
+    TypedArray<RID> a;
+    a.push_back(get_rid());
+    parameters->set_exclude(a);
+    Dictionary result = space_state->intersect_ray(parameters);
+//        UtilityFunctions::print(result);
+    UtilityFunctions::print(result["collider"], result["position"]);
+    looking_at = Object::cast_to<Node3D>(result["collider"]);
+    looking_pos = result["position"];
+    looking_norm = result["normal"];
+    
+}
+
 void PlayerCharacter::_input(const Ref<InputEvent> &event) {
     Ref<InputEventKey> key_ev = event;
     if (key_ev.is_valid() && key_ev->is_pressed()) {
@@ -146,6 +169,11 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             if (left_hand)
                 status_line(String("in left hand: ") + String(left_hand->element->get_name()));
         }
+        else if (key_ev->get_keycode() == KEY_Q)
+            drop(&right_hand);
+        else if (key_ev->get_keycode() == KEY_E)
+            drop(&left_hand);
+
 
     }
     Ref<InputEventMouseMotion> motion = event;
@@ -186,69 +214,31 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
     {//right mouse
         UtilityFunctions::print("mine");
         Ref<InputEventMouseButton> button = event;
-        PhysicsDirectSpaceState3D* space_state = get_world_3d()->get_direct_space_state();
-        //Ref<PhysicsRayQueryParameters3D> parameters = memnew(PhysicsRayQueryParameters3D);
-        Camera3D* camera = get_node<Camera3D>("Camera3D");
-        Vector3 from = camera->project_ray_origin(button->get_position());
-        Vector3 to = from + camera->project_ray_normal(button->get_position())* 100;
-        Ref<PhysicsRayQueryParameters3D> parameters = PhysicsRayQueryParameters3D::create(from, to);
-        TypedArray<RID> a;
-        a.push_back(get_rid());
-        parameters->set_exclude(a);
-        Dictionary result = space_state->intersect_ray(parameters);
-//        UtilityFunctions::print(result);
-        UtilityFunctions::print(result["collider"], result["position"]);
-        Node3D* node = Object::cast_to<Node3D>(result["collider"]);
-        if (node) {
-            Item* item = Object::cast_to<Item>(node);
+        if (looking_at) {
+            Item* item = Object::cast_to<Item>(looking_at);
             if (item) {
                 UtilityFunctions::print("get item");
                 pick_up(item, &left_hand);
             }
 
-            Terrain* terrain = Object::cast_to<Terrain>(node->get_parent()->get_parent());
+            Terrain* terrain = Object::cast_to<Terrain>(looking_at->get_parent()->get_parent());
             if (terrain)
-                terrain->mine(result);
-
-            /*ChunkRenderer* chunk = Object::cast_to<ChunkRenderer>(node->get_parent());
-            if (chunk) {
-                Vector3 posf = result["position"];
-                Vector3 normal = result["normal"];
-                posf -= chunk->get_position();
-                posf -= normal*0.5;
-                Vector3i pos = posf.round();
-
-                world_table[chunk->chunk_z][chunk->chunk_x]->table[pos.z][pos.y][pos.x].tile = TILE_AIR;
-                chunk->render_self();
-                UtilityFunctions::print(chunk->chunk_x, chunk->chunk_z);
-            }*/
+                terrain->mine(looking_pos, looking_norm);
         }
     }
     if (event->is_action_pressed("place"))
     {//left mouse
         UtilityFunctions::print("place");
-        Ref<InputEventMouseButton> button = event;
-        PhysicsDirectSpaceState3D* space_state = get_world_3d()->get_direct_space_state();
-        Camera3D* camera = get_node<Camera3D>("Camera3D");
-        Vector3 from = camera->project_ray_origin(button->get_position());
-        Vector3 to = from + camera->project_ray_normal(button->get_position())* 100;
-        Ref<PhysicsRayQueryParameters3D> parameters = PhysicsRayQueryParameters3D::create(from, to);
-        TypedArray<RID> a;
-        a.push_back(get_rid());
-        parameters->set_exclude(a);
-        Dictionary result = space_state->intersect_ray(parameters);
-        UtilityFunctions::print(result["collider"], result["position"]);
-        Node3D* node = Object::cast_to<Node3D>(result["collider"]);
-        if (node) {
-            UtilityFunctions::print(node);
-            Item* item = Object::cast_to<Item>(node);
+        if (looking_at) {
+            UtilityFunctions::print(looking_at);
+            Item* item = Object::cast_to<Item>(looking_at);
             if (item) {
                 UtilityFunctions::print("get item");
                 pick_up(item, &right_hand);
             }
-            Terrain* terrain = Object::cast_to<Terrain>(node->get_parent()->get_parent());
+            Terrain* terrain = Object::cast_to<Terrain>(looking_at->get_parent()->get_parent());
             if (terrain)
-                terrain->place(result);
+                terrain->place(looking_pos, looking_norm);
         }
         else {
             UtilityFunctions::print("not item");
@@ -293,8 +283,15 @@ void PlayerCharacter::pick_up(Item *item, Item** hand) {
     }
 }
 
-void PlayerCharacter::drop() {
-
+void PlayerCharacter::drop(Item** hand) {
+    if (*hand) {
+        Item* item = *hand;
+        item->is_picked_up = false;
+        item->set_freeze_enabled(false);
+        item->reparent(get_parent());
+        item->get_node<CollisionShape3D>("Collision")->set_disabled(false);
+        *hand = nullptr;
+    }
 }
 
 void PlayerCharacter::craft_axe_blade() {

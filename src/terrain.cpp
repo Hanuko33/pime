@@ -159,9 +159,9 @@ void Terrain::generate_chunk(int chunk_x, int chunk_z) {
     }
 }
 
-void Terrain::mine(Dictionary &result) {
-    Vector3 posf = result["position"];
-    Vector3 normal = result["normal"];
+void Terrain::mine(Vector3 in_pos, Vector3 in_norm) {
+    Vector3 posf = in_pos;
+    Vector3 normal = in_norm;
     posf -= normal*0.5;
 
     Vector3i pos = posf.round();
@@ -187,9 +187,9 @@ void Terrain::mine(Dictionary &result) {
     UtilityFunctions::print(chunk->chunk_x, chunk->chunk_z);
 }
 
-void Terrain::place(Dictionary &result) {
-    Vector3 posf = result["position"];
-    Vector3 normal = result["normal"];
+void Terrain::place(Vector3 in_pos, Vector3 in_norm) {
+    Vector3 posf = in_pos;
+    Vector3 normal = in_norm;
     posf += normal*0.5;
 
     Vector3i pos = posf.round();

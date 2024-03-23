@@ -46,6 +46,7 @@ expand_to_text_length = true
 
 [node name="FreeLookCamera" type="Camera3D" parent="."]
 script = ExtResource("1_vpny3")
+sensitivity = null
 
 [node name="Item" parent="." instance=ExtResource("2_f1yfg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 16, 10)

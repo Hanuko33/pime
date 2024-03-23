@@ -32,8 +32,8 @@ public:
     int foo_z;
     ChunkRenderer* chunks[WORLD_SIZE][WORLD_SIZE];
 
-    void mine(Dictionary& result);
-    void place(Dictionary& result);
+    void mine(Vector3 pos, Vector3 norm);
+    void place(Vector3 pos, Vector3 norm);
 
     // game_gui properties
     struct OpenSimplex2F_context *simplex_context;

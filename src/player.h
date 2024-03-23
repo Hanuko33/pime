@@ -31,8 +31,12 @@ public:
     //void status_line(String s);
     void _ready() override;
     void _process(double delta) override;
+    void _physics_process(double delta) override;
     void _input(const Ref<InputEvent> &event) override;
 
+    Node3D* looking_at;
+    Vector3 looking_pos;
+    Vector3 looking_norm;
 
     float speed;
     float total_pitch;
@@ -63,7 +67,7 @@ public:
     Item* right_hand;
 
     void pick_up(Item* item, Item** hand);
-    void drop();
+    void drop(Item** hand);
 
     void craft_axe_blade();
     void craft_axe_handle();
