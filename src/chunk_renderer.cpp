@@ -56,6 +56,7 @@ void ChunkRenderer::render_self() {
     PackedVector3Array verts;
     PackedVector3Array normals;
     PackedVector2Array uvs;
+    PackedColorArray colors;
 
     for (int z = 0; z < CHUNK_SIZE-1; z++)
     {
@@ -84,45 +85,28 @@ void ChunkRenderer::render_self() {
                     terrain->world_table[chunk_z][chunk_x]->table[z+1][y+1][x].weight
 
                 };
-                marching_cube(corners, weights, verts, normals);
+                marching_cube(corners, weights, verts, normals, colors);
             }
         }
     }
 
     int x_offset, chunk_offset;
     if (terrain->world_table[chunk_z][chunk_x+1]) {
-        cubes_on_z_edge(CHUNK_SIZE-1, chunk_x, verts, normals);
+ //       cubes_on_z_edge(CHUNK_SIZE-1, chunk_x, verts, normals);
     }
     if (terrain->world_table[chunk_z+1][chunk_x]) {
-        cubes_on_x_edge(CHUNK_SIZE-1, chunk_z, verts, normals);
+   //     cubes_on_x_edge(CHUNK_SIZE-1, chunk_z, verts, normals);
     }
-    /*if (terrain->world_table[chunk_z][chunk_x-1]) {
-        cubes_on_z_edge(-1, chunk_x-1, verts, normals);
-    }
-    if (terrain->world_table[chunk_z-1][chunk_x]) {
-        cubes_on_x_edge(-1, chunk_z-1, verts, normals);
-    }*/
 
     if (terrain->world_table[chunk_z+1][chunk_x+1] && terrain->world_table[chunk_z+1][chunk_x] && terrain->world_table[chunk_z][chunk_x+1]) {
-        cube_on_corner(chunk_x, chunk_z, 1, 1, verts, normals);
+     //   cube_on_corner(chunk_x, chunk_z, 1, 1, verts, normals);
     }
-    /*if (terrain->world_table[chunk_z-1][chunk_x-1] && terrain->world_table[chunk_z-1][chunk_x] && terrain->world_table[chunk_z][chunk_x-1]) {
-        cube_on_corner(chunk_x-1, chunk_z-1, -1, -1, verts, normals);
-    }
-    if (terrain->world_table[chunk_z-1][chunk_x+1] && terrain->world_table[chunk_z-1][chunk_x] && terrain->world_table[chunk_z][chunk_x+1]) {
-        cube_on_corner(chunk_x, chunk_z-1, 1, -1, verts, normals);
-    }
-    if (terrain->world_table[chunk_z+1][chunk_x-1] && terrain->world_table[chunk_z+1][chunk_x] && terrain->world_table[chunk_z][chunk_x-1]) {
-        cube_on_corner(chunk_x-1, chunk_z, -1, 1, verts, normals);
-    }*/
-   
+  
     if (!(verts.size() > 0))
     {
         UtilityFunctions::print("ERROR NO VERTS!!!");
         return;
     }
-
-    PackedColorArray colors;
 
     for (int i = 0; i < verts.size(); i+=3)
     {
@@ -138,6 +122,9 @@ void ChunkRenderer::render_self() {
     mesh_data[Mesh::ARRAY_VERTEX] = verts;
     mesh_data[Mesh::ARRAY_NORMAL] = normals;
     mesh_data[Mesh::ARRAY_TEX_UV] = uvs;
+    mesh_data[Mesh::ARRAY_COLOR] = colors;
+//    UtilityFunctions::print(verts.size(), "abc", colors.size());
+    UtilityFunctions::print(colors);
     array_mesh->clear_surfaces();
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, mesh_data);
 //    create_trimesh_collision();
@@ -247,7 +234,90 @@ Vector3 interpolate_verts(Vector3 v1, Vector3 v2, float w1, float w2) {
     return v1 + (w2 / (w1+w2)) * (v2-v1);
     //return (v1+v2) * 0.5;
 }
+Vector3 inter(Vector3 v1, Vector3 v2) {
+    return (v1+v2) * 0.5;
+}
 
+void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], PackedVector3Array &verts, PackedVector3Array &normals, PackedColorArray &colors) {
+    int cubeIndex = 0;
+    for (int i = 0; i < 8; i++) {
+        //corners[i][0] += (chunk_x - WORLD_CENTER) * CHUNK_SIZE;
+        //corners[i][1] *= 10;
+        //corners[i][2] += (chunk_z - WORLD_CENTER) * CHUNK_SIZE;
+        if (corners[i][3] == 0) cubeIndex |= (1 << i);
+    }
+    int numIndices = lengths[cubeIndex];
+    int offset = offsets[cubeIndex];
+
+    for (int i = 0; i < numIndices; i += 3) {
+        int v0 = lut[offset+i];
+        int v1 = lut[offset+1+i];
+        int v2 = lut[offset+2+i];
+
+        int a0 = cornerIndexAFromEdge[v0];
+        int b0 = cornerIndexBFromEdge[v0];
+
+        int a1 = cornerIndexAFromEdge[v1];
+        int b1 = cornerIndexBFromEdge[v1];
+
+        int a2 = cornerIndexAFromEdge[v2];
+        int b2 = cornerIndexBFromEdge[v2];
+
+        Vector3 a = interpolate_verts(Vector3(corners[a0][0], corners[a0][1], corners[a0][2]), Vector3(corners[b0][0], corners[b0][1], corners[b0][2]), weights[a0], weights[b0]);
+        Vector3 b = interpolate_verts(Vector3(corners[a1][0], corners[a1][1], corners[a1][2]), Vector3(corners[b1][0], corners[b1][1], corners[b1][2]), weights[a1], weights[b1]);
+        Vector3 c = interpolate_verts(Vector3(corners[a2][0], corners[a2][1], corners[a2][2]), Vector3(corners[b2][0], corners[b2][1], corners[b2][2]), weights[a2], weights[b2]);
+//        Vector3 a = interpolate_verts(Vector3(corners[a0][0], corners[a0][1], corners[a0][2]), Vector3(corners[b0][0], corners[b0][1], corners[b0][2]), /*weights[a0]*/ 0.5);
+ //       Vector3 b = interpolate_verts(Vector3(corners[a1][0], corners[a1][1], corners[a1][2]), Vector3(corners[b1][0], corners[b1][1], corners[b1][2]), /*weights[a1]*/ 0.5);
+  //      Vector3 c = interpolate_verts(Vector3(corners[a2][0], corners[a2][1], corners[a2][2]), Vector3(corners[b2][0], corners[b2][1], corners[b2][2]), /*weights[a2]*/ 0.5);
+        int common = 0;
+        /*if (a0 == a1 || a0 == b1) {
+            common = a0;
+        } else if (b0 == a1 || b0 == b1) {
+            common = b1;
+        } else {
+            UtilityFunctions::print("something is wrong");
+        }*/
+
+        Vector3 ab = b - a;
+        Vector3 ac = c - a;
+        Vector3 norm = -(ab.cross(ac).normalized());
+
+        Vector3 a3 = inter(Vector3(corners[a0][0], corners[a0][1], corners[a0][2]), Vector3(corners[b0][0], corners[b0][1], corners[b0][2]));
+        Vector3 b3 = inter(Vector3(corners[a1][0], corners[a1][1], corners[a1][2]), Vector3(corners[b1][0], corners[b1][1], corners[b1][2]));
+        Vector3 c3 = inter(Vector3(corners[a2][0], corners[a2][1], corners[a2][2]), Vector3(corners[b2][0], corners[b2][1], corners[b2][2]));
+        Vector3 center = (a3+b3+c3)/3.0;
+        Vector3 center_norm = -((b3-a3).cross(c3-a3).normalized());
+        center.x -= corners[0][0];
+        center.y -= corners[0][1];
+        center.z -= corners[0][2];
+        center -= center_norm;
+        UtilityFunctions::print("cemter ", center, " normal ", norm);
+        if (center.y >= 0.5)
+            common = 4;
+        if (center.x >= 0.5)
+            common += 1;
+        if (center.z >= 0.5)
+            common += 3;
+        if (center.x >= 0.5 && center.z >= 0.5)
+            common -= 2;
+
+
+
+        verts.push_back(a);
+        verts.push_back(b);
+        verts.push_back(c);
+        normals.push_back(norm);
+        normals.push_back(norm);
+        normals.push_back(norm);
+        //colors.push_back(Color(corners[common][3]*20, 0, 0));
+        //colors.push_back(Color(corners[common][3]*20, 0, 0));
+        //colors.push_back(Color(corners[common][3]*20, 0, 0));
+        colors.push_back(Color(corners[common][3]/9.0, 0, 0));
+        colors.push_back(Color(corners[common][3]/9.0, 0, 0));
+        colors.push_back(Color(corners[common][3]/9.0, 0, 0));
+    }
+
+}
 void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], PackedVector3Array &verts, PackedVector3Array &normals) {
     int cubeIndex = 0;
     for (int i = 0; i < 8; i++) {
@@ -279,6 +349,7 @@ void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], Packe
 //        Vector3 a = interpolate_verts(Vector3(corners[a0][0], corners[a0][1], corners[a0][2]), Vector3(corners[b0][0], corners[b0][1], corners[b0][2]), /*weights[a0]*/ 0.5);
  //       Vector3 b = interpolate_verts(Vector3(corners[a1][0], corners[a1][1], corners[a1][2]), Vector3(corners[b1][0], corners[b1][1], corners[b1][2]), /*weights[a1]*/ 0.5);
   //      Vector3 c = interpolate_verts(Vector3(corners[a2][0], corners[a2][1], corners[a2][2]), Vector3(corners[b2][0], corners[b2][1], corners[b2][2]), /*weights[a2]*/ 0.5);
+
 
         Vector3 ab = b - a;
         Vector3 ac = c - a;

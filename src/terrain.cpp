@@ -60,9 +60,10 @@ void Terrain::_ready() {
     generator();
 //        generate_chunk(WORLD_CENTER, WORLD_CENTER);
 
+    int render_distance = 2;
         //for (int y = 3; y >=0; y--) {
-        for (int y = 0; y < 4; y++) {
-            for (int x = 3; x >=0; x--) {
+        for (int y = -render_distance; y < render_distance; y++) {
+            for (int x = render_distance; x >=-render_distance; x--) {
             //for (int x = 0; x < 4; x++) {
                 generate_chunk(WORLD_CENTER + x, WORLD_CENTER + y);
             }

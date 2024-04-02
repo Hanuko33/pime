@@ -23,6 +23,7 @@ public:
     void cubes_on_x_edge(int x_offset, int chunk_offset, PackedVector3Array& verts, PackedVector3Array& normals);
     void cube_on_corner(int x, int z, int dx, int dz,  PackedVector3Array& verts, PackedVector3Array& normals);
     void marching_cube(int (&corners)[8][4], int (&weights)[8], PackedVector3Array& verts, PackedVector3Array& normals);
+    void marching_cube(int (&corners)[8][4], int (&weights)[8], PackedVector3Array& verts, PackedVector3Array& normals, PackedColorArray& colors);
     int chunk_x;
     int chunk_z;
     CollisionShape3D* collision;
