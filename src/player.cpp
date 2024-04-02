@@ -36,6 +36,9 @@ void PlayerCharacter::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_speed"), &PlayerCharacter::get_speed);
     ClassDB::add_property("PlayerCharacter", PropertyInfo(Variant::FLOAT, "speed"), "set_speed", "get_speed");
 
+    ClassDB::bind_method(D_METHOD("set_mouse_sen", "p_mouse_sen"), &PlayerCharacter::set_mouse_sen);
+    ClassDB::bind_method(D_METHOD("get_mouse_sen"), &PlayerCharacter::get_mouse_sen);
+    ClassDB::add_property("PlayerCharacter", PropertyInfo(Variant::FLOAT, "mouse_sen"), "set_mouse_sen", "get_mouse_sen");
 }
 
 PlayerCharacter::PlayerCharacter() {
@@ -48,6 +51,7 @@ PlayerCharacter::PlayerCharacter() {
     move_direction = Vector2i(0, 0);
     speed = 10;
     total_pitch = 0;
+    mouse_sensitivity = 1;
 
 	energy=250;
 	back_x=0;
@@ -142,8 +146,8 @@ void PlayerCharacter::_physics_process(double delta) {
     a.push_back(get_rid());
     parameters->set_exclude(a);
     Dictionary result = space_state->intersect_ray(parameters);
-//        UtilityFunctions::print(result);
-    UtilityFunctions::print(result["collider"], result["position"]);
+//    UtilityFunctions::print(result);
+//    UtilityFunctions::print(result["collider"], result["position"]);
     looking_at = Object::cast_to<Node3D>(result["collider"]);
     looking_pos = result["position"];
     looking_norm = result["normal"];
@@ -179,8 +183,8 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
     Ref<InputEventMouseMotion> motion = event;
     if (motion.is_valid()) {
         status_line("motion is valid");
-        float yaw = motion->get_relative().x * 0.5;
-        float pitch = motion->get_relative().y * 0.5;
+        float yaw = motion->get_relative().x * mouse_sensitivity;
+        float pitch = motion->get_relative().y * mouse_sensitivity;
         pitch = Math::clamp(pitch, -90 - total_pitch, 90-total_pitch);
         total_pitch += pitch;
 
@@ -263,6 +267,14 @@ void PlayerCharacter::set_speed(float p_speed) {
 
 float PlayerCharacter::get_speed() {
     return speed;
+}
+
+void PlayerCharacter::set_mouse_sen(float s) {
+    mouse_sensitivity = s;
+}
+
+float PlayerCharacter::get_mouse_sen() {
+    return mouse_sensitivity;
 }
 
 void PlayerCharacter::pick_up(Item *item, Item** hand) {    

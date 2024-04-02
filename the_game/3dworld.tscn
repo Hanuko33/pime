@@ -29,6 +29,7 @@ shadow_enabled = true
 [node name="Terrain" type="Terrain" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("1_i01nf")]
+mouse_sen = 0.2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 20, 11)
 
 [node name="UI" type="Control" parent="Player"]
@@ -45,8 +46,8 @@ text = "status line"
 expand_to_text_length = true
 
 [node name="FreeLookCamera" type="Camera3D" parent="."]
+transform = Transform3D(-0.731359, 0.504459, -0.45895, 0, 0.672954, 0.739684, 0.681993, 0.540974, -0.492171, -9.66489, 91.5309, -12.6951)
 script = ExtResource("1_vpny3")
-sensitivity = null
 
 [node name="Item" parent="." instance=ExtResource("2_f1yfg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 16, 10)
