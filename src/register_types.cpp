@@ -8,8 +8,8 @@
 #include "terrain.h"
 #include "chunk_renderer.h"
 #include "item.h"
-// includes go here
-
+#include "ftree.h"
+#include <time.h>
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -21,8 +21,10 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
         return;
     }
+    UtilityFunctions::print("initialize game");
+    srandom(time(nullptr));
+    init_elements();
 
-    
     ClassDB::register_class<PlayerCharacter>();
     ClassDB::register_class<MasterNode>();
     ClassDB::register_class<LevelNode>();
@@ -30,8 +32,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     ClassDB::register_class<Terrain>();
     ClassDB::register_class<ChunkRenderer>();
     ClassDB::register_class<Item>();
-    //     ClassDB::register_class<class_name>();
-
+    ClassDB::register_class<FTree>();
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {

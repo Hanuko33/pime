@@ -9,7 +9,8 @@ void Item::_bind_methods() {
 }
 
 Item::Item() {
-    element = new Element(&base_elements[0]);
+    UtilityFunctions::print("item::item");
+    element = new Element(base_elements[rand() % BASE_ELEMENTS]);
     is_picked_up = false;
 }
 

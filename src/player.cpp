@@ -141,7 +141,7 @@ void PlayerCharacter::_physics_process(double delta) {
     parameters->set_exclude(a);
     Dictionary result = space_state->intersect_ray(parameters);
 //        UtilityFunctions::print(result);
-    UtilityFunctions::print(result["collider"], result["position"]);
+  //  UtilityFunctions::print("looking at:", result["collider"], " pos=", result["position"]);
     looking_at = Object::cast_to<Node3D>(result["collider"]);
     looking_pos = result["position"];
     looking_norm = result["normal"];

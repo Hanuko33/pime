@@ -3,8 +3,8 @@
 #include "elements.h"
 #include "names.h"
 
-bool fantasy_game;
-BaseElement base_elements[BASE_ELEMENTS];
+bool fantasy_game=1;
+BaseElement *base_elements[BASE_ELEMENTS];
 
 const char * Form_name[]
 {
@@ -117,8 +117,6 @@ BaseElement::BaseElement()
 
 void BaseElement::init_fantasy()
 {
-    name = get_name(5 - form);
-
     int f = rand() % 100;
 
     if (f < 60) { //60%
@@ -145,6 +143,7 @@ void BaseElement::init_fantasy()
         edible=new Edible;
         id=rand() % FOOD_ELEMENTS;
     }
+    name = get_name(5 - form);
 }
 
 void BaseElement::init_real()
@@ -303,4 +302,12 @@ Form Product::get_form()
 const char * Product::get_form_name() 
 { 
     return Form_name[get_form()]; 
+}
+
+void init_elements()
+{
+    for (int i=0; i < BASE_ELEMENTS; i++)
+    {
+        base_elements[i] = new BaseElement;
+    }
 }
