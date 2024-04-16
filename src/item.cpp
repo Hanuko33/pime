@@ -10,6 +10,7 @@ void Item::_bind_methods() {
 
 Item::Item() {
     element = new Element(&base_elements[0]);
+    element->known = true;
     is_picked_up = false;
 }
 

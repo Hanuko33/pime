@@ -37,6 +37,8 @@ public:
 
     // game_gui properties
     struct OpenSimplex2F_context *simplex_context;
+    struct OpenSimplex2F_context *simplex_context2;
+    struct OpenSimplex2F_context *simplex_context3;
 
     chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
