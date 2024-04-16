@@ -80,6 +80,12 @@ func _input(event):
 				_shift = event.pressed
 			KEY_ALT:
 				_alt = event.pressed
+			KEY_M:
+				if event.pressed:
+					if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+						Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+					else:
+						Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 # Updates mouselook and movement every frame
 func _process(delta):

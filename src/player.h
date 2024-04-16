@@ -43,6 +43,10 @@ public:
     void set_speed(float p_speed);
     float get_speed();
 
+    float mouse_sensitivity;
+    void set_mouse_sen(float s);
+    float get_mouse_sen();
+
     //Player player;
     // game_gui properties
     int map_y;

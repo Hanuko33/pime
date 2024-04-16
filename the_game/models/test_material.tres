@@ -1,7 +1,4 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://3ufsoqwwn1ee"]
-
-[ext_resource type="Texture2D" uid="uid://b18nh8nwqis8v" path="res://textures/grass.png" id="1_jlxf5"]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://3ufsoqwwn1ee"]
 
 [resource]
-albedo_color = Color(0.309804, 0.309804, 0.309804, 1)
-albedo_texture = ExtResource("1_jlxf5")
+vertex_color_use_as_albedo = true

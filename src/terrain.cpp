@@ -21,6 +21,7 @@
 #include <godot_cpp/classes/random_number_generator.hpp>
 
 #include "status_line.h"
+#include "tiles.h"
 #include "ftree.h"
 
 
@@ -63,18 +64,16 @@ void Terrain::_ready() {
     }
 
     generator();
-//        generate_chunk(WORLD_CENTER, WORLD_CENTER);
-#if 1
+    int render_distance = 2;
         //for (int y = 3; y >=0; y--) {
-        for (int y = -2; y < 3; y++) {
-            for (int x = -2; x < 3; x++) {
-            //for (int x = 0; x < 4; x++) {
+        for (int y = -render_distance; y < render_distance; y++) {
+            //for (int x = render_distance; x >=-render_distance; x--) {
+            for (int x = -render_distance; x < render_distance; x++) {
                 generate_chunk(WORLD_CENTER + x, WORLD_CENTER + y);
             }
             //UtilityFunctions::print(y);
             printf("%d\n", y);
         }
-#endif
 
         FTree * tree= memnew(FTree);
         Node3D *node=get_node<Node3D>("/root/Node3D");
@@ -234,17 +233,27 @@ void Terrain::generator()
     //OpenSimplex2F(time(NULL), &simplex_context);
     RandomNumberGenerator rng;
     OpenSimplex2F(rng.randi(), &simplex_context);
+    OpenSimplex2F(rng.randi(), &simplex_context2);
+    OpenSimplex2F(rng.randi(), &simplex_context3);
 
     load_chunk(WORLD_CENTER, WORLD_CENTER);
 }
 
 int Terrain::height_at(int chunk_x, int chunk_y, int x, int y)
 {
-    return 1 + 
-        (OpenSimplex2F_noise2(simplex_context, 
+    return CHUNK_SIZE/2 + 
+        ((OpenSimplex2F_noise2(simplex_context, 
                 (chunk_x * CHUNK_SIZE + x) / WORLD_SCALE, 
-                (chunk_y * CHUNK_SIZE + y) / WORLD_SCALE) + 1) *
-        (CHUNK_SIZE - 2) / 2.0;
+                (chunk_y * CHUNK_SIZE + y) / WORLD_SCALE)) *
+        (CHUNK_SIZE - 2) / 4.0) +
+        ((OpenSimplex2F_noise2(simplex_context2, 
+                (chunk_x * CHUNK_SIZE + x) / WORLD_SCALE, 
+                (chunk_y * CHUNK_SIZE + y) / WORLD_SCALE)) *
+        (CHUNK_SIZE - 2) / 8.0) -
+        ((OpenSimplex2F_noise2(simplex_context3, 
+                (chunk_x * CHUNK_SIZE + x) / WORLD_SCALE, 
+                (chunk_y * CHUNK_SIZE + y) / WORLD_SCALE)) *
+        (CHUNK_SIZE - 2) / 8.0);
 }
 
 void Terrain::generate_chunk2(chunk *chunk, int chunk_x, int chunk_y)  
