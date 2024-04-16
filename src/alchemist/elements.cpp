@@ -163,9 +163,10 @@ void BaseElement::init_real()
     }
 }
 
-void BaseElement::show()
+void BaseElement::show(bool details)
 {
     printf("   *** BaseElement -> %d ***\n", c_id);
+    if (!details) return;
     printf("   density = %u\n", density);
     printf("   transparency = %u\n", transparency);
     printf("   form = %u\n", form);
@@ -191,13 +192,14 @@ Element::Element(BaseElement *b)
     
 }
 
-void Element::show()
+void Element::show(bool details)
 {
-    printf("\n*** Element -> %d: %s ***\n", c_id, base->name);
+    printf("\n*** Element -> %d: base=%s ***\n", c_id, base->name);
+    if (!details) return;
     printf("sharpness = %u\n", sharpness);
     printf("smoothness = %u\n", smoothness);
     printf("mass = %u: l=%u w=%u h=%u \n", mass, length, width, height);
-    base->show();
+    base->show(details);
 }
 
 Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
@@ -210,7 +212,10 @@ Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
         
 bool Ingredient::craft()
 {
-    if (req_form != get_form()) return false;
+    if (req_form != get_form()) {
+        printf("form != %d\n", req_form);
+        return false;
+    }
 
     quality = rand() % 100;
     resilience = rand() % 100;
@@ -218,13 +223,14 @@ bool Ingredient::craft()
     return true;
 }
 
-void Ingredient::show()
+void Ingredient::show(bool details)
 {
     printf("\nvvv %s ->%d vvv\n", name, c_id);
+    if (!details) return;
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
     printf("usage = %d\n", usage);
-    el->show();
+    el->show(details);
     printf("^^^ %s ^^^\n", name);
 }
         
@@ -254,7 +260,10 @@ bool Product::craft()
 {
     for (int i=0; i < ing_count; i++)
     {
-        if (req_form != ings[i]->get_form()) return false;
+        if (req_form != ings[i]->get_form()) {
+            printf("form != %d for inq[%d]\n", req_form, i);       
+            return false;
+        }
     }
     if (!check_ing()) return false;
 
@@ -264,16 +273,17 @@ bool Product::craft()
     return true;
 }
 
-void Product::show()
+void Product::show(bool details)
 {
     printf("\n!!! %s -> %d!!!\n", name, c_id);
+    if (!details) return;
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
     printf("usage = %d\n", usage);
 
     for (int i=0; i < ing_count; i++)
     {
-        ings[i]->show();
+        ings[i]->show(details);
     }
     printf("iii %s iii\n", name);
 }
@@ -310,4 +320,14 @@ void init_elements()
     {
         base_elements[i] = new BaseElement;
     }
+}
+
+
+void show_base_elements()
+{
+    for (int i=0; i < BASE_ELEMENTS; i++)
+    {
+        base_elements[i]->show(true);
+    }
+
 }

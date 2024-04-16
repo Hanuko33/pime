@@ -61,7 +61,7 @@ class BaseElement
         BaseElement(); 
         void init_real();
         void init_fantasy();
-        void show();
+        void show(bool details=true);
 };        
 
 class InventoryElement
@@ -71,12 +71,15 @@ class InventoryElement
         Form req_form;
         bool known;
         InventoryElement() { req_form = Form_none; known = true; }
-        virtual void show() {}
+        virtual void show(bool details=true) { }
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
         virtual const char * get_form_name() { return NULL; }
         virtual int get_id() {return -1; }
-        virtual bool craft() { return false; }
+        virtual bool craft() { 
+            printf("missing craft function\n");
+            return false; 
+        }
         void set_posittion(int _x, int _y, int _z) { x=_x; y=_y; z=_z; }
         void get_posittion(int *_x, int *_y, int *_z) { *_x=x; *_y=y; *_z=z; }
 };
@@ -95,7 +98,7 @@ class Element : public InventoryElement
         unsigned int height;
         unsigned int volume; //lenght*width*height
     
-        void show();
+        void show(bool details=true);
 
         Element(BaseElement *b);
         Form get_form() {return base->form; }
@@ -164,7 +167,7 @@ class Ingredient : public InventoryElement
         int get_id() {return id; }
         bool craft();
         Ingredient(InventoryElement * from, Ingredient_id i, Form f);
-        void show();
+        void show(bool details=true);
 };
 
 class Product : public InventoryElement
@@ -192,10 +195,11 @@ class Product : public InventoryElement
        
         bool craft();
         virtual bool check_ing() { return false; }
-        void show();
+        void show(bool details=true);
 
 
 };
+
 class Being : public Element
 {
     public:
@@ -214,5 +218,7 @@ class Being : public Element
 extern BaseElement *base_elements[BASE_ELEMENTS];
 
 void init_elements();
+void show_base_elements();
+
 #endif
 
