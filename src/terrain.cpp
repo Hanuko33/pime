@@ -19,8 +19,11 @@
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/input.hpp>
 #include <godot_cpp/classes/random_number_generator.hpp>
+
 #include "status_line.h"
 #include "tiles.h"
+#include "ftree.h"
+
 
 using namespace godot;
 
@@ -38,13 +41,15 @@ Array Terrain::get_mesh_data() {
 
 Terrain::Terrain() {
     foo_x = 1;
-    foo_z = 0;
+    foo_z = 0;    
+
     UtilityFunctions::print("terrain construct");
     for (int z = 0; z < WORLD_SIZE; z++) {
         for (int x = 0; x < WORLD_SIZE; x++) {
             chunks[z][x] = nullptr;
         }
     }
+
 }
 
 Terrain::~Terrain() {
@@ -59,8 +64,6 @@ void Terrain::_ready() {
     }
 
     generator();
-//        generate_chunk(WORLD_CENTER, WORLD_CENTER);
-
     int render_distance = 2;
         //for (int y = 3; y >=0; y--) {
         for (int y = -render_distance; y < render_distance; y++) {
@@ -71,6 +74,14 @@ void Terrain::_ready() {
             //UtilityFunctions::print(y);
             printf("%d\n", y);
         }
+
+        FTree * tree= memnew(FTree);
+        Node3D *node=get_node<Node3D>("/root/Node3D");
+        int h=height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
+        tree->set_position(Vector3(0, h-0.7, 0));
+        node->call_deferred("add_child", tree);
+
+
    /*        RenderingDevice* rd = RenderingServer::get_singleton()->create_local_rendering_device();
         Ref<RDShaderFile> file = ResourceLoader::get_singleton()->load("res://shader.comp.glsl");
         Ref<RDShaderSPIRV> shader_spirv = file->get_spirv();
@@ -285,7 +296,7 @@ void Terrain::generate_chunk2(chunk *chunk, int chunk_x, int chunk_y)
     for (int i = 0; i < 4; i++)
     {
         int b = rand() % BASE_ELEMENTS;
-        Element *o = new Element(&base_elements[b]);
+        Element *o = new Element(base_elements[b]);
         int x = rand() % 16;
         int z = rand() % 16;
 

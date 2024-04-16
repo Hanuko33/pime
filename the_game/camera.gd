@@ -54,6 +54,8 @@ func _input(event):
 	# Receives mouse button input
 	if event is InputEventMouseButton:
 		match event.button_index:
+			MOUSE_BUTTON_RIGHT: # Only allows rotation if right click down
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 			MOUSE_BUTTON_WHEEL_UP: # Increases max velocity
 				_vel_multiplier = clamp(_vel_multiplier * 1.1, 0.2, 500)
 			MOUSE_BUTTON_WHEEL_DOWN: # Decereases max velocity

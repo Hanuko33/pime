@@ -99,17 +99,15 @@ void PlayerCharacter::_process(double delta) {
             move_direction = input_sync->move_direction;
 
             Vector3 v = get_velocity();
-            if (is_on_floor()) {
-                v = Vector3(move_direction.x, 0, move_direction.y);
-                v.rotate(Vector3(0, 1, 0), get_rotation().y);
-                v.normalize();
-                v *= speed;
-                v.y = get_velocity().y;
-            }
+            v = Vector3(move_direction.x, 0, move_direction.y);
+            v.rotate(Vector3(0, 1, 0), get_rotation().y);
+            v.normalize();
+            v *= speed;
+            v.y = get_velocity().y;
             if (!is_on_floor()) {
                 v.y -= 10*delta;
             }
-            if (Input::get_singleton()->is_action_just_pressed("ui_accept") && is_on_floor()) {
+            if (Input::get_singleton()->is_action_pressed("ui_accept") && is_on_floor()) {
                 v.y = 4.5;
             }
             set_velocity(v);
@@ -147,7 +145,7 @@ void PlayerCharacter::_physics_process(double delta) {
     parameters->set_exclude(a);
     Dictionary result = space_state->intersect_ray(parameters);
 //    UtilityFunctions::print(result);
-//    UtilityFunctions::print(result["collider"], result["position"]);
+//    UtilityFunctions::print("looking at:", result["collider"], " pos=", result["position"]);
     looking_at = Object::cast_to<Node3D>(result["collider"]);
     looking_pos = result["position"];
     looking_norm = result["normal"];
@@ -173,9 +171,9 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             if (left_hand)
                 status_line(String("in left hand: ") + String(left_hand->element->get_name()));
         }
-        else if (key_ev->get_keycode() == KEY_Q)
-            drop(&right_hand);
         else if (key_ev->get_keycode() == KEY_E)
+            drop(&right_hand);
+        else if (key_ev->get_keycode() == KEY_Q)
             drop(&left_hand);
 
 
@@ -222,7 +220,7 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             Item* item = Object::cast_to<Item>(looking_at);
             if (item) {
                 UtilityFunctions::print("get item");
-                pick_up(item, &left_hand);
+                pick_up(item, &right_hand);
             }
 
             Terrain* terrain = Object::cast_to<Terrain>(looking_at->get_parent()->get_parent());
@@ -238,7 +236,7 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             Item* item = Object::cast_to<Item>(looking_at);
             if (item) {
                 UtilityFunctions::print("get item");
-                pick_up(item, &right_hand);
+                pick_up(item, &left_hand);
             }
             Terrain* terrain = Object::cast_to<Terrain>(looking_at->get_parent()->get_parent());
             if (terrain)
@@ -288,9 +286,9 @@ void PlayerCharacter::pick_up(Item *item, Item** hand) {
         //item->set_collision_mask_value(2, true);
         item->get_node<CollisionShape3D>("Collision")->set_disabled(true);
         if (hand == &right_hand)
-            item->set_position(Vector3(0.5, 0, -1));
+            item->set_position(Vector3(1, 0, -0.1));
         else
-            item->set_position(Vector3(-0.5, 0, -1));
+            item->set_position(Vector3(-1, 0, -0.1));
         *hand = item;
     }
 }

@@ -70,7 +70,7 @@ class InventoryElement
     public:
         Form req_form;
         bool known;
-        InventoryElement() { req_form = Form_none; known = false; }
+        InventoryElement() { req_form = Form_none; known = true; }
         virtual void show() {}
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
@@ -211,7 +211,7 @@ class Being : public Element
 #define ING_ELEMENTS 2
 #define PROD_ELEMENTS 1
 
-extern BaseElement base_elements[BASE_ELEMENTS];
+extern BaseElement *base_elements[BASE_ELEMENTS];
 
 void init_elements();
 #endif

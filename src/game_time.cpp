@@ -1,4 +1,4 @@
-#include "time.h"
+#include "game_time.h"
 
 Game_time game_time;
 
