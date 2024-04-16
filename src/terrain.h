@@ -42,7 +42,7 @@ public:
 
     chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
-    enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z);
+    /*enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z);
     enum game_tiles get_tile_at_ppos(PlayerCharacter *player);
 
     InventoryElement ** get_item_at_ppos(PlayerCharacter *player);
@@ -50,7 +50,7 @@ public:
 
     void set_item_at(InventoryElement * item, int chunk_x, int chunk_y, int x, int y, int z);
     void set_item_at_ppos(InventoryElement * item, PlayerCharacter* player);
-
+*/
     void generator();
     void generate_chunk2(chunk* chunk, int chunk_x, int chunk_y);
     char load_chunk(int x, int y);

@@ -113,6 +113,7 @@ BaseElement::BaseElement()
         init_fantasy();
     else
         init_real();
+    color = godot::Color((rand()%256)/255.0, (rand()%256)/255.0, (rand()%256)/255.0);
 }
 
 void BaseElement::init_fantasy()

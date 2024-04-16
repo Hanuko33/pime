@@ -1,5 +1,6 @@
 #include "terrain.h"
 #include "OpenSimplex/OpenSimplex2F.h"
+#include "alchemist/elements.h"
 #include "chunk_renderer.h"
 #include "notifier.h"
 #include "player.h"
@@ -185,7 +186,7 @@ void Terrain::mine(Vector3 in_pos, Vector3 in_norm) {
     int chunk_x = pos.x/CHUNK_SIZE;
     int z_pos = pos.z%CHUNK_SIZE;
     int x_pos = pos.x%CHUNK_SIZE;
-    world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = TILE_AIR;
+    world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = nullptr;
     chunk->render_self();
     if (z_pos == 0 && chunks[chunk_z-1][chunk_x]) {
         chunks[chunk_z-1][chunk_x]->render_self();
@@ -213,7 +214,7 @@ void Terrain::place(Vector3 in_pos, Vector3 in_norm) {
     ChunkRenderer* chunk = chunks[chunk_z][chunk_x];
     int z_pos = pos.z%CHUNK_SIZE;
     int x_pos = pos.x%CHUNK_SIZE;
-    world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = TILE_DIRT;
+    world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = base_elements[0];
     chunk->render_self();
     if (z_pos == 0 && chunks[chunk_z-1][chunk_x]) {
         chunks[chunk_z-1][chunk_x]->render_self();
@@ -266,7 +267,7 @@ void Terrain::generate_chunk2(chunk *chunk, int chunk_x, int chunk_y)
             //printf("%3d ", height);
             for (int y = 0; y < CHUNK_SIZE; y++)
             {
-                chunk->table[z][y][x].tile = (y < height-1) ? TILE_DIRT : (y == height-1 ? TILE_GRASS : TILE_AIR);
+                chunk->table[z][y][x].tile = (y < height-1) ? base_elements[0] : (y == height-1 ? base_elements[1] : nullptr);
                 chunk->table[z][y][x].weight = 4 + rand() % 9;
             }
         }
@@ -335,7 +336,7 @@ char Terrain::load_chunk(int x, int y)
     return 0;
 }
 
-InventoryElement** Terrain::get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
+/*InventoryElement** Terrain::get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
     // TODO: change items array to list
    
@@ -380,12 +381,12 @@ void Terrain::set_item_at_ppos(InventoryElement *item, PlayerCharacter *player)
 
 enum game_tiles Terrain::get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
-    return world_table[chunk_y][chunk_x]->table[z][y][x].tile;
+    return (game_tiles)world_table[chunk_y][chunk_x]->table[z][y][x].tile;
 }
 
 enum game_tiles Terrain::get_tile_at_ppos(PlayerCharacter *player)
 {
     return get_tile_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
-
+*/
 

@@ -2,6 +2,7 @@
 #define __ELEMENTS__H
 
 #include <cstdio>
+#include <godot_cpp/variant/color.hpp>
 
 extern bool fantasy_game;
 
@@ -57,6 +58,7 @@ class BaseElement
         Edible *edible;
         Form form;
         Solid *solid;
+        godot::Color color;
         
         BaseElement(); 
         void init_real();

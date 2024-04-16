@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/static_body3d.hpp>
+#include "alchemist/elements.h"
 #include "godot_cpp/classes/concave_polygon_shape3d.hpp"
 
 #include "terrain.h"
@@ -38,6 +39,7 @@ void ChunkRenderer::_ready() {
     body->add_child(collision);
 
     set_mesh(array_mesh);
+    terrain = get_node<Terrain>("..");
     //Ref<Material> mat = ResourceLoader::get_singleton()->load("res://models/test_material.tres");
     Ref<Material> mat = ResourceLoader::get_singleton()->load("res://models/new_shader_material.tres");
     if (!mat.is_valid()) {
@@ -50,7 +52,6 @@ void ChunkRenderer::_ready() {
 }
 
 void ChunkRenderer::render_self() {
-    Terrain *terrain = get_node<Terrain>("..");
 
     Ref<ArrayMesh> array_mesh = get_mesh();
 
@@ -65,7 +66,7 @@ void ChunkRenderer::render_self() {
         {
             for (int x = 0; x < CHUNK_SIZE-1; x++)
             {
-                int corners[8][4] = {
+                CubeCorner corners[8] = {
                     { x, y, z, terrain->world_table[chunk_z][chunk_x]->table[z][y][x].tile },
                     { x+1, y, z, terrain->world_table[chunk_z][chunk_x]->table[z][y][x+1].tile },
                     { x+1, y, z+1, terrain->world_table[chunk_z][chunk_x]->table[z+1][y][x+1].tile },
@@ -135,12 +136,11 @@ void ChunkRenderer::render_self() {
 }
 
 void ChunkRenderer::cubes_on_z_edge(int x_offset, int chunk_offset, PackedVector3Array &verts, PackedVector3Array &normals, PackedColorArray& colors) {
-    Terrain *terrain = get_node<Terrain>("..");
     for (int z = 0; z < CHUNK_SIZE-1; z++)
     {
         for (int y = 0; y < CHUNK_SIZE-1; y++)
         {
-             int corners[8][4] = {
+             CubeCorner corners[8] = {
                 { x_offset, y, z, terrain->world_table[chunk_z][chunk_offset]->table[z][y][CHUNK_SIZE-1].tile },
                 { x_offset+1, y, z, terrain->world_table[chunk_z][chunk_offset+1]->table[z][y][0].tile },
                 { x_offset+1, y, z+1, terrain->world_table[chunk_z][chunk_offset+1]->table[z+1][y][0].tile },
@@ -166,12 +166,11 @@ void ChunkRenderer::cubes_on_z_edge(int x_offset, int chunk_offset, PackedVector
 }
 
 void ChunkRenderer::cubes_on_x_edge(int z_offset, int chunk_offset, PackedVector3Array &verts, PackedVector3Array &normals, PackedColorArray& colors) {
-    Terrain *terrain = get_node<Terrain>("..");
     for (int x = 0; x < CHUNK_SIZE-1; x++)
     {
         for (int y = 0; y < CHUNK_SIZE-1; y++)
         {
-            int corners[8][4] = {
+            CubeCorner corners[8] = {
                 { x, y, z_offset, terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x].tile },
                 { x+1, y, z_offset, terrain->world_table[chunk_offset][chunk_x]->table[CHUNK_SIZE-1][y][x+1].tile },
                 { x+1, y, z_offset+1, terrain->world_table[chunk_offset+1][chunk_x]->table[0][y][x+1].tile },
@@ -197,7 +196,6 @@ void ChunkRenderer::cubes_on_x_edge(int z_offset, int chunk_offset, PackedVector
 }
 
 void ChunkRenderer::cube_on_corner(int x, int z, int dx, int dz, PackedVector3Array &verts, PackedVector3Array &normals, PackedColorArray& colors) {
-    Terrain *terrain = get_node<Terrain>("..");
     volatile int foo =x;
     volatile int boo = z;
     int pos_x = (dx == -1) ? -1 : CHUNK_SIZE-1;
@@ -206,7 +204,7 @@ void ChunkRenderer::cube_on_corner(int x, int z, int dx, int dz, PackedVector3Ar
     int tile_x;
     for (int y = 0; y < CHUNK_SIZE-1; y++)
     {
-      int corners[8][4] = {
+      CubeCorner corners[8] = {
             { pos_x, y, pos_z, terrain->world_table[z][x]->table[CHUNK_SIZE-1][y][CHUNK_SIZE-1].tile },
             { pos_x+1, y, pos_z, terrain->world_table[z][x+1]->table[CHUNK_SIZE-1][y][0].tile },
             { pos_x+1, y, pos_z+1, terrain->world_table[z + 1][x + 1]->table[0][y][0].tile },
@@ -239,13 +237,13 @@ Vector3 inter(Vector3 v1, Vector3 v2) {
     return (v1+v2) * 0.5;
 }
 
-void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], PackedVector3Array &verts, PackedVector3Array &normals, PackedColorArray &colors) {
+void ChunkRenderer::marching_cube(CubeCorner (&corners)[8], int (&weights)[8], PackedVector3Array &verts, PackedVector3Array &normals, PackedColorArray &colors) {
     int cubeIndex = 0;
     for (int i = 0; i < 8; i++) {
         //corners[i][0] += (chunk_x - WORLD_CENTER) * CHUNK_SIZE;
         //corners[i][1] *= 10;
         //corners[i][2] += (chunk_z - WORLD_CENTER) * CHUNK_SIZE;
-        if (corners[i][3] == 0) cubeIndex |= (1 << i);
+        if (corners[i].tile == nullptr) cubeIndex |= (1 << i);
     }
     int numIndices = lengths[cubeIndex];
     int offset = offsets[cubeIndex];
@@ -264,9 +262,9 @@ void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], Packe
         int a2 = cornerIndexAFromEdge[v2];
         int b2 = cornerIndexBFromEdge[v2];
 
-        Vector3 a = interpolate_verts(Vector3(corners[a0][0], corners[a0][1], corners[a0][2]), Vector3(corners[b0][0], corners[b0][1], corners[b0][2]), weights[a0], weights[b0]);
-        Vector3 b = interpolate_verts(Vector3(corners[a1][0], corners[a1][1], corners[a1][2]), Vector3(corners[b1][0], corners[b1][1], corners[b1][2]), weights[a1], weights[b1]);
-        Vector3 c = interpolate_verts(Vector3(corners[a2][0], corners[a2][1], corners[a2][2]), Vector3(corners[b2][0], corners[b2][1], corners[b2][2]), weights[a2], weights[b2]);
+        Vector3 a = interpolate_verts(Vector3(corners[a0].x, corners[a0].y, corners[a0].z), Vector3(corners[b0].x, corners[b0].y, corners[b0].z), weights[a0], weights[b0]);
+        Vector3 b = interpolate_verts(Vector3(corners[a1].x, corners[a1].y, corners[a1].z), Vector3(corners[b1].x, corners[b1].y, corners[b1].z), weights[a1], weights[b1]);
+        Vector3 c = interpolate_verts(Vector3(corners[a2].x, corners[a2].y, corners[a2].z), Vector3(corners[b2].x, corners[b2].y, corners[b2].z), weights[a2], weights[b2]);
 
         Vector3 ab = b - a;
         Vector3 ac = c - a;
@@ -278,13 +276,13 @@ void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], Packe
         float dist = -1;
         for (int j = 0; j < 8; j++) {
             if (color_corner == -1) {
-                if (corners[j][3]) {
+                if (corners[j].tile) {
                     color_corner = j;
-                    dist = center.distance_squared_to(Vector3(corners[j][0], corners[j][1], corners[j][2]));
+                    dist = center.distance_squared_to(Vector3(corners[j].x, corners[j].y, corners[j].z));
                 }
-            } else if (corners[j][3] && center.distance_squared_to(Vector3(corners[j][0], corners[j][1], corners[j][2])) < dist) {
+            } else if (corners[j].tile && center.distance_squared_to(Vector3(corners[j].x, corners[j].y, corners[j].z)) < dist) {
                 color_corner = j;
-                dist = center.distance_squared_to(Vector3(corners[j][0], corners[j][1], corners[j][2]));
+                dist = center.distance_squared_to(Vector3(corners[j].x, corners[j].y, corners[j].z));
             }
         }
         if (color_corner == -1)
@@ -299,16 +297,39 @@ void ChunkRenderer::marching_cube(int (&corners)[8][4], int (&weights)[8], Packe
         //colors.push_back(Color(corners[common][3]*20, 0, 0));
         //colors.push_back(Color(corners[common][3]*20, 0, 0));
         //colors.push_back(Color(corners[common][3]*20, 0, 0));
-        colors.push_back(Color(corners[color_corner][3]/9.0, 0, 0));
-        colors.push_back(Color(corners[color_corner][3]/9.0, 0, 0));
-        colors.push_back(Color(corners[color_corner][3]/9.0, 0, 0));
+        int x, y, z, cx, cz;
+        if (corners[color_corner].x < 16) {
+            x = corners[color_corner].x;
+            cx = chunk_x;
+        } else {
+            x = 0;
+            cx =  chunk_x+1;
+        }
+        if (corners[color_corner].y < 16) {
+            y = corners[color_corner].y;
+        } else {
+            y = 0;
+        }       
+        if (corners[color_corner].z < 16) {
+            z = corners[color_corner].z;
+            cz = chunk_z;
+        } else {
+            z = 0;
+            cz =  chunk_z+1;
+        }
+        BaseElement* el = terrain->world_table[cz][cx]->table[z][y][x].tile;
+        //printf("id: %d %d %d %d %d\n", id, color_corner, corners[color_corner].z, corners[color_corner].y, corners[color_corner].x);
+        Color color = el->color;
+        colors.push_back(color);
+        colors.push_back(color);
+        colors.push_back(color);
+        //colors.push_back(Color(corners[color_corner][3]/9.0, 0, 0));
     }
 
 }
 
 void ChunkRenderer::spawn_objects() {
     // TODO: replace table with lists
-    Terrain *terrain = get_node<Terrain>("..");
     for (int i = 0; i < 10; i++) {
         struct object * o = terrain->world_table[chunk_z][chunk_x]->objects[i];
         if (o)
