@@ -2,6 +2,8 @@
 #define __ELEMENTS__H
 
 #include <cstdio>
+#include <cstdlib>
+#include "names.h"
 
 extern bool fantasy_game;
 
@@ -43,7 +45,7 @@ enum Class_id
     Class_Base=1,
     Class_Element,
     Class_Ingredient,
-    Class_Product
+    Class_Product,
 };
 
 class BaseElement
@@ -72,6 +74,7 @@ class InventoryElement
         bool known;
         InventoryElement() { req_form = Form_none; known = true; }
         virtual void show(bool details=true) { }
+        virtual void tick() { }
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
         virtual const char * get_form_name() { return NULL; }
@@ -100,7 +103,7 @@ class Element : public InventoryElement
     
         void show(bool details=true);
 
-        Element(BaseElement *b);
+        Element(BaseElement *b);        
         Form get_form() {return base->form; }
         const char * get_name() {
             if (!fantasy_game) return base->name;
@@ -200,20 +203,70 @@ class Product : public InventoryElement
 
 };
 
-class Being : public Element
+class Being : public InventoryElement
 {
     public:
+        const char * name;
         unsigned int age;
         unsigned int max_age;
-        void grow() {}
+        bool alive;
+        virtual void grow() {
+            if (!alive) return;
+            age++;
+            if (age > max_age) alive=false;
+        }
+        Being()
+        {
+            alive=true;
+            age=0;
+            max_age=1 + rand() % 36000; //100 years
+            name=create_name(5);
+        }
+        bool is_alive() { return alive; }
+        void show(bool details=true) {
+           printf("\n@@@ %s age=%d/%d alive=%d @@@\n", name, age, max_age, alive);
+        }
+        void tick() {
+            grow();
+        }
+};
+
+enum Plant_phase
+{
+    Plant_seed=0,
+    Plant_seedling,
+    Plant_growing,
+    Plant_flowers,
+    Plant_fruits,
+    Plant_phase_max
+};
+
+class Plant: public Being
+{
+    //seed -> seedling/sprout -> young plant -> flowers -> fruits
+    Edible * edible;
+    Plant_phase phase;
+    public:
+    Plant() {
+        max_age=60 + rand() % 300; //1 years
+        phase = (Plant_phase) (rand() %  Plant_phase_max);
+        edible = new Edible;
+    }
+    void show(bool details=true) {
+       Being::show(details);
+       printf("phase = %d\n", phase);
+       edible->show();
+    }
+
 };
 #define BASE_ELEMENTS 50
 #define SOLID_ELEMENTS 4
 #define FOOD_ELEMENTS 2
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
-#define ING_ELEMENTS 2
-#define PROD_ELEMENTS 1
+
+//#define ING_ELEMENTS 2
+//#define PROD_ELEMENTS 1
 
 extern BaseElement *base_elements[BASE_ELEMENTS];
 

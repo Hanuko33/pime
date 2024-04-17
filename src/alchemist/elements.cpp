@@ -1,7 +1,7 @@
 #include <cstdlib>
 
 #include "elements.h"
-#include "names.h"
+
 
 bool fantasy_game=1;
 BaseElement *base_elements[BASE_ELEMENTS];
@@ -97,11 +97,11 @@ Solid::Solid()
 void Solid::show()
 {
     printf("      *** Solid ***\n");
-    printf("      stretching = %u\n", stretching);
-    printf("      squeezing = %u\n", squeezing);
-    printf("      bending = %u\n", bending);
-    printf("      fragility = %u\n", fragility);
-    printf("      solubility = %u\n", solubility);
+    printf("      stretching = %u\n", stretching); // rozciąganie
+    printf("      squeezing = %u\n", squeezing); //ściskanie
+    printf("      bending = %u\n", bending); // zginanie
+    printf("      fragility = %u\n", fragility); //kruchość
+    printf("      solubility = %u\n", solubility); //rozpuszczalność
 
 }
 
@@ -143,7 +143,7 @@ void BaseElement::init_fantasy()
         edible=new Edible;
         id=rand() % FOOD_ELEMENTS;
     }
-    name = get_name(5 - form);
+    name = create_name(5 - form);
 }
 
 void BaseElement::init_real()
@@ -167,14 +167,15 @@ void BaseElement::show(bool details)
 {
     printf("   *** BaseElement -> %d ***\n", c_id);
     if (!details) return;
-    printf("   density = %u\n", density);
-    printf("   transparency = %u\n", transparency);
+    printf("   density = %u\n", density); //gęstość
+    printf("   transparency = %u\n", transparency); //przezroczystość
     printf("   form = %u\n", form);
     switch(form)
     {
         case Form_solid:
             solid->show();
             break;
+        default: break;
     }
     if (edible) edible->show();
 }
@@ -196,8 +197,8 @@ void Element::show(bool details)
 {
     printf("\n*** Element -> %d: base=%s ***\n", c_id, base->name);
     if (!details) return;
-    printf("sharpness = %u\n", sharpness);
-    printf("smoothness = %u\n", smoothness);
+    printf("sharpness = %u\n", sharpness); //ostrość
+    printf("smoothness = %u\n", smoothness); //gładkość
     printf("mass = %u: l=%u w=%u h=%u \n", mass, length, width, height);
     base->show(details);
 }
@@ -301,6 +302,7 @@ Form Product::get_form()
             case Form_solid: solid++; break;
             case Form_liquid: liq++; break;
             case Form_gas: gas++; break;
+            default: return Form_none;
         }
     }
     if (solid) return Form_solid;
@@ -321,7 +323,6 @@ void init_elements()
         base_elements[i] = new BaseElement;
     }
 }
-
 
 void show_base_elements()
 {

@@ -6,10 +6,19 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <cstdio>
-
+#include "game_time.h"
 
 InvList * inventory;
 InvList * elements;
+InvList * plants;
+
+void (*callback_daily)();
+
+void daily_call()
+{
+  //  printf("daily call\n");
+    plants->tick();
+}
 
 void help()
 {
@@ -17,7 +26,7 @@ void help()
     printf("t - Test\n");
     printf("c - Craft\n");
     printf("s - Show\n");
-
+    printf("@ - change clock\n");
 }
 
 void show()
@@ -25,6 +34,7 @@ void show()
     printf("%sb - base elements\n", colorCyan);
     printf("e - elements\n");
     printf("i - inventory\n");
+    printf("p - plants\n");
 
     printf("%s%s", colorNormal, colorGreenBold);
 
@@ -34,6 +44,25 @@ void show()
             case 'b': show_base_elements(); break;
             case 'i': inventory->show(false); break;
             case 'e': elements->show(true); break;
+            case 'p': plants->show(true); break;
+        }
+}
+
+void change_clock()
+{
+    printf("%sh - add 1 hour\n", colorCyan);
+    printf("d - add 1 day\n");
+    printf("q - add 90 days\n");
+    printf("y - add 1 year\n");
+    printf("%s%s", colorNormal, colorGreenBold);
+
+    char c=wait_key('@');
+        switch(c)
+        {
+            case 'h': game_time.update_time(3600); break;
+            case 'd': game_time.update_time(24*3600); break;
+            case 'q': game_time.update_time(90*24*3600); break;
+            case 'y': game_time.update_time(360*24*3600); break;
         }
 }
 
@@ -173,7 +202,9 @@ void play()
             case 'e': return;
             case 27: printf("%s", clrscr); break;
             case '?': help(); break;
+            case '@': change_clock(); break;
         }
+        game_time.update_time(1);
     }
 }
 
@@ -198,9 +229,15 @@ int main()
 
     inventory = new InvList("inventory");
     elements = new InvList("elements");
+    plants = new InvList("plants");
+
     for (int i=0; i < 5; i++)
         elements->add(new Element(base_elements[rand() % BASE_ELEMENTS]));
 
+    for (int i=0; i < 5; i++)
+        plants->add(new Plant());
+
+    callback_daily=daily_call;
     play();
 
     tcsetattr(0, TCSANOW, &old_stdin);

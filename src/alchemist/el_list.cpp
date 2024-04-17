@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <cstring>
 #include <unistd.h>
+#include "game_time.h"
 
 ListElement::ListElement(InventoryElement *entry)
 {
@@ -68,6 +69,16 @@ void InvList::show(bool details)
     printf("--- %s (%d) ---\n", name, nr_elements);
     while(cur) {
         cur->show(details);
+        cur = cur->next;
+    }
+}
+
+void InvList::tick()
+{
+    ListElement * cur = head;
+
+    while(cur) {
+        cur->tick();
         cur = cur->next;
     }
 }
@@ -147,17 +158,17 @@ int kbhit()
 
 char wait_key(char prompt)
 {
-    printf("\r%c> ", prompt);
+    printf("\r%s%c> ", game_time.get_time(),   prompt);
     while(!kbhit())
     {
         usleep(1000);
     }
     char c;
-    read(0,&c,1);
-    printf("%c\n", c);
-    return c;
+    if (read(0,&c,1) == 1) {
+        printf("%c\n", c);
+        return c;
+    } else return 0;
 }
-
 
 Show_el::Show_el(char _c, ListElement *_el)
 {

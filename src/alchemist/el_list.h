@@ -11,6 +11,7 @@ public:
 
 	void add(ListElement * entry);
 	virtual void show(bool details=true);
+    virtual void tick() { el->tick(); };
 	ListElement(InventoryElement *entry);
     ListElement(): next(nullptr) {}
 };
@@ -34,6 +35,7 @@ public:
 	void add(ListElement *el);
 	void remove(InventoryElement *el);
 	int get_count(InventoryElement *el);
+    void tick();
 };
 
 class Show_el : public ListElement
