@@ -26,7 +26,56 @@ void help()
     printf("t - Test\n");
     printf("c - Craft\n");
     printf("s - Show\n");
+    printf("h - Harvest plant\n");
+    printf("o - sOw plant\n");
     printf("@ - change clock\n");
+    printf("f - find\n");
+}
+
+InventoryElement * select_element(InvList * list)
+{
+    ListElement *elems = list->head;
+    Show_list *show_cat = new Show_list('e');
+    char k = 'a';
+
+    while(elems)
+    {
+        if (elems->is_enabled())
+        {
+            show_cat->add(new Show_el(k, elems));
+            k++;
+        }
+        elems=elems->next;
+    }
+    printf("%s", colorCyan);
+    show_cat->show(false);
+    elems = show_cat->select_el();
+    if (!elems) return nullptr;
+    if (elems->el)
+    {
+        printf("%s%s", colorNormal, colorGreenBold);
+        printf("selected %s\n", elems->el->get_name());
+        return elems->el;
+    }
+
+    return nullptr;
+}
+
+void harvest_plant()
+{
+    ListElement * cur = plants->head;
+    while(cur) {
+        Plant * p=(Plant*) cur->el;
+        if (!p->planted) cur->disable();
+        cur = cur->next;
+    }
+
+    InventoryElement *el=select_element(plants);
+    plants->enable_all();
+    if (!el) return;
+    inventory->add(el);
+    plants->remove(el);
+    printf("plant: %s harvested to inventory\n", el->get_name());
 }
 
 void show()
@@ -48,10 +97,46 @@ void show()
         }
 }
 
+void add_new_plant()
+{
+    Plant *p=new Plant();
+    if (p->phase == Plant_seed)
+    {
+        elements->add(p);
+        printf("new Plant seed %s found\n", p->get_name());
+    }
+    else {
+        plants->add(p);
+        printf("new Plant %s found\n", p->get_name());
+    }
+}
+
+void add_new_element()
+{
+    Element * el=new Element(base_elements[rand() % BASE_ELEMENTS]);
+    elements->add(el);
+    printf("new Element %s found\n", el->get_name());
+
+}
+void find_new()
+{
+    printf("%se - Element\n", colorCyan);
+    printf("p - Plant\n");
+    printf("%s%s", colorNormal, colorGreenBold);
+
+    char c=wait_key('f');
+        switch(c)
+        {
+            case 'e': add_new_element(); break;
+            case 'p': add_new_plant(); break;
+        }
+}
+
 void change_clock()
 {
     printf("%sh - add 1 hour\n", colorCyan);
     printf("d - add 1 day\n");
+    printf("m - add 30 days\n");
     printf("q - add 90 days\n");
     printf("y - add 1 year\n");
     printf("%s%s", colorNormal, colorGreenBold);
@@ -61,6 +146,7 @@ void change_clock()
         {
             case 'h': game_time.update_time(3600); break;
             case 'd': game_time.update_time(24*3600); break;
+            case 'm': game_time.update_time(30*24*3600); break;
             case 'q': game_time.update_time(90*24*3600); break;
             case 'y': game_time.update_time(360*24*3600); break;
         }
@@ -84,7 +170,7 @@ void test()
         }
 }
 
-InventoryElement * select_inventory()
+bool select_inventory2(InventoryElement **el1, InventoryElement **el2)
 {
     ListElement *inv = inventory->head; 
     Show_list *show_cat = new Show_list('i');
@@ -97,42 +183,30 @@ InventoryElement * select_inventory()
     }
     printf("%s", colorCyan);
     show_cat->show(false);
-    inv = show_cat->select_el();
-    if (!inv) return nullptr;
-    if (inv->el)
-    {
-        printf("%s%s", colorNormal, colorGreenBold);
-        printf("wybrano %s\n", inv->el->get_name());
-        return inv->el;
-    }
- 
-    return nullptr;
-}
+    bool sel = show_cat->multi_select();
+    if (!sel) return false;
 
-InventoryElement * select_element()
-{
-    ListElement *elems = elements->head; 
-    Show_list *show_cat = new Show_list('e');
-    char k = 'a';
-    
-    while(elems) 
+    printf("%swybrane zasoby: ", colorGreen);
+    Show_el * el = (Show_el*) show_cat->head;
+    int count = 0;
+
+    while(el)
     {
-        show_cat->add(new Show_el(k, elems));
-        k++;
-        elems=elems->next;
+        if (el->selected)
+        {
+            printf("%s ", el->el->el->get_name());
+            count++;
+            if (!*el1) *el1=el->el->el; else *el2=el->el->el;
+        }
+        el=(Show_el*)el->next;
     }
-    printf("%s", colorCyan);
-    show_cat->show(false);
-    elems = show_cat->select_el();
-    if (!elems) return nullptr;
-    if (elems->el)
+    if (count == 2)
     {
-        printf("%s%s", colorNormal, colorGreenBold);
-        printf("wybrano %s\n", elems->el->get_name());
-        return elems->el;
+        puts("");
+        return true;
     }
  
-    return nullptr;
+    return false;
 }
 
 
@@ -148,12 +222,9 @@ void craft()
         switch(c)
         {
             case 'a': 
-                {
-                    InventoryElement * el1 = select_inventory();
-                    if (!el1) return;
-                    InventoryElement * el2 = select_inventory();
-                    if (!el2) return;
-                    
+                {                    
+                    InventoryElement * el1=nullptr, * el2=nullptr;
+                    if (!select_inventory2(&el1, &el2)) return;
                     Axe * axe=new Axe(el1, el2);
                     if (!axe->craft()) return;
                     inventory->add(axe); 
@@ -164,7 +235,7 @@ void craft()
                 break;
             case 'b':
                 {
-                    InventoryElement *el=select_element();
+                    InventoryElement *el=select_element(elements);
                     if (!el) return;
                     AxeBlade * axe_blade=new AxeBlade(el);  
                     if (!axe_blade->craft()) return; 
@@ -175,7 +246,7 @@ void craft()
                 break;
             case 'h':
                 {
-                    InventoryElement *el=select_element();
+                    InventoryElement *el=select_element(elements);
                     if (!el) return;
                     AxeHandle * axe_handle=new AxeHandle(el);  
                     if (!axe_handle->craft()) return; 
@@ -187,6 +258,23 @@ void craft()
         }
 }
 
+void sow_plant()
+{
+    ListElement * cur = elements->head;
+    while(cur) {
+        if (cur->el->c_id != Class_Plant) cur->disable();
+        cur = cur->next;
+    }
+
+    InventoryElement *el=select_element(elements);
+    elements->enable_all();
+    if (!el) return;
+    elements->remove(el);
+    plants->add(el);
+    Plant * p=(Plant*) el;
+    p->sow();
+    printf("%s planted\n", el->get_name());
+}
 
 void play()
 {
@@ -203,6 +291,9 @@ void play()
             case 27: printf("%s", clrscr); break;
             case '?': help(); break;
             case '@': change_clock(); break;
+            case 'h': harvest_plant(); break;
+            case 'o': sow_plant(); break;
+            case 'f': find_new(); break;
         }
         game_time.update_time(1);
     }
@@ -232,10 +323,12 @@ int main()
     plants = new InvList("plants");
 
     for (int i=0; i < 5; i++)
-        elements->add(new Element(base_elements[rand() % BASE_ELEMENTS]));
+        add_new_element();
 
-    for (int i=0; i < 5; i++)
-        plants->add(new Plant());
+    for (int i=0; i < 10; i++)
+    {
+        add_new_plant();
+    }
 
     callback_daily=daily_call;
     play();

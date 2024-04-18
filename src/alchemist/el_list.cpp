@@ -11,6 +11,7 @@ ListElement::ListElement(InventoryElement *entry)
 {
 	el=entry;
 	next = NULL;
+    enabled=true;
 }
 
 void ListElement::add(ListElement * entry)
@@ -73,13 +74,28 @@ void InvList::show(bool details)
     }
 }
 
+void InvList::enable_all()
+{
+    ListElement * cur = head;
+
+    while(cur) {
+        cur->enable();
+        cur = cur->next;
+    }
+}
+
 void InvList::tick()
 {
     ListElement * cur = head;
 
     while(cur) {
-        cur->tick();
-        cur = cur->next;
+        ListElement * next=cur->next;
+        bool alive=cur->tick();
+        if (!alive)
+        {
+            remove(cur->el);
+        }
+        cur = next;
     }
 }
 
@@ -212,7 +228,7 @@ bool Show_list::multi_select()
             f->selected ^= true;
             sel = true;
         }
-        show();
+        show(false);
         printf("z - zakończ selekcje\n");
     }
     return sel;

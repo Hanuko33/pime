@@ -15,11 +15,11 @@ class Game_time
     void update_time(int sec);
     Game_time()
     {
-        seconds=0;
-        minutes=0;
-        hours=0;
-        days=0; // 24 hours
-        years=0; //360 days
+        seconds=rand() % 60;
+        minutes=rand() % 60;
+        hours=rand() % 24;
+        days=rand() % 360;
+        years=1000 + rand() % 1000 ;
     }
     char * get_time();
 };

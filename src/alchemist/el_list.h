@@ -5,13 +5,17 @@
 
 class ListElement
 {
+    bool enabled;
 public:	
     InventoryElement * el; 
     ListElement * next;
 
 	void add(ListElement * entry);
+    void disable() { enabled=false; };
+    void enable() { enabled=true; };
+    bool is_enabled() { return enabled; };
 	virtual void show(bool details=true);
-    virtual void tick() { el->tick(); };
+    virtual bool tick() { return el->tick(); };
 	ListElement(InventoryElement *entry);
     ListElement(): next(nullptr) {}
 };
@@ -36,6 +40,7 @@ public:
 	void remove(InventoryElement *el);
 	int get_count(InventoryElement *el);
     void tick();
+    void enable_all();
 };
 
 class Show_el : public ListElement

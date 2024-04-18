@@ -24,7 +24,6 @@ const char * Ingredient_name[]=
 
     "Knife_blade",
     "Knife_handle",
-
 };
 
 const char * Product_name[]=
@@ -46,6 +45,15 @@ const char * food_name[]=
 {
     "Pumpkin",
     "Watermelon"
+};
+
+const char * Plant_phase_name[]=
+{
+    "Seed",
+    "Seedling",
+    "Growing",
+    "Flowers",
+    "Fruits"
 };
 
 Edible::Edible()
@@ -106,7 +114,7 @@ void Solid::show()
 }
 
 BaseElement::BaseElement()
-{
+{    
     transparency=rand() % 256;
     solid=NULL;
     if (fantasy_game) 
@@ -165,11 +173,11 @@ void BaseElement::init_real()
 
 void BaseElement::show(bool details)
 {
-    printf("   *** BaseElement -> %d ***\n", c_id);
+    printf("BaseElement\n");
     if (!details) return;
     printf("   density = %u\n", density); //gęstość
     printf("   transparency = %u\n", transparency); //przezroczystość
-    printf("   form = %u\n", form);
+    printf("   form = %s\n", Form_name[form]);
     switch(form)
     {
         case Form_solid:
@@ -182,6 +190,7 @@ void BaseElement::show(bool details)
 
 Element::Element(BaseElement *b)
 {
+    c_id=Class_Element;
     base = b;
     sharpness = rand() % 100;
     smoothness = rand() % 100;
@@ -195,7 +204,7 @@ Element::Element(BaseElement *b)
 
 void Element::show(bool details)
 {
-    printf("\n*** Element -> %d: base=%s ***\n", c_id, base->name);
+    printf("Element -> %d: base=%s form=%s\n", c_id, base->name, get_form_name());
     if (!details) return;
     printf("sharpness = %u\n", sharpness); //ostrość
     printf("smoothness = %u\n", smoothness); //gładkość
@@ -205,6 +214,7 @@ void Element::show(bool details)
 
 Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
 {
+    c_id=Class_Ingredient;
     el = from;
     name = Ingredient_name[i];
     id = i;
@@ -226,13 +236,12 @@ bool Ingredient::craft()
 
 void Ingredient::show(bool details)
 {
-    printf("\nvvv %s ->%d vvv\n", name, c_id);
+    printf("%s ->%d\n", name, c_id);
     if (!details) return;
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
     printf("usage = %d\n", usage);
     el->show(details);
-    printf("^^^ %s ^^^\n", name);
 }
         
 void Product::init(Product_id i, int c, Form f)
@@ -245,6 +254,7 @@ void Product::init(Product_id i, int c, Form f)
 
 Product::Product(InventoryElement * el1, InventoryElement *el2, Product_id i, Form f)
 {
+    c_id=Class_Product;
     ings = (InventoryElement**) calloc(2, sizeof(InventoryElement));
     ings[0]=el1;
     ings[1]=el2;
@@ -253,6 +263,7 @@ Product::Product(InventoryElement * el1, InventoryElement *el2, Product_id i, Fo
 
 Product::Product(InventoryElement ** from, int count, Product_id i, Form f)
 {
+    c_id=Class_Product;
     ings = from;
     init(i, count, f);
 }
@@ -276,7 +287,7 @@ bool Product::craft()
 
 void Product::show(bool details)
 {
-    printf("\n!!! %s -> %d!!!\n", name, c_id);
+    printf("%s -> %d\n", name, c_id);
     if (!details) return;
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
@@ -285,8 +296,7 @@ void Product::show(bool details)
     for (int i=0; i < ing_count; i++)
     {
         ings[i]->show(details);
-    }
-    printf("iii %s iii\n", name);
+    }    
 }
         
 Form Product::get_form()
@@ -331,4 +341,35 @@ void show_base_elements()
         base_elements[i]->show(true);
     }
 
+}
+
+Plant::Plant()
+{
+    c_id=Class_Plant;
+    seedling_time=7 + rand() % 14;
+    growing_time=seedling_time + rand() % 150;
+    flowers_time=growing_time + rand() % 30;
+    fruits_time=flowers_time + rand() % 30;
+    max_age=fruits_time + rand() % 100;
+    phase = (Plant_phase) (rand() %  (Plant_fruits+1));
+    switch (phase)
+    {
+        case Plant_seed: age = 0; planted = false; break;
+        case Plant_seedling: age = seedling_time;  planted = true; break;
+        case Plant_growing: age = growing_time; planted = true; break;
+        case Plant_flowers: age = flowers_time; planted = true; break;
+        case Plant_fruits: age=fruits_time; planted = true; break;
+    }
+    edible = new Edible;
+}
+
+bool Plant::grow()
+{
+    if (!alive) return false;
+    if (!Being::grow()) return false;
+    if (age >= fruits_time) { change_phase(Plant_fruits); return alive; }
+    if (age >= flowers_time) { change_phase(Plant_flowers); return alive; }
+    if (age >= growing_time) { change_phase(Plant_growing); return alive; }
+    if (age >= seedling_time) { change_phase(Plant_seedling); return alive; }
+    return alive;
 }

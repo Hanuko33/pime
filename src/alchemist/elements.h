@@ -11,7 +11,7 @@ class Edible
 {
     public:
     unsigned int irrigation;
-    unsigned int  poison;
+    unsigned int poison;
     unsigned int caloric;
 
     Edible();
@@ -41,17 +41,16 @@ enum Form
 extern const char * Form_name[];
 
 enum Class_id
-{
-    Class_Base=1,
-    Class_Element,
+{    
+    Class_Element=1,
     Class_Ingredient,
     Class_Product,
+    Class_Plant,
 };
 
 class BaseElement
 {
-    public:
-    static const Class_id c_id=Class_Base;
+    public:    
         const char * name;
         int id; //texture id
         unsigned int density;
@@ -70,11 +69,12 @@ class InventoryElement
 {
 	int x, y, z;
     public:
+        Class_id c_id;
         Form req_form;
         bool known;
         InventoryElement() { req_form = Form_none; known = true; }
         virtual void show(bool details=true) { }
-        virtual void tick() { }
+        virtual bool tick() { return false;}
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
         virtual const char * get_form_name() { return NULL; }
@@ -91,8 +91,7 @@ class InventoryElement
 class Element : public InventoryElement
 {
     BaseElement * base;
-    public:
-    static const Class_id c_id=Class_Element;
+    public:      
         unsigned int sharpness;
         unsigned int smoothness;
         unsigned int mass; //density*volume
@@ -155,8 +154,7 @@ extern const char * food_name[];
 class Ingredient : public InventoryElement
 {
     const char * name;
-    public:
-    static const Class_id c_id=Class_Ingredient;
+    public:    
         int quality; //[0..100] slaby..najlepszy
         int resilience; // [0..100] wytrzymały..słaby
         int usage; // [0..100] łatwy..trudny
@@ -177,8 +175,7 @@ class Product : public InventoryElement
 {
     const char * name;
     void init(Product_id i, int c, Form f);
-    public:
-    static const Class_id c_id=Class_Product;
+    public:    
         int quality; //[0..100] slaby..najlepszy
         int resilience; // [0..100] wytrzymały..słaby
         int usage; // [0..100] łatwy..trudny
@@ -210,10 +207,11 @@ class Being : public InventoryElement
         unsigned int age;
         unsigned int max_age;
         bool alive;
-        virtual void grow() {
-            if (!alive) return;
+        virtual bool grow() {
+            if (!alive) return false;
             age++;
             if (age > max_age) alive=false;
+            return alive;
         }
         Being()
         {
@@ -223,11 +221,12 @@ class Being : public InventoryElement
             name=create_name(5);
         }
         bool is_alive() { return alive; }
+        const char * get_name() {return name; }
         void show(bool details=true) {
-           printf("\n@@@ %s age=%d/%d alive=%d @@@\n", name, age, max_age, alive);
+           printf("Being %s age=%d/%d alive=%d\n", name, age, max_age, alive);
         }
-        void tick() {
-            grow();
+        bool tick() {
+            return grow();
         }
 };
 
@@ -237,26 +236,42 @@ enum Plant_phase
     Plant_seedling,
     Plant_growing,
     Plant_flowers,
-    Plant_fruits,
-    Plant_phase_max
+    Plant_fruits
 };
 
+extern const char * Plant_phase_name[];
+
 class Plant: public Being
-{
-    //seed -> seedling/sprout -> young plant -> flowers -> fruits
+{    
     Edible * edible;
+    unsigned int seedling_time;
+    unsigned int growing_time;
+    unsigned int flowers_time;
+    unsigned int fruits_time;
+public:
+    bool planted;
     Plant_phase phase;
-    public:
-    Plant() {
-        max_age=60 + rand() % 300; //1 years
-        phase = (Plant_phase) (rand() %  Plant_phase_max);
-        edible = new Edible;
-    }
+    Plant();
     void show(bool details=true) {
+       printf("Plant -> %d name=%s ", c_id, name);
        Being::show(details);
-       printf("phase = %d\n", phase);
-       edible->show();
+       if (details) {
+              printf("phase=%s planted=%d times=%d/%d/%d/%d\n",
+                     Plant_phase_name[phase], planted, seedling_time, growing_time, flowers_time, fruits_time);
+              edible->show();
+       }
     }
+    void sow() {
+        planted=1;
+    }
+    void change_phase(Plant_phase p)
+    {
+        if (phase != p){
+            printf("%s growing: %s -> %s\n", name, Plant_phase_name[phase], Plant_phase_name[p]);
+        }
+        phase=p;
+    }
+    bool grow();
 
 };
 #define BASE_ELEMENTS 50
