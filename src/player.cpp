@@ -12,6 +12,7 @@
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/viewport.hpp>
+#include <godot_cpp/classes/control.hpp>
 
 #include "status_line.h"
 
@@ -83,7 +84,7 @@ void PlayerCharacter::_ready() {
 
        if (!status_line_node) {
            UtilityFunctions::print("playercharacter: setting status line node");
-           status_line_node = get_node<LineEdit>("/root/Node3D/Player/UI/StatusLine");
+           status_line_node = get_node<LineEdit>("UI/StatusLine");
           }
     }
 }
@@ -242,6 +243,10 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             UtilityFunctions::print("not item");
         }
     }
+	if (event->is_action_pressed("toggle_UI")) {
+		get_node<Control>("UI")->hide();
+
+	}
 }
 
 void PlayerCharacter::set_id(int p_id) {

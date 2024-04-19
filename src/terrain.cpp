@@ -27,6 +27,13 @@
 
 using namespace godot;
 
+
+void daily_call()
+{
+}
+
+void (*callback_daily)() = daily_call;
+
 void Terrain::_bind_methods() {
     ClassDB::bind_method(D_METHOD("generate_chunk", "p_x", "p_y"), &Terrain::generate_chunk);
 }
@@ -47,6 +54,7 @@ Terrain::Terrain() {
     for (int z = 0; z < WORLD_SIZE; z++) {
         for (int x = 0; x < WORLD_SIZE; x++) {
             chunks[z][x] = nullptr;
+			world_table[z][x] = nullptr;
         }
     }
 

@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://cwvg72307ycu7"]
+[gd_scene load_steps=8 format=3 uid="uid://cwvg72307ycu7"]
 
 [ext_resource type="PackedScene" uid="uid://drmuk8ut21aja" path="res://player.tscn" id="1_i01nf"]
 [ext_resource type="Script" path="res://camera.gd" id="1_vpny3"]
 [ext_resource type="PackedScene" uid="uid://baxite7eykf50" path="res://rock.tscn" id="2_f1yfg"]
+[ext_resource type="PackedScene" uid="uid://c873dpjmi1wl6" path="res://test123.tscn" id="4_puibm"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i5q0q"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -32,19 +33,6 @@ shadow_enabled = true
 mouse_sen = 0.2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 20, 11)
 
-[node name="UI" type="Control" parent="Player"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="StatusLine" type="LineEdit" parent="Player/UI"]
-layout_mode = 0
-offset_right = 67.0625
-offset_bottom = 31.0
-text = "status line"
-expand_to_text_length = true
-
 [node name="FreeLookCamera" type="Camera3D" parent="."]
 transform = Transform3D(-0.731359, 0.504459, -0.45895, 0, 0.672954, 0.739684, 0.681993, 0.540974, -0.492171, -9.66489, 91.5309, -12.6951)
 script = ExtResource("1_vpny3")
@@ -68,3 +56,12 @@ offset_bottom = 2.5
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="Item3" parent="." instance=ExtResource("4_puibm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 15.8471, 9.51194)
+
+[node name="Item4" parent="." instance=ExtResource("4_puibm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 15.8804, 8.79834)
+
+[node name="Item5" parent="." instance=ExtResource("4_puibm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.04661, 16.5, 9.21475)
