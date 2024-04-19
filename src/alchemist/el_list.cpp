@@ -174,7 +174,7 @@ int kbhit()
 
 char wait_key(char prompt)
 {
-    printf("\r%s%c> ", game_time.get_time(),   prompt);
+    printf("\r%s%c> ", game_time->get_time(),   prompt);
     while(!kbhit())
     {
         usleep(1000);

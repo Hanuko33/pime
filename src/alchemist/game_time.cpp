@@ -1,7 +1,7 @@
 #include "game_time.h"
 #include <cstdio>
 
-Game_time game_time;
+Game_time * game_time;
 
 void Game_time::update_time(int sec)
 {

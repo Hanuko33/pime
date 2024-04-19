@@ -24,6 +24,6 @@ class Game_time
     char * get_time();
 };
 
-extern Game_time game_time;
+extern Game_time *game_time;
 extern void (*callback_daily)();
 #endif

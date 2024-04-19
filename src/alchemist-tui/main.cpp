@@ -80,20 +80,24 @@ void harvest_plant()
 
 void show()
 {
-    printf("%sb - base elements\n", colorCyan);
-    printf("e - elements\n");
-    printf("i - inventory\n");
-    printf("p - plants\n");
+    printf("%sb/B - base elements (details off/on)\n", colorCyan);
+    printf("e/E - elements (details off/on)\n");
+    printf("i/I - inventory (details off/on)\n");
+    printf("p/P - plants (details off/on)\n");
 
     printf("%s%s", colorNormal, colorGreenBold);
 
     char c=wait_key('p');
         switch(c)
         {
-            case 'b': show_base_elements(); break;
+            case 'b': show_base_elements(false); break;
             case 'i': inventory->show(false); break;
-            case 'e': elements->show(true); break;
-            case 'p': plants->show(true); break;
+            case 'e': elements->show(false); break;
+            case 'p': plants->show(false); break;
+            case 'B': show_base_elements(true); break;
+            case 'I': inventory->show(true); break;
+            case 'E': elements->show(true); break;
+            case 'P': plants->show(true); break;
         }
 }
 
@@ -144,11 +148,11 @@ void change_clock()
     char c=wait_key('@');
         switch(c)
         {
-            case 'h': game_time.update_time(3600); break;
-            case 'd': game_time.update_time(24*3600); break;
-            case 'm': game_time.update_time(30*24*3600); break;
-            case 'q': game_time.update_time(90*24*3600); break;
-            case 'y': game_time.update_time(360*24*3600); break;
+            case 'h': game_time->update_time(3600); break;
+            case 'd': game_time->update_time(24*3600); break;
+            case 'm': game_time->update_time(30*24*3600); break;
+            case 'q': game_time->update_time(90*24*3600); break;
+            case 'y': game_time->update_time(360*24*3600); break;
         }
 }
 
@@ -295,7 +299,7 @@ void play()
             case 'o': sow_plant(); break;
             case 'f': find_new(); break;
         }
-        game_time.update_time(1);
+        game_time->update_time(1);
     }
 }
 
@@ -317,6 +321,7 @@ int main()
     
     srandom(time(nullptr));
     init_elements();
+	game_time=new Game_time;
 
     inventory = new InvList("inventory");
     elements = new InvList("elements");

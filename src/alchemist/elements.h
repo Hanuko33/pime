@@ -286,7 +286,7 @@ public:
 extern BaseElement *base_elements[BASE_ELEMENTS];
 
 void init_elements();
-void show_base_elements();
+void show_base_elements(bool details);
 
 #endif
 

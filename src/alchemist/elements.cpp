@@ -173,7 +173,7 @@ void BaseElement::init_real()
 
 void BaseElement::show(bool details)
 {
-    printf("BaseElement\n");
+    printf("BaseElement name=%s form=%s\n", name, Form_name[form]); 
     if (!details) return;
     printf("   density = %u\n", density); //gęstość
     printf("   transparency = %u\n", transparency); //przezroczystość
@@ -334,11 +334,11 @@ void init_elements()
     }
 }
 
-void show_base_elements()
+void show_base_elements(bool details)
 {
     for (int i=0; i < BASE_ELEMENTS; i++)
     {
-        base_elements[i]->show(true);
+        base_elements[i]->show(details);
     }
 
 }
