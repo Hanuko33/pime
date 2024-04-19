@@ -87,7 +87,7 @@ void show()
 
     printf("%s%s", colorNormal, colorGreenBold);
 
-    char c=wait_key('p');
+    char c=wait_key('s');
         switch(c)
         {
             case 'b': show_base_elements(false); break;

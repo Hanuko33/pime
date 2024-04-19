@@ -2,6 +2,7 @@
 .sconsign.dblite
 *.os
 compile_commands.json
+build
 start.sh
 tags
 .qtc_clangd
