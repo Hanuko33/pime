@@ -1,4 +1,7 @@
-# Game\_gui 
+# Game\_gui (Pime - Piotr game)
+
+![SDL version](game-gui-sdl.png)
+
 This is a game made with sdl2 and C++. On master branch there is version for Godot.
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
