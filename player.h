@@ -29,7 +29,7 @@ public:
     int thirst;
     int hunger;
     int health;
-    List * inventory; 
+    InvList * inventory; 
     InventoryElement * hotbar[10];
     int craftbar[10];
 	void move(int x, int z);

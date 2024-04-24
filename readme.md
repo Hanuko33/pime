@@ -1,5 +1,5 @@
 # Game\_gui 
-This is a game made with sdl2 and c
+This is a game made with sdl2 and C++. On master branch there is version for Godot.
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
 
@@ -44,5 +44,4 @@ This is a game made with sdl2 and c
 * ` - previous hotbar
 * TAB - next hotbar
 * = - use from hotbar
-
 

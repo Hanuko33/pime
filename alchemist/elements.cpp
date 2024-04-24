@@ -5,7 +5,7 @@
 #include "../texture.h"
 
 bool fantasy_game;
-BaseElement base_elements[BASE_ELEMENTS];
+BaseElement *base_elements[BASE_ELEMENTS];
 
 const char * Form_name[]
 {
@@ -25,7 +25,6 @@ const char * Ingredient_name[]=
 
     "Knife_blade",
     "Knife_handle",
-
 };
 
 const char * Product_name[]=
@@ -47,6 +46,15 @@ const char * food_name[]=
 {
     "Pumpkin",
     "Watermelon"
+};
+
+const char * Plant_phase_name[]=
+{
+    "Seed",
+    "Seedling",
+    "Growing",
+    "Flowers",
+    "Fruits"
 };
 
 Edible::Edible()
@@ -98,11 +106,11 @@ Solid::Solid()
 void Solid::show()
 {
     printf("      *** Solid ***\n");
-    printf("      stretching = %u\n", stretching);
-    printf("      squeezing = %u\n", squeezing);
-    printf("      bending = %u\n", bending);
-    printf("      fragility = %u\n", fragility);
-    printf("      solubility = %u\n", solubility);
+    printf("      stretching = %u\n", stretching); // rozciąganie
+    printf("      squeezing = %u\n", squeezing); //ściskanie
+    printf("      bending = %u\n", bending); // zginanie
+    printf("      fragility = %u\n", fragility); //kruchość
+    printf("      solubility = %u\n", solubility); //rozpuszczalność
 
 }
 
@@ -114,12 +122,11 @@ BaseElement::BaseElement()
         init_fantasy();
     else
         init_real();
+    magic=false; //TODO
 }
 
 void BaseElement::init_fantasy()
 {
-    name = get_name(5 - form);
-
     int f = rand() % 100;
 
     if (f < 60) { //60%
@@ -141,11 +148,12 @@ void BaseElement::init_fantasy()
     }
 
     edible = NULL;
-    if (rand() % 100 < 30) // 10 % food
+    if (rand() % 100 < 30) // 30 % food
     {
         edible=new Edible;
         id=rand() % FOOD_ELEMENTS;
     }
+    name = create_name(5 - form);
 }
 
 void BaseElement::init_real()
@@ -165,23 +173,26 @@ void BaseElement::init_real()
     }
 }
 
-void BaseElement::show()
+void BaseElement::show(bool details)
 {
-    printf("   *** BaseElement -> %d ***\n", c_id);
-    printf("   density = %u\n", density);
-    printf("   transparency = %u\n", transparency);
-    printf("   form = %u\n", form);
+    printf("BaseElement name=%s form=%s\n", name, Form_name[form]); 
+    if (!details) return;
+    printf("   density = %u\n", density); //gęstość
+    printf("   transparency = %u\n", transparency); //przezroczystość
+    printf("   form = %s\n", Form_name[form]);
     switch(form)
     {
         case Form_solid:
             solid->show();
             break;
+        default: break;
     }
     if (edible) edible->show();
 }
 
 Element::Element(BaseElement *b)
 {
+    c_id=Class_Element;
     base = b;
     sharpness = rand() % 100;
     smoothness = rand() % 100;
@@ -193,15 +204,17 @@ Element::Element(BaseElement *b)
     
 }
 
-void Element::show()
+void Element::show(bool details)
 {
-    printf("\n*** Element -> %d: %s ***\n", c_id, base->name);
-    printf("sharpness = %u\n", sharpness);
-    printf("smoothness = %u\n", smoothness);
+    printf("Element -> %d: base=%s form=%s\n", c_id, base->name, get_form_name());
+    if (!details) return;
+    printf("sharpness = %u\n", sharpness); //ostrość
+    printf("smoothness = %u\n", smoothness); //gładkość
     printf("mass = %u: l=%u w=%u h=%u \n", mass, length, width, height);
-    base->show();
+    base->show(details);
 }
 
+#ifndef STUB_SDL
 SDL_Texture * Element::get_texture()
 {
     if (base->edible) return food_textures[base->id];
@@ -214,9 +227,10 @@ SDL_Texture * Element::get_texture()
     }
     return NULL;
 }
-
+#endif
 Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
 {
+    c_id=Class_Ingredient;
     el = from;
     name = Ingredient_name[i];
     id = i;
@@ -225,7 +239,10 @@ Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
         
 bool Ingredient::craft()
 {
-    if (req_form != get_form()) return false;
+    if (req_form != get_form()) {
+        printf("form != %d\n", req_form);
+        return false;
+    }
 
     quality = rand() % 100;
     resilience = rand() % 100;
@@ -233,21 +250,22 @@ bool Ingredient::craft()
     return true;
 }
 
-void Ingredient::show()
+void Ingredient::show(bool details)
 {
-    printf("\nvvv %s ->%d vvv\n", name, c_id);
+    printf("%s ->%d\n", name, c_id);
+    if (!details) return;
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
     printf("usage = %d\n", usage);
-    el->show();
-    printf("^^^ %s ^^^\n", name);
+    el->show(details);
 }
         
+#ifndef STUB_SDL
 SDL_Texture *Ingredient::get_texture() 
 { 
     return ing_textures[id]; 
 }
-
+#endif
 void Product::init(Product_id i, int c, Form f)
 {
     name = Product_name[i];
@@ -258,6 +276,7 @@ void Product::init(Product_id i, int c, Form f)
 
 Product::Product(InventoryElement * el1, InventoryElement *el2, Product_id i, Form f)
 {
+    c_id=Class_Product;
     ings = (InventoryElement**) calloc(2, sizeof(InventoryElement));
     ings[0]=el1;
     ings[1]=el2;
@@ -266,6 +285,7 @@ Product::Product(InventoryElement * el1, InventoryElement *el2, Product_id i, Fo
 
 Product::Product(InventoryElement ** from, int count, Product_id i, Form f)
 {
+    c_id=Class_Product;
     ings = from;
     init(i, count, f);
 }
@@ -274,7 +294,10 @@ bool Product::craft()
 {
     for (int i=0; i < ing_count; i++)
     {
-        if (req_form != ings[i]->get_form()) return false;
+        if (req_form != ings[i]->get_form()) {
+            printf("form != %d for inq[%d]\n", req_form, i);       
+            return false;
+        }
     }
     if (!check_ing()) return false;
 
@@ -284,25 +307,26 @@ bool Product::craft()
     return true;
 }
 
-void Product::show()
+void Product::show(bool details)
 {
-    printf("\n!!! %s -> %d!!!\n", name, c_id);
+    printf("%s -> %d\n", name, c_id);
+    if (!details) return;
     printf("quality = %d\n", quality);
     printf("resilience = %d\n", resilience);
     printf("usage = %d\n", usage);
 
     for (int i=0; i < ing_count; i++)
     {
-        ings[i]->show();
+        ings[i]->show(details);
     }
-    printf("iii %s iii\n", name);
 }
-        
+
+#ifndef STUB_SDL     
 SDL_Texture *Product::get_texture() 
 { 
     return prod_textures[id]; 
 }
-        
+#endif        
 Form Product::get_form()
 {
     int solid=0;
@@ -316,6 +340,7 @@ Form Product::get_form()
             case Form_solid: solid++; break;
             case Form_liquid: liq++; break;
             case Form_gas: gas++; break;
+            default: return Form_none;
         }
     }
     if (solid) return Form_solid;
@@ -327,4 +352,51 @@ Form Product::get_form()
 const char * Product::get_form_name() 
 { 
     return Form_name[get_form()]; 
+}
+void init_elements()
+{
+    for (int i=0; i < BASE_ELEMENTS; i++)
+    {
+        base_elements[i] = new BaseElement;
+    }
+}
+
+void show_base_elements(bool details)
+{
+    for (int i=0; i < BASE_ELEMENTS; i++)
+    {
+        base_elements[i]->show(details);
+    }
+
+}
+
+Plant::Plant()
+{
+    c_id=Class_Plant;
+    seedling_time=7 + rand() % 14;
+    growing_time=seedling_time + rand() % 150;
+    flowers_time=growing_time + rand() % 30;
+    fruits_time=flowers_time + rand() % 30;
+    max_age=fruits_time + rand() % 100;
+    phase = (Plant_phase) (rand() %  (Plant_fruits+1));
+    switch (phase)
+    {
+        case Plant_seed: age = 0; planted = false; break;
+        case Plant_seedling: age = seedling_time;  planted = true; break;
+        case Plant_growing: age = growing_time; planted = true; break;
+        case Plant_flowers: age = flowers_time; planted = true; break;
+        case Plant_fruits: age=fruits_time; planted = true; break;
+    }
+    edible = new Edible;
+}
+
+bool Plant::grow()
+{
+    if (!alive) return false;
+    if (!Being::grow()) return false;
+    if (age >= fruits_time) { change_phase(Plant_fruits); return alive; }
+    if (age >= flowers_time) { change_phase(Plant_flowers); return alive; }
+    if (age >= growing_time) { change_phase(Plant_growing); return alive; }
+    if (age >= seedling_time) { change_phase(Plant_seedling); return alive; }
+    return alive;
 }

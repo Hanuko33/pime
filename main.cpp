@@ -19,18 +19,22 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "menu.h"
-#include "time.h"
 #include "world.h"
 #include "tiles.h"
 #include <termios.h>
+#include "alchemist/game_time.h"
 
 SDL_Texture *map;
 int auto_explore;
 int active_hotbar=0;
-char force_screen=1;
 
-// DON'T MOVE THIS
 Player player;
+
+void (*callback_daily)();
+
+void daily_call()
+{
+}
 
 void save(char with_player)
 {
@@ -292,8 +296,16 @@ void player_interact(int key)
     
     switch (key)
     {
+        case SDLK_SEMICOLON:
+        {
+            InventoryElement * el = player.hotbar[active_hotbar];
+            if (el)
+            {
+                el->show(true);
+            }
+        }
+            break;
         case SDLK_F11:
-            force_screen ^= 1;
             update_window_size();
             break;
 /*        case SDLK_EQUALS:
@@ -714,9 +726,6 @@ void draw()
                 pixels[py * WORLD_SIZE + px]=0xffffffff;
         }
 
-    sprintf(text, "force screen: %d", force_screen);
-    write_text(tx, ty+220, text, White, 15, 30);
-    
     switch(world_table[player.map_y][player.map_x]->biome)
     {
         case BIOME_DESERT:
@@ -812,8 +821,12 @@ int main()
     }
 
     srand (time(NULL));
-    
     intro();
+
+    callback_daily=daily_call;
+    init_elements();
+	game_time=new Game_time;
+    
     generator();
     
 	player.y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
@@ -835,7 +848,8 @@ int main()
    
     sprintf(status_line, "Welcome in game!");
     status_code = 1;
-
+    
+    int ww=0, wh=0;
     for (;;)
     {   
         SDL_Event event;
@@ -853,10 +867,15 @@ int main()
 
                 player_interact(key);
             }
-            if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED && force_screen)
-            {
-              //  printf("window event %d %d \n", event.window.data1, event.window.data2);
-                update_window_size();
+            if (event.type==SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED )
+            { 
+                //i3 window manager sends these events if window is not floated 
+                if (ww != event.window.data1 && wh != event.window.data2) {
+                    printf("window event: resizing to %d, %d\n", event.window.data1, event.window.data2);
+                    update_window_size();
+                    ww=event.window.data1;
+                    wh=event.window.data2;
+                }
             }
 
             if (event.type == SDL_MOUSEBUTTONDOWN)
@@ -909,7 +928,7 @@ int main()
          }
 
 
-        update_time();
+       // update_time();
 #if 0
         if (player.energy <= 0)
         {

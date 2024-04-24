@@ -13,7 +13,6 @@
 
 struct OpenSimplex2F_context *simplex_context;
 
-Game_time game_time;
 chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
 void generator()
@@ -260,7 +259,7 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     for (int i = 0; i < 4; i++)
     {
         int b = rand() % BASE_ELEMENTS;
-        Element *o = new Element(&base_elements[b]);
+        Element *o = new Element(base_elements[b]);
         int x = rand() % 16;
         int z = rand() % 16;
 

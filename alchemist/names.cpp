@@ -4,8 +4,12 @@
 char vowels[]="euyioa";
 char consonant[]="qwrtpsdfghjklzxcvbnm";
 
-char * get_name(int s)
+char * create_name(int s)
 {
+    //solid 4 syllables
+    //liquid 3 syllables
+    //gas 2 syllables
+    //being 5 syllables
     int v = strlen(vowels);
     int c = strlen(consonant);
 

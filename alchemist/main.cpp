@@ -20,18 +20,24 @@ SDL_Texture * down_mask;
 #include "axe_handle.h"
 #include "axe.h"
 
+void (*callback_daily)();
+
+void daily_call()
+{
+  //  printf("daily call\n");
+}
+
 void test1()
 {
 	Element *elements[10];
     for (int i=0; i< 10; i++)
     {
         int b = rand() % 5;
-        elements[i] = new Element(&base_elements[b]);
+        elements[i] = new Element(base_elements[b]);
         elements[i]->show();
     }
  
 }
-
 void test2()
 {
     BaseElement *b1 = new BaseElement();
@@ -93,6 +99,8 @@ void test3()
 int main()
 {
     srandom(time(nullptr));
+    
+    callback_daily=daily_call;
 
     // test1();
   //   test2();

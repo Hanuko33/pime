@@ -24,7 +24,7 @@ void Player::check_and_move(int new_map_x, int new_map_y, int new_x, int new_z)
     
     if (moved)
     { 
-        game_time.seconds += (running ? 15 : sneaking ? 45 : 30);
+        //game_time.seconds += (running ? 15 : sneaking ? 45 : 30);
         map_x = new_map_x;
         map_y = new_map_y;
         x = new_x;
@@ -68,7 +68,7 @@ Player::Player()
     thirst=50;
     map_x = WORLD_CENTER;
     map_y = WORLD_CENTER;
-    inventory = new List("inventory");
+    inventory = new InvList("inventory");
 
 	y = 0;
 
