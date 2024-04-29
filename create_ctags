@@ -1,2 +1,2 @@
 #/bin/bash
-ctags -R --exclude=build --exclude=.cache --exclude=*.md
+ctags -R --exclude=build --exclude=godot-cpp --exclude=.cache --exclude=*.md

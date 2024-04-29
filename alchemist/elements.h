@@ -86,6 +86,7 @@ class InventoryElement
         virtual const char * get_name() {return NULL; }
         virtual const char * get_form_name() { return NULL; }
         virtual int get_id() {return -1; }
+        virtual Edible * get_edible() { return NULL; }
 #ifndef STUB_SDL     
         virtual SDL_Texture * get_texture() { return NULL;}
 #endif
@@ -110,6 +111,11 @@ class Element : public InventoryElement
         unsigned int height;
         unsigned int volume; //lenght*width*height
     
+        Edible * get_edible()
+        {
+            return base->edible;
+        }
+        
         void show(bool details=true);
 
         Element(BaseElement *b);
@@ -180,6 +186,7 @@ class Ingredient : public InventoryElement
         const char * get_form_name() { return Form_name[el->get_form()]; }
         int get_id() {return id; }
         bool craft();
+        Edible * get_edible() {return el->get_edible();}
         Ingredient(InventoryElement * from, Ingredient_id i, Form f);
         void show(bool details=true);
 #ifndef STUB_SDL     

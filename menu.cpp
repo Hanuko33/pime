@@ -120,12 +120,12 @@ void Menu::show()
             SDL_Rect rect;
             rect.x = modx;
             rect.y = mody + i * menu_opt_size;
-            rect.w = 32;
-            rect.h = 32;
+            rect.w = menu_opt_size;
+            rect.h = menu_opt_size;
 
             SDL_Texture *texture = el[i]->get_texture();
             SDL_RenderCopy(renderer, texture, NULL, &rect);
-            write_text(rect.x+32, rect.y, entries[i], White, game_size/27, menu_opt_size);
+            write_text(rect.x+menu_opt_size, rect.y, entries[i], White, game_size/27, menu_opt_size);
         } 
         else 
             write_text(modx, mody+i * menu_opt_size, entries[i], White, game_size/27, menu_opt_size);

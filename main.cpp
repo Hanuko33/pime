@@ -5,6 +5,7 @@
 //#include <SDL2/SDL_render.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "alchemist/elements.h"
 #include "text.h"
 #include "tiles.h"
 #include "window.h"
@@ -304,7 +305,32 @@ void player_interact(int key)
                 el->show(true);
             }
         }
+        break;
+        
+        case SDLK_f:
+        {
+            InventoryElement * el = player.hotbar[active_hotbar];
+            if (el)
+            {
+                Edible * edible = el->get_edible();
+                if (edible)
+                {
+                    player.thirst+=edible->irrigation;
+                    player.hunger+=edible->caloric;
+                    player.inventory->remove(el);
+                    player.hotbar[active_hotbar]=NULL;
+                    sprintf(status_line, "eat");
+                    status_code = 1;
+                }
+                else
+                {
+                    sprintf(status_line, "eat: not food");
+                    status_code = 0;
+                }
+            }
+            
             break;
+        }
         case SDLK_F11:
             update_window_size();
             break;
@@ -489,7 +515,6 @@ void draw()
         }
     }
     // render objects
-    // TODO: change object array to list
     for (int i = 0; i < 128; i++)
     {
         struct object * o = world_table[player.map_y][player.map_x]->objects[i];
@@ -501,7 +526,6 @@ void draw()
         }
     }
     // render items
-    // TODO: change items array to list
     for (int i = 0; i < 128; i++)
     {
         InventoryElement * o = world_table[player.map_y][player.map_x]->items[i];
@@ -565,49 +589,50 @@ void draw()
         SDL_RenderCopy(renderer, Texture.sneak_icon, NULL, &sneaking_icon_rect);
     }
 
-    if (rand() % 10 < 2 && player.hunger && player.thirst && player.energy < 1000)
-    {
-        player.hunger-=rand() % 2+1;
-        player.thirst-=rand() % 2+1;
-        player.energy+=rand() % 2+1;
-    }
-    if (player.energy < 0) 
-    {
-        player.energy = 0;
-        player.health -= rand() % 10;
-    }
-    
-    if (player.health < 0) 
-    {
-        player.health = 0;
-        printf("Death here\n");
-    }
-
-    if (player.hunger > 100 && player.energy > 100 && player.thirst > 100 && player.health < 1000)
-    {
-        if (rand() % 2)
-        {
-            player.hunger-=rand() % 9+1;
-            player.thirst-=rand() % 9+1;
-            player.energy-=rand() % 9+1;
-
-            player.health+=rand() % 2+1;
-        }
-    }
-    
-    if (player.thirst < 0) player.thirst = 0;
-    if (player.hunger < 0) player.hunger = 0;
-    
-    if (player.energy > 1000) player.energy = 1000;   
-    if (player.hunger > 1000) player.hunger = 1000;
-    if (player.thirst > 1000) player.thirst = 1000;
-    if (player.health > 1000) player.health = 1000;
-
      
     int tx=width+10;
     int ty=10;
 
     if (!fantasy_game) {
+
+
+        if (rand() % 10 < 2 && player.hunger && player.thirst && player.energy < 1000)
+        {
+            player.hunger-=rand() % 2+1;
+            player.thirst-=rand() % 2+1;
+            player.energy+=rand() % 2+1;
+        }
+        if (player.energy < 0) 
+        {
+            player.energy = 0;
+            player.health -= rand() % 10;
+        }
+        
+        if (player.health < 0) 
+        {
+            player.health = 0;
+            printf("Death here\n");
+        }
+
+        if (player.hunger > 100 && player.energy > 100 && player.thirst > 100 && player.health < 1000)
+        {
+            if (rand() % 2)
+            {
+                player.hunger-=rand() % 9+1;
+                player.thirst-=rand() % 9+1;
+                player.energy-=rand() % 9+1;
+
+                player.health+=rand() % 2+1;
+            }
+        }
+        if (player.thirst < 0) player.thirst = 0;
+        if (player.hunger < 0) player.hunger = 0;
+        
+        if (player.energy > 1000) player.energy = 1000;   
+        if (player.hunger > 1000) player.hunger = 1000;
+        if (player.thirst > 1000) player.thirst = 1000;
+        if (player.health > 1000) player.health = 1000;
+
         sprintf(text, "Energy: %d", player.energy);
         write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
         ty +=25; 
@@ -623,6 +648,20 @@ void draw()
         write_text(tx, ty, text, player.health < 100 ? Red : White, 15,30);
         ty +=25; 
     }
+    else 
+    {
+        sprintf(text, "Hunger: %d", player.hunger);
+        write_text(tx, ty, text, player.hunger < 100 ? Red : White, 15,30);
+        ty +=25; 
+        
+        sprintf(text, "Irrigation: %d", player.thirst);
+        write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
+        ty +=25; 
+    }
+
+
+
+
     sprintf(text, "Player@(%d, %d, %d)->%d", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
 			player.y,
@@ -785,12 +824,14 @@ void intro()
         Mix_Pause(1);
     } else printf("\nGame without music\n");
 
-    printf("Game mode:\nr - more real gameplay\nf - more fantasy gameplay? ");
-    a=getchar();
+    /* printf("Game mode:\nr - more real gameplay\nf - more fantasy gameplay? "); */
+    printf("Setting game type to fantasy\n");
+    a='f';
+    /* a=getchar(); */
     if (a == 'f') {
         fantasy_game=true;
         printf("\nEnabling fantasy gameplay\n");
-    } else printf("\nEnabling real gameplay\n");
+    } //else printf("\nEnabling real gameplay\n");
 
     tcflush(0, TCIFLUSH);
     tcsetattr(0, TCSANOW, &state);
