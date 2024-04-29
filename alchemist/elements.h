@@ -142,7 +142,8 @@ enum Item_id
 enum Food_id
 {
     ID_PUMPKIN,
-    ID_WATERMELON
+    ID_WATERMELON,
+    ID_CHERRY
 };
 
 enum Ingredient_id
@@ -301,7 +302,7 @@ public:
 
 #define BASE_ELEMENTS 50
 #define SOLID_ELEMENTS 4
-#define FOOD_ELEMENTS 2
+#define FOOD_ELEMENTS 3
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
 #define ING_ELEMENTS 2

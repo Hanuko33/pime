@@ -114,6 +114,7 @@ void load_textures()
 
     add_food_texture(ID_PUMPKIN, "textures/items/pumpkin.png");
     add_food_texture(ID_WATERMELON, "textures/items/watermelon.png");
+    add_food_texture(ID_CHERRY, "textures/items/cherry.png");
 
     add_liquid_texture(0, "textures/items/water.png");
 
