@@ -1,3 +1,4 @@
+#include "alchemist/elements.h"
 #include "object.h"
 #include "player.h"
 #include "world.h"
@@ -250,6 +251,7 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     {
         struct object *o = (struct object *)malloc(sizeof(struct object));
         o->type = OBJECT_TREE;
+        o->base_element_id = rand() % BASE_ELEMENTS;
         o->x = rand() % 16;
         o->z = rand() % 16;
         o->y = height_at(chunk_x, chunk_y, o->x, o->z);
@@ -321,8 +323,6 @@ char traversable_tiles[TILE_MAX_NUM] =
 
 InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
 {
-    // TODO: change items array to list
-   
     for (int i = 0; i < 128; i++)
     {
         InventoryElement *el = world_table[chunk_y][chunk_x]->items[i];
@@ -338,6 +338,28 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
         }
     }
     return NULL;
+}
+
+struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y, int z)
+{
+    for (int i = 0; i < 128; i++)
+    {
+        struct object *ob = world_table[chunk_y][chunk_x]->objects[i];
+        if (ob)
+        {
+            if (ob->x == x && ob->y == y && ob->z == z)
+            {
+                return &world_table[chunk_y][chunk_x]->objects[i];
+            }
+        }
+
+    }
+    return NULL;
+}
+
+struct object ** get_object_at_ppos(Player * player)
+{
+    return get_object_at(player->map_x, player->map_y, player->x, player->y, player->z);
 }
 
 InventoryElement **get_item_at_ppos(Player * player)

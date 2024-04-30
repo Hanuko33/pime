@@ -12,10 +12,10 @@ enum object_types
 
 
 struct object {
+    int base_element_id;
     enum object_types type;
     int x, y, z;
+    // TODO add "texture" for sdl2
 };
-
-
 
 #endif

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "alchemist/elements.h"
+#include "object.h"
 #include "text.h"
 #include "tiles.h"
 #include "window.h"
@@ -245,17 +246,48 @@ void put_element()
 
 void use_tile()
 {
+    struct object ** ob_pointer = get_object_at_ppos(&player);
     InventoryElement ** item_pointer = get_item_at_ppos(&player);
     if (item_pointer)
     {
-       InventoryElement * item = *item_pointer;
+        InventoryElement * item = *item_pointer;
        player.inventory->add(item);
        if (fantasy_game)
            sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
        else
            sprintf(status_line, "got item: %s", item->get_name()); //player.inventory->get_count(item));
-       *item_pointer=NULL;																			 
+       *item_pointer=NULL; 
+
        status_code = 1; 
+    }
+    if (ob_pointer)
+    {
+        struct object * ob = *ob_pointer;
+        if (ob->type == OBJECT_TREE)
+        {
+            if (player.hotbar[active_hotbar])
+            {
+                if (player.hotbar[active_hotbar]->get_id() == PROD_AXE)
+                {
+                    sprintf(status_line, "Tree mine");
+                    status_code = 1;
+                    Element * el = new Element(base_elements[ob->base_element_id]);
+                    el->set_posittion(player.x, player.y, player.z);
+                    set_item_at_ppos(el, &player);
+                    ob->type = OBJECT_NULL;
+                }
+                else
+                {
+                    sprintf(status_line, "Tree mine: NEED AXE");
+                    status_code = 0;
+                }
+            }
+            else
+            {
+                sprintf(status_line, "Tree mine: NEED AXE");
+                status_code = 0;
+            }
+        }
     }
 /*
 
