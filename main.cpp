@@ -462,22 +462,30 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     {
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
+            player.hunger-=5;
+            player.thirst-=2;
             player.move(0, 1);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
+            player.hunger-=5;
+            player.thirst-=2;
             player.move(0, -1);
             *last_frame_press=1;
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
+            player.hunger-=5;
+            player.thirst-=2;
             player.going_right=1;
             player.move(1, 0);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
+            player.hunger-=5;
+            player.thirst-=2;
             player.going_right=0;
             player.move(-1, 0);
             *last_frame_press=1;
