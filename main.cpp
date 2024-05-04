@@ -446,7 +446,7 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     else
     {
         player.sneaking = 0;
-        if (keys[SDL_SCANCODE_LCTRL])
+        if (keys[SDL_SCANCODE_LCTRL] && player.hunger && player.thirst)
         {
             player.running = 1;
             time_period = 50;
@@ -508,6 +508,8 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
 
 void draw()
 {
+    if (player.hunger < 0) player.hunger = 0;
+    if (player.thirst < 0) player.thirst = 0;
     int game_size;
     int tile_dungeon_size;
     int width = window_width - PANEL_WINDOW;
