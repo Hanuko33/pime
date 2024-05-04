@@ -250,12 +250,9 @@ void use_tile()
     InventoryElement ** item_pointer = get_item_at_ppos(&player);
     if (item_pointer)
     {
-        InventoryElement * item = *item_pointer;
+       InventoryElement * item = *item_pointer;
        player.inventory->add(item);
-       if (fantasy_game)
-           sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
-       else
-           sprintf(status_line, "got item: %s", item->get_name()); //player.inventory->get_count(item));
+       sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
        *item_pointer=NULL; 
 
        status_code = 1; 
@@ -625,63 +622,6 @@ void draw()
     int tx=width+10;
     int ty=10;
 
-    if (!fantasy_game) {
-
-
-        if (rand() % 10 < 2 && player.hunger && player.thirst && player.energy < 1000)
-        {
-            player.hunger-=rand() % 2+1;
-            player.thirst-=rand() % 2+1;
-            player.energy+=rand() % 2+1;
-        }
-        if (player.energy < 0) 
-        {
-            player.energy = 0;
-            player.health -= rand() % 10;
-        }
-        
-        if (player.health < 0) 
-        {
-            player.health = 0;
-            printf("Death here\n");
-        }
-
-        if (player.hunger > 100 && player.energy > 100 && player.thirst > 100 && player.health < 1000)
-        {
-            if (rand() % 2)
-            {
-                player.hunger-=rand() % 9+1;
-                player.thirst-=rand() % 9+1;
-                player.energy-=rand() % 9+1;
-
-                player.health+=rand() % 2+1;
-            }
-        }
-        if (player.thirst < 0) player.thirst = 0;
-        if (player.hunger < 0) player.hunger = 0;
-        
-        if (player.energy > 1000) player.energy = 1000;   
-        if (player.hunger > 1000) player.hunger = 1000;
-        if (player.thirst > 1000) player.thirst = 1000;
-        if (player.health > 1000) player.health = 1000;
-
-        sprintf(text, "Energy: %d", player.energy);
-        write_text(tx, ty, text, player.energy < 100 ? Red : White, 15,30);
-        ty +=25; 
-        sprintf(text, "Hunger: %d", player.hunger);
-        write_text(tx, ty, text, player.hunger < 100 ? Red : White, 15,30);
-        ty +=25; 
-        
-        sprintf(text, "Thirst: %d", player.thirst);
-        write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
-        ty +=25; 
-        
-        sprintf(text, "Health: %d", player.health);
-        write_text(tx, ty, text, player.health < 100 ? Red : White, 15,30);
-        ty +=25; 
-    }
-    else 
-    {
         sprintf(text, "Hunger: %d", player.hunger);
         write_text(tx, ty, text, player.hunger < 100 ? Red : White, 15,30);
         ty +=25; 
@@ -689,12 +629,8 @@ void draw()
         sprintf(text, "Irrigation: %d", player.thirst);
         write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
         ty +=25; 
-    }
 
-
-
-
-    sprintf(text, "Player@(%d, %d, %d)->%d", 
+        sprintf(text, "Player@(%d, %d, %d)->%d", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
 			player.y,
 			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
@@ -709,10 +645,7 @@ void draw()
     InventoryElement ** ip = get_item_at_ppos(&player);
     if (ip) {
         InventoryElement * item = *ip;
-        if (fantasy_game) 
-            sprintf(text, "Item: %s (%s)", item->get_form_name(), item->get_name());
-        else
-            sprintf(text, "Item: %s",item->get_name());
+        sprintf(text, "Item: %s (%s)", item->get_form_name(), item->get_name());
         write_text(tx, ty+75, text, White,15,30);
     }
 
@@ -730,10 +663,7 @@ void draw()
 			SDL_Texture *texture = item->get_texture();
             SDL_RenderCopy(renderer, texture, NULL, &rect);
             if (i == active_hotbar) {
-                if (fantasy_game)
-                    sprintf(text, "%s (%s)", item->get_form_name(), item->get_name() );
-                else 
-                    sprintf(text, "%s", item->get_name() );
+                sprintf(text, "%s (%s)", item->get_form_name(), item->get_name() );
 	    	    write_text(tx + 3 , rect.y+50, text, Yellow, 10,20);
             }
 		}
@@ -855,15 +785,6 @@ void intro()
         Mix_Volume(1, 0);
         Mix_Pause(1);
     } else printf("\nGame without music\n");
-
-    /* printf("Game mode:\nr - more real gameplay\nf - more fantasy gameplay? "); */
-    printf("Setting game type to fantasy\n");
-    a='f';
-    /* a=getchar(); */
-    if (a == 'f') {
-        fantasy_game=true;
-        printf("\nEnabling fantasy gameplay\n");
-    } //else printf("\nEnabling real gameplay\n");
 
     tcflush(0, TCIFLUSH);
     tcsetattr(0, TCSANOW, &state);

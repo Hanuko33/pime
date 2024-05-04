@@ -4,7 +4,6 @@
 #include "names.h"
 #include "../texture.h"
 
-bool fantasy_game;
 BaseElement *base_elements[BASE_ELEMENTS];
 
 const char * Form_name[]
@@ -118,15 +117,6 @@ BaseElement::BaseElement()
 {
     transparency=rand() % 256;
     solid=NULL;
-    if (fantasy_game) 
-        init_fantasy();
-    else
-        init_real();
-    magic=false; //TODO
-}
-
-void BaseElement::init_fantasy()
-{
     int f = rand() % 100;
 
     if (f < 60) { //60%
@@ -154,23 +144,7 @@ void BaseElement::init_fantasy()
         id=rand() % FOOD_ELEMENTS;
     }
     name = create_name(5 - form);
-}
-
-void BaseElement::init_real()
-{
-    form = Form_solid;
-    solid=new Solid;
-    density=50 + rand() % 2000;
-    id=rand() % SOLID_ELEMENTS;
-    name=items_name[id];
-    
-    edible = NULL;
-    if (rand() % 100 < 30) // 10 % food
-    {
-        edible=new Edible;
-        id=rand() % FOOD_ELEMENTS;
-        name=food_name[id];
-    }
+    magic=false; //TODO
 }
 
 void BaseElement::show(bool details)

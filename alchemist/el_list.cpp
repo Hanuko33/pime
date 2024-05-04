@@ -189,19 +189,19 @@ char wait_key(char prompt)
 Show_el::Show_el(char _c, ListElement *_el)
 {
     c = _c;
-    el = _el;
+    l_el = _el;
     selected = false;
 }
 
 void Show_el::show(bool details)
 {
     printf("%c (%c) - ", c, selected ? '*' : ' ');
-    el->show(details);
+    l_el->show(details);
 }
 
-bool Show_list::find_check(ListElement *el, void * what)
+bool Show_list::find_check(ListElement *_el, void * what)
 {
-    Show_el * s_el = (Show_el*)el;
+    Show_el * s_el = (Show_el*)_el;
     char * c = (char *) what;
     if (s_el->c == *c) return true;
     return false;
@@ -211,7 +211,7 @@ ListElement *Show_list::select_el()
 {
     char c=wait_key(prompt);
     Show_el * f = (Show_el*) find(&c);
-    if (f) return f->el;
+    if (f) return f->l_el;
     return nullptr;
 }
 
@@ -238,8 +238,8 @@ void Show_list::unselect_all()
 {
     ListElement * cur = head;
     while(cur) {
-        Show_el * el= (Show_el*) cur;
-        el->selected = false;
+        Show_el * _el= (Show_el*) cur;
+        _el->selected = false;
         cur = cur->next;
     }
 }

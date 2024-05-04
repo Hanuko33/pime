@@ -172,15 +172,10 @@ void create_menus()
     menu_music->add("-5 Volume", MENU_QUIETER);
     menu_music->add("Cancel", MENU_CANCEL);
    
-   if (fantasy_game) { 
-        menu_inventory_categories = new Menu("Inventory", 3);
-        menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
-        menu_inventory_categories->add("Liquid form", MENU_INV_LIGQUID, Form_liquid);
-        menu_inventory_categories->add("Gas form", MENU_INV_GAS, Form_gas);
-   } else {
-        menu_inventory_categories = new Menu("Inventory", 1);
-        menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
-   }
+    menu_inventory_categories = new Menu("Inventory", 3);
+    menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
+    menu_inventory_categories->add("Liquid form", MENU_INV_LIGQUID, Form_liquid);
+    menu_inventory_categories->add("Gas form", MENU_INV_GAS, Form_gas);
         
     menu_crafting = new Menu("Crafting", 4);
     menu_crafting->add("Axe blade (1 ing.)", MENU_CRAFT_AXE_BLADE);

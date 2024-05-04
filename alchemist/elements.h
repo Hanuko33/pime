@@ -11,8 +11,6 @@ typedef void * SDL_Texture;
 #include <cstdlib>
 #include "names.h"
 
-extern bool fantasy_game;
-
 class Edible
 {
     public:
@@ -67,8 +65,6 @@ class BaseElement
         bool magic; // TODO
         
         BaseElement(); 
-        void init_real();
-        void init_fantasy();
         void show(bool details=true);
 };        
 
@@ -121,7 +117,6 @@ class Element : public InventoryElement
         Element(BaseElement *b);
         Form get_form() {return base->form; }
         const char * get_name() {
-            if (!fantasy_game) return base->name;
             return known ? base->name : "unknown"; 
         }
         const char * get_form_name() { return Form_name[base->form]; }
