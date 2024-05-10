@@ -21,8 +21,11 @@ add_executable(game_gui
 
     alchemist/axe_blade.cpp
     alchemist/axe_handle.cpp
-    
     alchemist/axe.cpp
+
+    alchemist/knife_blade.cpp
+    alchemist/knife_handle.cpp
+    alchemist/knife.cpp
 
     OpenSimplex/OpenSimplex2F.c
 	)

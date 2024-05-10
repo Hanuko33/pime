@@ -172,21 +172,20 @@ void create_menus()
     menu_music->add("-5 Volume", MENU_QUIETER);
     menu_music->add("Cancel", MENU_CANCEL);
    
-   if (fantasy_game) { 
-        menu_inventory_categories = new Menu("Inventory", 3);
-        menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
-        menu_inventory_categories->add("Liquid form", MENU_INV_LIGQUID, Form_liquid);
-        menu_inventory_categories->add("Gas form", MENU_INV_GAS, Form_gas);
-   } else {
-        menu_inventory_categories = new Menu("Inventory", 1);
-        menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
-   }
+    menu_inventory_categories = new Menu("Inventory", 3);
+    menu_inventory_categories->add("Solid form", MENU_INV_SOLID, Form_solid);
+    menu_inventory_categories->add("Liquid form", MENU_INV_LIGQUID, Form_liquid);
+    menu_inventory_categories->add("Gas form", MENU_INV_GAS, Form_gas);
         
-    menu_crafting = new Menu("Crafting", 4);
+    menu_crafting = new Menu("Crafting", 7);
     menu_crafting->add("Axe blade (1 ing.)", MENU_CRAFT_AXE_BLADE);
     menu_crafting->add("Axe handle (1 ing.)", MENU_CRAFT_AXE_HANDLE);
     menu_crafting->add("Axe (2 ing.)", MENU_CRAFT_AXE);
 
+    menu_crafting->add("Knife blade (1 ing.)", MENU_CRAFT_KNIFE_BLADE);
+    menu_crafting->add("Knife handle (1 ing.)", MENU_CRAFT_KNIFE_HANDLE);
+    menu_crafting->add("Knife (2 ing.)", MENU_CRAFT_KNIFE);
+    
     menu_crafting->add("Cancel", MENU_CANCEL);
 }
                 
@@ -302,6 +301,10 @@ int craft(menu_actions a)
     InventoryElement * el=NULL;
     sprintf(status_line, "Starting crafting");
     switch(a) { 
+        case MENU_CRAFT_KNIFE_BLADE: el = craft_knife_blade(); break;
+        case MENU_CRAFT_KNIFE_HANDLE: el = craft_knife_handle(); break;
+        case MENU_CRAFT_KNIFE: el = craft_knife(); break;
+
         case MENU_CRAFT_AXE_BLADE: el = craft_axe_blade(); break;
         case MENU_CRAFT_AXE_HANDLE: el = craft_axe_handle(); break;
         case MENU_CRAFT_AXE: el = craft_axe(); break;
@@ -377,6 +380,9 @@ int interact(enum menu_actions a)
         case MENU_CRAFT_AXE_BLADE: 
         case MENU_CRAFT_AXE_HANDLE: 
         case MENU_CRAFT_AXE: 
+        case MENU_CRAFT_KNIFE:
+        case MENU_CRAFT_KNIFE_BLADE:
+        case MENU_CRAFT_KNIFE_HANDLE:
             return craft(a);
     }
     return 1;

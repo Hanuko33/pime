@@ -1,4 +1,5 @@
 #include "texture.h"
+#include "alchemist/elements.h"
 #include "tiles.h"
 #include "object.h"
 #include "window.h"
@@ -122,8 +123,11 @@ void load_textures()
 
     add_ing_texture(ING_AXE_BLADE, "textures/items/axe_blade.png");
     add_ing_texture(ING_AXE_HANDLE, "textures/items/axe_handle.png");
+    add_ing_texture(ING_KNIFE_BLADE, "textures/items/knife_blade.png");
+    add_ing_texture(ING_KNIFE_HANDLE, "textures/items/knife_handle.png");
     
     add_prod_texture(PROD_AXE, "textures/items/axe.png");
+    add_prod_texture(PROD_KNIFE, "textures/items/knife.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 

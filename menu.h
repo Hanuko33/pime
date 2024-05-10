@@ -24,6 +24,9 @@ enum menu_actions
     MENU_CRAFT_AXE_BLADE,
     MENU_CRAFT_AXE_HANDLE,
     MENU_CRAFT_AXE,
+    MENU_CRAFT_KNIFE_BLADE,
+    MENU_CRAFT_KNIFE_HANDLE,
+    MENU_CRAFT_KNIFE,
 //must be the last     
     MENU_ITEM=0x1000,
 };

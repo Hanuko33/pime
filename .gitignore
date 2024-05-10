@@ -3,3 +3,5 @@ data
 *.os
 .cache
 tags
+godot-cpp
+the_game

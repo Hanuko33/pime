@@ -239,19 +239,15 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
 
     for (int i = 0; i < 128; i++)
     {
-        struct object *o = (struct object *)malloc(sizeof(struct object));
-        o->type = OBJECT_NULL;
-        o->x = rand() % 16;
-        o->z = rand() % 16;
-        o->y = height_at(chunk_x, chunk_y, o->x, o->z);
-
-        chunk->objects[i] = o;
+        chunk->objects[i] = NULL;
     }
     for (int i = 0; i < 19; i++)
     {
         struct object *o = (struct object *)malloc(sizeof(struct object));
         o->type = OBJECT_TREE;
+            
         o->base_element_id = rand() % BASE_ELEMENTS;
+        
         o->x = rand() % 16;
         o->z = rand() % 16;
         o->y = height_at(chunk_x, chunk_y, o->x, o->z);

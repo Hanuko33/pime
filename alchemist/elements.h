@@ -67,8 +67,7 @@ class BaseElement
         bool magic; // TODO
         
         BaseElement(); 
-        void init_real();
-        void init_fantasy();
+        void init();
         void show(bool details=true);
 };        
 
@@ -121,7 +120,6 @@ class Element : public InventoryElement
         Element(BaseElement *b);
         Form get_form() {return base->form; }
         const char * get_name() {
-            if (!fantasy_game) return base->name;
             return known ? base->name : "unknown"; 
         }
         const char * get_form_name() { return Form_name[base->form]; }
@@ -305,8 +303,8 @@ public:
 #define FOOD_ELEMENTS 3
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
-#define ING_ELEMENTS 2
-#define PROD_ELEMENTS 1
+#define ING_ELEMENTS 4
+#define PROD_ELEMENTS 2
 
 extern BaseElement *base_elements[BASE_ELEMENTS];
 
