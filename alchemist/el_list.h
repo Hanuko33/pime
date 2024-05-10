@@ -17,7 +17,7 @@ public:
 	virtual void show(bool details=true);
     virtual bool tick() { return el->tick(); };
 	ListElement(InventoryElement *entry);
-    ListElement(): next(nullptr) {}
+    ListElement(): el(nullptr), next(nullptr) {}
 };
     
 
@@ -48,7 +48,7 @@ class Show_el : public ListElement
 public:
     char c;
     bool selected;
-    ListElement *el;
+    ListElement *l_el;
     Show_el(char _c, ListElement *_el);
     void show(bool details=true);
 };

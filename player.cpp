@@ -64,8 +64,8 @@ Player::Player()
 	back_x=0;
 	back_y=0;
     health=1000;
-    hunger=50;
-    thirst=50;
+    hunger=500;
+    thirst=250;
     map_x = WORLD_CENTER;
     map_y = WORLD_CENTER;
     inventory = new InvList("inventory");

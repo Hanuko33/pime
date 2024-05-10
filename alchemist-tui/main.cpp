@@ -198,9 +198,9 @@ bool select_inventory2(InventoryElement **el1, InventoryElement **el2)
     {
         if (el->selected)
         {
-            printf("%s ", el->el->el->get_name());
+            printf("%s ", el->l_el->el->get_name());
             count++;
-            if (!*el1) *el1=el->el->el; else *el2=el->el->el;
+            if (!*el1) *el1=el->l_el->el; else *el2=el->l_el->el;
         }
         el=(Show_el*)el->next;
     }

@@ -11,8 +11,6 @@ typedef void * SDL_Texture;
 #include <cstdlib>
 #include "names.h"
 
-extern bool fantasy_game;
-
 class Edible
 {
     public:

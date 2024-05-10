@@ -250,9 +250,9 @@ void use_tile()
     InventoryElement ** item_pointer = get_item_at_ppos(&player);
     if (item_pointer)
     {
-        InventoryElement * item = *item_pointer;
+       InventoryElement * item = *item_pointer;
        player.inventory->add(item);
-           sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
+       sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
        *item_pointer=NULL; 
 
        status_code = 1; 
@@ -350,6 +350,12 @@ void player_interact(int key)
                     player.hotbar[active_hotbar]=NULL;
                     sprintf(status_line, "eat");
                     status_code = 1;
+                    if (edible->poison)
+                    {
+                        player.thirst-=edible->poison*10;
+                        player.hunger-=edible->poison*10;
+                        sprintf(status_line, "eat: GOT POISONED");
+                    }
                 }
                 else
                 {
@@ -443,7 +449,7 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     else
     {
         player.sneaking = 0;
-        if (keys[SDL_SCANCODE_LCTRL])
+        if (keys[SDL_SCANCODE_LCTRL] && player.hunger && player.thirst)
         {
             player.running = 1;
             time_period = 50;
@@ -459,22 +465,30 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     {
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
+            player.hunger-=5;
+            player.thirst--;
             player.move(0, 1);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
+            player.hunger-=5;
+            player.thirst--;
             player.move(0, -1);
             *last_frame_press=1;
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
+            player.hunger-=5;
+            player.thirst--;
             player.going_right=1;
             player.move(1, 0);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
+            player.hunger-=5;
+            player.thirst--;
             player.going_right=0;
             player.move(-1, 0);
             *last_frame_press=1;
@@ -497,6 +511,8 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
 
 void draw()
 {
+    if (player.hunger < 0) player.hunger = 0;
+    if (player.thirst < 0) player.thirst = 0;
     int game_size;
     int tile_dungeon_size;
     int width = window_width - PANEL_WINDOW;
@@ -633,10 +649,7 @@ void draw()
     write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
     ty +=25; 
 
-
-
-
-    sprintf(text, "Player@(%d, %d, %d)->%d", 
+        sprintf(text, "Player@(%d, %d, %d)->%d", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
 			player.y,
 			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
@@ -792,9 +805,6 @@ void intro()
         Mix_Volume(1, 0);
         Mix_Pause(1);
     } else printf("\nGame without music\n");
-
-    printf("Setting game type to fantasy\n");
-
     tcflush(0, TCIFLUSH);
     tcsetattr(0, TCSANOW, &state);
 }
