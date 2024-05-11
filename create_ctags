@@ -1,2 +1,4 @@
 #/bin/bash
 ctags -R --exclude=build --exclude=godot-cpp --exclude=.cache --exclude=*.md
+cd alchemist
+ctags -R --exclude=start --exclude=PCUSTOM --exclude=Makefile
