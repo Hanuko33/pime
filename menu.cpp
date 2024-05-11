@@ -3,8 +3,11 @@
 #include "music.h"
 #include "alchemist/elements.h"
 #include "texture.h"
+#include "alchemist/axe.h"
 #include "world.h"
 #include "craft.h"
+#include <cstdio>
+#include <cstdlib>
 
 
 extern class Player player;
@@ -19,6 +22,7 @@ Menu *current_menu;
 Menu *menu_inventory_categories;
 Menu *menu_inventory;
 Menu *menu_crafting;
+Menu *menu_dev;
 
 void load(char with_player);
 void save(char with_player);
@@ -187,6 +191,10 @@ void create_menus()
     menu_crafting->add("Knife (2 ing.)", MENU_CRAFT_KNIFE);
     
     menu_crafting->add("Cancel", MENU_CANCEL);
+
+    menu_dev = new Menu("dev options", 2);
+    menu_dev->add("axe", MENU_GET_AXE);
+    menu_dev->add("random element", MENU_GET_RANDOM_ELEMENT);
 }
                 
 Menu * create_inv_menu(int v)
@@ -234,6 +242,11 @@ int menu_interact(int key)
        {
             if (current_menu) current_menu=NULL; else current_menu=menu_main;
             return 1;
+       }
+       case SDLK_h:
+       {
+           if (current_menu) current_menu=NULL; else current_menu=menu_dev;
+           return 1;
        }
        case SDLK_m:
        { 
@@ -323,6 +336,25 @@ int interact(enum menu_actions a)
     if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
     switch(a)
     {
+        case MENU_GET_AXE:
+        {
+            Element * el1=new Element(base_elements[0]);
+            Element * el2=new Element(base_elements[1]);
+            sprintf(status_line, "Creating axe...");
+            status_code=1;
+            Axe * axe=new Axe(el1, el2);
+            axe->show();
+            player.inventory->add(axe);
+            player.hotbar[active_hotbar]=axe;
+            break;
+        }
+        case MENU_GET_RANDOM_ELEMENT:
+        {
+            Element * el=new Element(base_elements[rand() % BASE_ELEMENTS]);
+            player.inventory->add(el);
+            player.hotbar[active_hotbar]=el;
+            break;
+        }
         case MENU_MUSIC:
             current_menu=menu_music;
             return 0;
