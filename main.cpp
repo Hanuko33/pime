@@ -250,10 +250,17 @@ void use_tile()
     InventoryElement ** item_pointer = get_item_at_ppos(&player);
     if (item_pointer)
     {
-       InventoryElement * item = *item_pointer;
-       player.inventory->add(item);
-       sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
-       *item_pointer=NULL; 
+        InventoryElement * item = *item_pointer;
+        player.inventory->add(item);
+        for (int i = 0; i<10; i++) {
+            if (!player.hotbar[i])
+            {
+                player.hotbar[i]=item;
+                break;
+            }
+        }
+        sprintf(status_line, "got item: %s (%s)", item->get_form_name(), item->get_name()); //player.inventory->get_count(item));
+        *item_pointer=NULL; 
 
        status_code = 1; 
     }
@@ -326,6 +333,9 @@ void player_interact(int key)
     
     switch (key)
     {
+        case SDLK_r:
+            player.hotbar[active_hotbar]=NULL;
+            break;
         case SDLK_SEMICOLON:
         {
             InventoryElement * el = player.hotbar[active_hotbar];
