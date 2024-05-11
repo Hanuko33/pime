@@ -792,31 +792,31 @@ void draw()
 
 void intro()
 {
-    int a;
-    struct termios state, new_state;
-    tcgetattr(0, &state);
-    new_state=state;
-    new_state.c_lflag &= ~(ECHO | ICANON |ECHOE| ISIG);
-    new_state.c_cc[VMIN] = 1;
-    tcsetattr(0, TCSANOW, &new_state);
+    /* int a; */
+    /* struct termios state, new_state; */
+    /* tcgetattr(0, &state); */
+    /* new_state=state; */
+    /* new_state.c_lflag &= ~(ECHO | ICANON |ECHOE| ISIG); */
+    /* new_state.c_cc[VMIN] = 1; */
+    /* tcsetattr(0, TCSANOW, &new_state); */
 
-    printf("Do you want music y/n? ");
-    a=getchar();
-    if (a=='y')
-    {
-        printf("\nInitializing music\n");
-        if (init_music()) 
-            printf("Failed to initialize music!\n"); ;
-        load_music();
+    /* printf("Do you want music y/n? "); */
+    /* a=getchar(); */
+    /* if (a=='y') */
+    /* { */
+    /*     printf("\nInitializing music\n"); */
+    /*     if (init_music()) */ 
+    /*         printf("Failed to initialize music!\n"); ; */
+    /*     load_music(); */
 
-        Mix_PlayChannel(0, music.music_one, 99999); 
-        Mix_PlayChannel(1, music.music_two, 99999);
-        Mix_Volume(0, 0);
-        Mix_Volume(1, 0);
-        Mix_Pause(1);
-    } else printf("\nGame without music\n");
-    tcflush(0, TCIFLUSH);
-    tcsetattr(0, TCSANOW, &state);
+    /*     Mix_PlayChannel(0, music.music_one, 99999); */ 
+    /*     Mix_PlayChannel(1, music.music_two, 99999); */
+    /*     Mix_Volume(0, 0); */
+    /*     Mix_Volume(1, 0); */
+    /*     Mix_Pause(1); */
+    /* } else printf("\nGame without music\n"); */
+    /* tcflush(0, TCIFLUSH); */
+    /* tcsetattr(0, TCSANOW, &state); */
 }
 
 
