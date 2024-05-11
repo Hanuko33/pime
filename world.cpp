@@ -248,6 +248,10 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
             
         o->base_element_id = rand() % BASE_ELEMENTS;
         
+        while (!(base_elements[o->base_element_id]->form==Form_solid)) {
+            o->base_element_id = rand() % BASE_ELEMENTS;
+        }
+
         o->x = rand() % 16;
         o->z = rand() % 16;
         o->y = height_at(chunk_x, chunk_y, o->x, o->z);
