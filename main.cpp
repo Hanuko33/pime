@@ -1,6 +1,7 @@
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_timer.h>
+#include <cstdlib>
 #include <time.h>
 //#include <SDL2/SDL_render.h>
 #include <stdlib.h>
@@ -264,7 +265,7 @@ void use_tile()
 
        status_code = 1; 
     }
-    if (ob_pointer)
+    else if (ob_pointer)
     {
         struct object * ob = *ob_pointer;
         if (ob->type == OBJECT_TREE)
@@ -278,7 +279,10 @@ void use_tile()
                     Element * el = new Element(base_elements[ob->base_element_id]);
                     el->set_posittion(player.x, player.y, player.z);
                     set_item_at_ppos(el, &player);
-                    ob->type = OBJECT_NULL;
+                    /* ob->type = OBJECT_NULL; */
+                    free(ob);
+                    ob=NULL;
+                    *ob_pointer=NULL;
                 }
                 else
                 {
