@@ -580,23 +580,6 @@ void player_interact(int key)
         case SDLK_MINUS: player.craftbar[active_hotbar]=0;  break;
         case SDLK_EQUALS: player.craftbar[active_hotbar]=1;  break;
 
-        case SDLK_F1:
-            generator();
-            player.z = 0;
-            player.in = LOC_WORLD;
-        break;
-
-        case SDLK_F2:
-            generate_dungeon(world_table[player.map_y][player.map_x], player.x, player.y);
-            player.z = 1;
-            player.in = LOC_DUNGEON;
-        break;
-
-        case SDLK_F3:
-            generate_cave(world_table[player.map_y][player.map_x], player.x, player.y);
-            player.z = 2;
-            player.in = LOC_CAVE;
-            break;
         case SDLK_F5:
             auto_explore^=1;
         break;
@@ -644,7 +627,6 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     {
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
-            player.hunger-=3;
             player.thirst--;
             player.move(0, 1);
             player.direction=direction::down;
@@ -652,7 +634,6 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
-            player.hunger-=3;
             player.thirst--;
             player.direction=direction::up;
             player.move(0, -1);
@@ -660,7 +641,6 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
-            player.hunger-=3;
             player.thirst--;
             player.going_right=1;
             player.direction=direction::right;
@@ -669,7 +649,6 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
-            player.hunger-=3;
             player.thirst--;
             player.going_right=0;
             player.direction=direction::left;
@@ -704,8 +683,6 @@ int next_to(int x1, int y1, int x2, int y2)
 }
 void draw()
 {
-    if (player.hunger < 0) player.hunger = 0;
-    if (player.thirst < 0) player.thirst = 0;
     int game_size;
     int tile_dungeon_size;
     int width = window_width - PANEL_WINDOW;
@@ -1078,6 +1055,9 @@ int main()
         SDL_Event event;
         clear_window();
 
+        if (player.hunger < 0) player.hunger = 0;
+        if (player.thirst < 0) player.thirst = 0;
+        
         draw();
 
         // keyboard handling for not move
@@ -1116,7 +1096,7 @@ int main()
         }
 
         // keyboard handling for move
-        if (player.energy > 0 || rand() % 2)
+        if (player.hunger > 0 || rand() % 3)
         {
             const Uint8 *currentKeyState = SDL_GetKeyboardState(NULL);
             Uint64 tmp = move_interact(currentKeyState, last_time, &last_frame_press);
@@ -1150,23 +1130,6 @@ int main()
                 dst_map_y=player.map_y;
          }
 
-
-       // update_time();
-#if 0
-        if (player.energy <= 0)
-        {
-            printf("You ran out of energy (death)\n");
-            printf("This is still in early alpha, the world isn't lost, just run the game and use the new menu (wip) set energy to 400\n");
-            printf("Thank you for playing =)\n");
-            SDL_Quit();
-            return 0;
-        }
-#endif
-        // DEBUG x, y, map_x, map_y, running
-        //printf("x: %d y: %d\n map_x: %d map_y: %d running: %d\n", player.x, player.y, player.map_x, player.map_y, player.running);                   
-        // DEBUG in_menu
-        //printf("in_menu: %d\n", in_menu);
-        
         SDL_RenderPresent(renderer);
         if (!auto_explore) SDL_Delay(20);   
     }

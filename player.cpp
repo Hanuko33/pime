@@ -24,12 +24,11 @@ void Player::check_and_move(int new_map_x, int new_map_y, int new_x, int new_z)
     
     if (moved)
     { 
-        //game_time.seconds += (running ? 15 : sneaking ? 45 : 30);
         map_x = new_map_x;
         map_y = new_map_y;
         x = new_x;
         z = new_z;
-        energy -= (running ? 2 : 1);
+        hunger -= 3;
     }
 }
 
@@ -60,10 +59,8 @@ void Player::move(int dx, int dz)
 
 Player::Player()
 {
-	energy=250;
 	back_x=0;
 	back_y=0;
-    health=1000;
     hunger=500;
     thirst=250;
     map_x = WORLD_CENTER;

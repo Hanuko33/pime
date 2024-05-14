@@ -6,23 +6,8 @@ This is a game made with sdl2 and C++. On master branch there is version for God
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
 
-## ALPHA STAGE: done
+## Early development stage
 
-## BETA STAGE
-
-### Requirements for Beta stage:
-- [x] help menu in game
-- [x] dungeons fix (better generation)
-- [ ] in-game music - wip. artist needs more time
-- [x] in-game "timer" (for in game events)
-- [x] more distro support
-- [x] Better generation
-    - [x] More terrain types
-        - [x] Water, with collision
-    - [x] biome support
-- [ ] Godot port
-- [ ] Dropping items
-- [ ] Change item backend
 #### (this list will be longer)
 
 ## Installation
@@ -35,16 +20,30 @@ This is a game made with sdl2 and C++. On master branch there is version for God
 
 ## Keys
 
-* ESC - menu: exit, load, save, help menu
-* m   - menu: energy
-* arrows, w, a, s, d - moves
-* ctrl - run
+* escape - main menu
+* l - dev menu
+* c - crafting
+* i - inventory
+* v - clear statusline (text at bottom)
+* t - break terrain (up)
+* g - break terrain (same level)
+* b - break terrain (under)
+* r - remove item from hotbar
+* semicolon (;) - show item info (sends to stdout)
+* f - eat
+* f11 - updates window size (use when game windows size starts to look weird)
+* 1,2,3,4,5,6,7,8,9,0 - hotbar select (single mode)
+* q - drop element from hotbar
+* backquote (`) - previous hotbar element
+* tab - next hotbar element
+* minus (-) - deselect hotbar (multi mode)
+* equals (=) - select hotbar (mutli mode)
+* F5 - auto explore
+* F4 - show information about item at player position (sends to stdout)
+* enter / e - use (also works for menu)
 * shift - sneak
-* e, ENTER - interact / pickup item
-* F5 - autoexplorer
-* F11 - stop automaticaly resizing (may break some things)
-* 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 - select hotbar
-* ` - previous hotbar
-* TAB - next hotbar
-* = - use from hotbar
+* ctrl - run
+* w,a,s,d - move (s,w for menu)
+* arrow keys - move (up,down for menu)
+
 

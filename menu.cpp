@@ -16,9 +16,9 @@ extern int active_hotbar;
 
 Menu *menu_music;
 Menu *menu_main;
-Menu *menu_energy;
 Menu *menu_help;
 Menu *menu_help2;
+Menu *menu_help3;
 Menu *current_menu;
 Menu *menu_inventory_categories;
 Menu *menu_inventory;
@@ -152,31 +152,40 @@ void create_menus()
     menu_main->add("Change music volume", MENU_MUSIC);
     menu_main->add("Cancel", MENU_CANCEL);
 
-    menu_energy = new Menu("Energy", 3);
-    menu_energy->add("Regain 100 energy", MENU_REGAIN);
-    menu_energy->add("Set the energy to 1000", MENU_BOOST);
-    menu_energy->add("Cancel", MENU_CANCEL);
-
-    menu_help = new Menu("Help", 9);
-    menu_help->add("ESC - game menu", MENU_CANCEL);
-    menu_help->add("m - energy", MENU_CANCEL);
-    menu_help->add("arrows - moves", MENU_CANCEL);
-    menu_help->add("w,a,s,d - moves", MENU_CANCEL);
-    menu_help->add("ctrl - run", MENU_CANCEL);
-    menu_help->add("shift - sneak", MENU_CANCEL);
-    menu_help->add("e,ENTER - pickup", MENU_CANCEL);
-    menu_help->add("i - inventory", MENU_CANCEL);
+    menu_help = new Menu("Help 1", 9);
+	menu_help->add("; - show item info", MENU_CANCEL);
+	menu_help->add("f11 - resize", MENU_CANCEL);
+	menu_help->add("1-9,0 - hotbar", MENU_CANCEL);
+	menu_help->add("q - drop item", MENU_CANCEL);
+	menu_help->add("` - previous item", MENU_CANCEL);
+	menu_help->add("tab - next item", MENU_CANCEL);
+	menu_help->add("minus - deselect hotbar", MENU_CANCEL);
     menu_help->add("N E X T", MENU_HELP_2);
+	menu_help->add("Cancel", MENU_CANCEL);
 
-    menu_help2 = new Menu("Help", 6);
+    menu_help2 = new Menu("Help 2", 9);
     menu_help2->add("P R E V I O U S", MENU_HELP_1);
-    menu_help2->add("= - use item in hotbar", MENU_CANCEL);
-	menu_help2->add("1234567890 - hotbar", MENU_CANCEL);
-	menu_help2->add("TAB - hotbar next", MENU_CANCEL);
-	menu_help2->add("` - hotbar previous", MENU_CANCEL);
+	menu_help2->add("esc - main menu", MENU_CANCEL);
+	menu_help2->add("l - devmenu", MENU_CANCEL);
+	menu_help2->add("c - crafting", MENU_CANCEL);
+	menu_help2->add("i - inventory", MENU_CANCEL);
+	menu_help2->add("v - clear statusline", MENU_CANCEL);
+	menu_help2->add("t,g,b - terrain break", MENU_CANCEL);
+    menu_help2->add("N E X T", MENU_HELP_3);
 	menu_help2->add("Cancel", MENU_CANCEL);
 
-    menu_music = new Menu("Music", 3);
+    menu_help3 = new Menu("Help 3", 9);
+    menu_help3->add("P R E V I O U S", MENU_HELP_2);
+	menu_help3->add("r - remove from hotbar", MENU_CANCEL);
+	menu_help3->add("= - select hotbar", MENU_CANCEL);
+	menu_help3->add("F5 - autoexplore", MENU_CANCEL);
+	menu_help3->add("F4 - item info at player", MENU_CANCEL);
+	menu_help3->add("e / enter - use", MENU_CANCEL);
+	menu_help3->add("shift/control - sneak/run", MENU_CANCEL);
+	menu_help3->add("wasd+arrows - move", MENU_CANCEL);
+    menu_help3->add("Cancel", MENU_CANCEL);
+
+    menu_music = new Menu("Music 3", 3);
     menu_music->add("+5 Volume", MENU_LOUDER);
     menu_music->add("-5 Volume", MENU_QUIETER);
     menu_music->add("Cancel", MENU_CANCEL);
@@ -197,10 +206,11 @@ void create_menus()
     
     menu_crafting->add("Cancel", MENU_CANCEL);
 
-    menu_dev = new Menu("dev options", 3);
+    menu_dev = new Menu("dev options", 4);
     menu_dev->add("axe", MENU_GET_AXE);
     menu_dev->add("knife", MENU_GET_KNIFE);
     menu_dev->add("random element", MENU_GET_RANDOM_ELEMENT);
+    menu_dev->add("food/water +100", MENU_REGAIN);
 }
                 
 Menu * create_inv_menu(int v)
@@ -252,11 +262,6 @@ int menu_interact(int key)
        case SDLK_l:
        {
            if (current_menu) current_menu=NULL; else current_menu=menu_dev;
-           return 1;
-       }
-       case SDLK_m:
-       { 
-           if (!current_menu) current_menu=menu_energy; else if (current_menu ==  menu_energy) current_menu=NULL;
            return 1;
        }
        case SDLK_c:
@@ -376,18 +381,17 @@ int interact(enum menu_actions a)
             return 0;
         case MENU_REGAIN:
             player.hunger+=100;
-            break;
-
+            player.thirst+=100;
+            return 0;
+        case MENU_HELP_3:
+            current_menu=menu_help3;
+            return 0;
         case MENU_HELP_2:
             current_menu=menu_help2;
             return 0;
         case MENU_HELP_1:
             current_menu=menu_help;
             return 0;
-
-        case MENU_BOOST:
-            player.energy=1000;
-            break;
 
         case MENU_SAVE:
             save(1);

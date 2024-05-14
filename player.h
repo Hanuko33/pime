@@ -35,10 +35,8 @@ public:
     char going_right;
     enum direction direction;
     enum location in;
-    int energy;
     int thirst;
     int hunger;
-    int health;
     InvList * inventory; 
     InventoryElement * hotbar[10];
     int craftbar[10];
