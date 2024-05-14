@@ -13,7 +13,6 @@ SDL_Texture * gas_textures[GAS_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
 SDL_Texture * objects_textures[OBJECT_MAX];
-SDL_Texture * up_mask;
 SDL_Texture * down_mask;
 
 #include "axe_blade.h"

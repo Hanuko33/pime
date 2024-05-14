@@ -545,32 +545,40 @@ void draw()
 
     // render terrain
     int heightmap[CHUNK_SIZE][CHUNK_SIZE];
-    for (int y=0; y < CHUNK_SIZE ; y++)
+    for (int z=0; z < CHUNK_SIZE; z++)
     {
-        int y_size = y * tile_dungeon_size;
+        int y_size = z * tile_dungeon_size;
         for (int x=0; x < CHUNK_SIZE; x++)
         {
             int dy = 0;
             SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
-            if (get_tile_at(player.map_x, player.map_y, x, player.y, y) == TILE_AIR) 
+
+            /* for (int i = CHUNK_SIZE-1; i>0; i--) { */
+            /*     if (get_tile_at(player.map_x, player.map_y, x, i, z) != TILE_AIR) */
+            /*         heightmap[x][z] = i; */
+            /* } */
+            if (get_tile_at(player.map_x, player.map_y, x, player.y, z) == TILE_AIR) 
             {
-                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy, y) == TILE_AIR) 
+                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy, z) == TILE_AIR) 
                 {
                     dy--;
                 }
             }
             else 
             {
-                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy +1 , y) != TILE_AIR) 
+                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy +1 , z) != TILE_AIR) 
                 {
                     dy++;
                 }
+             } 
+            heightmap[x][z] = dy;
+            printf("%d \n", player.y+dy);
+            if (player.y+dy < player.y)
+            {
+                enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, z);
+                SDL_Texture *texture = tiles_textures[tile];
+                SDL_RenderCopy(renderer, texture, NULL, &img_rect);
             }
-            heightmap[x][y] = dy;
-            enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, y);    
-            SDL_Texture *texture = tiles_textures[tile];
-            SDL_RenderCopy(renderer, texture, NULL, &img_rect);
-            
         }
     }
     // render objects
@@ -579,11 +587,14 @@ void draw()
         struct object * o = world_table[player.map_y][player.map_x]->objects[i];
         if (o)
         {
-            SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-            int dy = o->y - player.y;
-            if (heightmap[o->x][o->z]+1 == dy)
+            if (o->y<=player.y)
             {
-                SDL_RenderCopy(renderer, objects_textures[o->type], NULL, &img_rect);
+                SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+                int dy = o->y - player.y;
+                if (heightmap[o->x][o->z]+1 == dy)
+                {
+                    SDL_RenderCopy(renderer, objects_textures[o->type], NULL, &img_rect);
+                }
             }
         }
     }
@@ -595,20 +606,21 @@ void draw()
         {
             int x, y, z;
             o->get_posittion(&x, &y, &z);
-            SDL_Rect img_rect = {x * tile_dungeon_size, z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-            int dy = y - player.y;
-            if (heightmap[x][z]+1 == dy)
+            if (y<=player.y)
             {
-                SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
+                SDL_Rect img_rect = {x * tile_dungeon_size, z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+                int dy = y - player.y;
+                if (heightmap[x][z]+1 == dy)
+                {
+                    SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
+                }
             }
         }
     }
 
     // render mask
 	Uint8 up, down;	
-	SDL_GetTextureAlphaMod(up_mask, &up);
 	SDL_GetTextureAlphaMod(down_mask, &down);
-	SDL_SetTextureAlphaMod(up_mask, 160);
 	SDL_SetTextureAlphaMod(down_mask, 160);
 
     for (int y=0; y < CHUNK_SIZE ; y++)
@@ -618,11 +630,6 @@ void draw()
         {
             int dy = heightmap[x][y];
             SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
-            while (dy > -1)
-            {
-                SDL_RenderCopy(renderer, up_mask, NULL, &img_rect);
-                dy--;
-            }
             while (dy < -1)
             {
                 SDL_RenderCopy(renderer, down_mask, NULL, &img_rect);
