@@ -14,8 +14,6 @@ SDL_Texture * gas_textures[GAS_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
 SDL_Texture * objects_textures[OBJECT_MAX];
-SDL_Texture * up_mask;
-SDL_Texture * down_mask;
 
 SDL_Texture* load_texture(const char * texture_name)
 {
@@ -131,6 +129,4 @@ void load_textures()
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 
-    up_mask = IMG_LoadTexture(renderer, "textures/game_tiles/up_mask.png");
-    down_mask = IMG_LoadTexture(renderer, "textures/game_tiles/down_mask.png");
 }

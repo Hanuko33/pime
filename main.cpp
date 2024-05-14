@@ -777,10 +777,6 @@ void draw()
     }
 
     // render mask
-	Uint8 up, down;	
-	SDL_GetTextureAlphaMod(down_mask, &down);
-	SDL_SetTextureAlphaMod(down_mask, 160);
-
     for (int y=0; y < CHUNK_SIZE ; y++)
     {
         int y_size = y * tile_dungeon_size;
@@ -790,13 +786,11 @@ void draw()
             SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
             while (dy < -1)
             {
-                SDL_RenderCopy(renderer, down_mask, NULL, &img_rect);
+                draw_rectangle(x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size, SDL_Color{0,0,0,100}, SDL_Color{0,0,0,100}, SDL_Color{0,0,0,100}, SDL_Color{0,0,0,100});
                 dy++;
             }
         }
     }
-	SDL_SetTextureAlphaMod(up_mask, up);
-	SDL_SetTextureAlphaMod(down_mask, down);
     
     // render player
    SDL_Rect img_rect = {player.x * tile_dungeon_size, player.z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
