@@ -111,9 +111,13 @@ void Menu::show()
     int mody3 = mody+(((menu_pos+1)*menu_opt_size)-(menu_opt_size));
     int mody4 = mody+((menu_pos+1)*menu_opt_size);
     
-    SDL_Rect rect2 = {modx, mody3, modx2-modx, mody4-mody3};
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 100);
-    SDL_RenderFillRect(renderer, &rect2);
+
+    // THIS IS THE SELECT
+    /* SDL_Rect rect2 = {modx, mody3, modx2-modx, mody4-mody3}; */
+    /* SDL_SetRenderDrawColor(renderer, 200, 200, 200, 100); */
+    /* SDL_RenderFillRect(renderer, &rect2); */
+    draw_rectangle(modx, mody3, modx2-modx, mody4-mody3, SDL_Color{0,255,255,255}, SDL_Color{0,255,255,255}, SDL_Color{}, SDL_Color{});
+    draw_rectangle(modx, mody3, modx2-modx, mody4-mody3, SDL_Color{}, SDL_Color{}, SDL_Color{0,255,255,255}, SDL_Color{0,255,255,255});
     
     SDL_Rect rect3 = {modx, mody - menu_opt_size, modx2-modx, mody4-mody3};
     SDL_SetRenderDrawColor(renderer, 150, 0, 150, 100);
@@ -245,7 +249,7 @@ int menu_interact(int key)
             if (current_menu) current_menu=NULL; else current_menu=menu_main;
             return 1;
        }
-       case SDLK_h:
+       case SDLK_l:
        {
            if (current_menu) current_menu=NULL; else current_menu=menu_dev;
            return 1;

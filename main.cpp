@@ -39,6 +39,14 @@ void daily_call()
 {
 }
 
+const char * direction_names[4] =
+{
+    "up",
+    "right",
+    "down",
+    "left",
+};
+
 void save(char with_player)
 {
  /*   if (with_player)
@@ -337,6 +345,163 @@ void player_interact(int key)
     
     switch (key)
     {
+        case SDLK_v:
+            sprintf(status_line, "");
+            status_code = 1;
+            break;
+        case SDLK_t: // break up
+            switch (player.direction) {
+                case direction::down:
+                    if (player.z == CHUNK_SIZE-1)
+                    {
+                        if (!load_chunk(player.map_x, player.map_y+1)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y+1][player.map_x]->table[0][player.y+1][player.x].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z+1][player.y+1][player.x].tile=TILE_AIR;
+                    }
+                    break;
+                case direction::up:
+                    if (player.z == 0)
+                    {
+                        if (!load_chunk(player.map_x, player.map_y-1)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.y+1][player.x].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z-1][player.y+1][player.x].tile=TILE_AIR;
+                    }
+                    break;
+                case direction::right:
+                    if (player.x == CHUNK_SIZE-1)
+                    {
+                        if (!load_chunk(player.map_x+1, player.map_y)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y][player.map_x+1]->table[player.z][player.y+1][0].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z][player.y+1][player.x+1].tile=TILE_AIR;
+                    }
+                    break;
+                case direction::left:
+                    if (player.x == 0)
+                    {
+                        if (!load_chunk(player.map_x-1, player.map_y)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y][player.map_x-1]->table[player.z][player.y+1][CHUNK_SIZE-1].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z][player.y+1][player.x-1].tile=TILE_AIR;
+                    }
+                    break;
+            }
+            break;
+
+
+        case SDLK_g: // break same level
+            switch (player.direction) {
+                case direction::down:
+                    if (player.z == CHUNK_SIZE-1)
+                    {
+                        if (!load_chunk(player.map_x, player.map_y+1)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y+1][player.map_x]->table[0][player.y][player.x].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z+1][player.y][player.x].tile=TILE_AIR;
+                    }
+                    break;
+                case direction::up:
+                    if (player.z == 0)
+                    {
+                        if (!load_chunk(player.map_x, player.map_y-1)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.y][player.x].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z-1][player.y][player.x].tile=TILE_AIR;
+                    }
+                    break;
+                case direction::right:
+                    if (player.x == CHUNK_SIZE-1)
+                    {
+                        if (!load_chunk(player.map_x+1, player.map_y)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y][player.map_x+1]->table[player.z][player.y][0].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x+1].tile=TILE_AIR;
+                    }
+                    break;
+                case direction::left:
+                    if (player.x == 0)
+                    {
+                        if (!load_chunk(player.map_x-1, player.map_y)) 
+                        {
+                            sprintf(status_line, "ON EDGE OF WORLD!");
+                            status_code=0;
+                            return;
+                        };
+
+                        world_table[player.map_y][player.map_x-1]->table[player.z][player.y][CHUNK_SIZE-1].tile=TILE_AIR;
+                    }
+                    else
+                    {
+                        world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x-1].tile=TILE_AIR;
+                    }
+                    break;
+            }
+            break;
+        case SDLK_b: // break under
+            if (player.y>1)
+            {
+                world_table[player.map_y][player.map_x]->table[player.z][player.y-1][player.x].tile=TILE_AIR;
+                player.move(0, 0);
+            }
+            break;
         case SDLK_r:
             player.hotbar[active_hotbar]=NULL;
             break;
@@ -406,7 +571,7 @@ void player_interact(int key)
         case SDLK_8: active_hotbar=7; break;
         case SDLK_9: active_hotbar=8; break;
         case SDLK_0: active_hotbar=9; break;
-
+    
 		case SDLK_q: put_element(); break;
 
 		case SDLK_BACKQUOTE: active_hotbar--; if (active_hotbar==-1) active_hotbar=9; break;
@@ -479,31 +644,35 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     {
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
-            player.hunger-=5;
+            player.hunger-=3;
             player.thirst--;
             player.move(0, 1);
+            player.direction=direction::down;
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
-            player.hunger-=5;
+            player.hunger-=3;
             player.thirst--;
+            player.direction=direction::up;
             player.move(0, -1);
             *last_frame_press=1;
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
-            player.hunger-=5;
+            player.hunger-=3;
             player.thirst--;
             player.going_right=1;
+            player.direction=direction::right;
             player.move(1, 0);
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
-            player.hunger-=5;
+            player.hunger-=3;
             player.thirst--;
             player.going_right=0;
+            player.direction=direction::left;
             player.move(-1, 0);
             *last_frame_press=1;
         }
@@ -522,7 +691,17 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     return 0;
 }
 
+int next_to(int x1, int y1, int x2, int y2)
+{
+    if (x1==x2 && y1==y2)
+        return 2;
 
+    if ((x1==x2+1 || x1==x2-1) && y1==y2)
+        return 1;
+    if ((y1==y2+1 || y1==y2-1) && x1==x2)
+        return 1;
+    return 0;
+}
 void draw()
 {
     if (player.hunger < 0) player.hunger = 0;
@@ -572,12 +751,18 @@ void draw()
                 }
              } 
             heightmap[x][z] = dy;
-            printf("%d \n", player.y+dy);
             if (player.y+dy < player.y)
             {
                 enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, z);
                 SDL_Texture *texture = tiles_textures[tile];
                 SDL_RenderCopy(renderer, texture, NULL, &img_rect);
+            }
+            else if (next_to(player.x, player.z, x, z) == 1 && player.y+dy < player.y+1)
+            {
+                enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, z);
+                SDL_Texture *texture = tiles_textures[tile];
+                SDL_RenderCopy(renderer, texture, NULL, &img_rect);
+                draw_rectangle(x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size, SDL_Color{255,255,255,100}, SDL_Color{255,255,255,100}, SDL_Color{255,255,255,100}, SDL_Color{255,255,255,100});
             }
         }
     }
@@ -641,7 +826,7 @@ void draw()
 	SDL_SetTextureAlphaMod(down_mask, down);
     
     // render player
-    SDL_Rect img_rect = {player.x * tile_dungeon_size, player.z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+   SDL_Rect img_rect = {player.x * tile_dungeon_size, player.z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
     if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
     else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
 
@@ -667,6 +852,10 @@ void draw()
     ty +=25; 
     
     sprintf(text, "Irrigation: %d", player.thirst);
+    write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
+    ty +=25; 
+
+    sprintf(text, "Direction: %s", direction_names[(int)player.direction]);
     write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
     ty +=25; 
 

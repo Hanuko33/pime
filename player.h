@@ -9,6 +9,15 @@ enum location
     LOC_CAVE
 };
 
+
+enum class direction
+{
+    up,
+    right,
+    down,
+    left,
+};
+
 class Player
 {
 	void check_and_move(int new_map_x, int new_map_y, int new_x, int new_z);
@@ -24,6 +33,7 @@ public:
     char running;
     char sneaking;
     char going_right;
+    enum direction direction;
     enum location in;
     int energy;
     int thirst;
