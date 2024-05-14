@@ -108,26 +108,26 @@ void load_textures()
     add_tile_texture(TILE_CAVE_FLOOR,"textures/game_tiles/cave/cave_floor.png");
     add_tile_texture(TILE_CAVE_WALL,"textures/game_tiles/cave/cave_wall.png");
 
-    add_items_texture(ID_STONE, "textures/items/stone.png");
-    add_items_texture(ID_LOG, "textures/items/log.png");
-    add_items_texture(ID_SAND, "textures/items/sand.png");
-    add_items_texture(ID_STICK, "textures/items/stick.png");
+    add_items_texture(ID_STONE, "textures/items/solid/stone.png");
+    add_items_texture(ID_LOG, "textures/items/solid/log.png");
+    add_items_texture(ID_SAND, "textures/items/solid/sand.png");
+    add_items_texture(ID_STICK, "textures/items/solid/stick.png");
 
-    add_food_texture(ID_PUMPKIN, "textures/items/pumpkin.png");
-    add_food_texture(ID_WATERMELON, "textures/items/watermelon.png");
-    add_food_texture(ID_CHERRY, "textures/items/cherry.png");
+    add_food_texture(ID_PUMPKIN, "textures/items/food/pumpkin.png");
+    add_food_texture(ID_WATERMELON, "textures/items/food/watermelon.png");
+    add_food_texture(ID_CHERRY, "textures/items/food/cherry.png");
 
-    add_liquid_texture(0, "textures/items/water.png");
+    add_liquid_texture(0, "textures/items/liquid/water.png");
 
-    add_gas_texture(0, "textures/items/gas.png");
+    add_gas_texture(0, "textures/items/gas/gas.png");
 
-    add_ing_texture(ING_AXE_BLADE, "textures/items/axe_blade.png");
-    add_ing_texture(ING_AXE_HANDLE, "textures/items/axe_handle.png");
-    add_ing_texture(ING_KNIFE_BLADE, "textures/items/knife_blade.png");
-    add_ing_texture(ING_KNIFE_HANDLE, "textures/items/knife_handle.png");
+    add_ing_texture(ING_AXE_BLADE, "textures/items/ingredients/axe_blade.png");
+    add_ing_texture(ING_AXE_HANDLE, "textures/items/ingredients/axe_handle.png");
+    add_ing_texture(ING_KNIFE_BLADE, "textures/items/ingredients/knife_blade.png");
+    add_ing_texture(ING_KNIFE_HANDLE, "textures/items/ingredients/knife_handle.png");
     
-    add_prod_texture(PROD_AXE, "textures/items/axe.png");
-    add_prod_texture(PROD_KNIFE, "textures/items/knife.png");
+    add_prod_texture(PROD_AXE, "textures/items/products/axe.png");
+    add_prod_texture(PROD_KNIFE, "textures/items/products/knife.png");
 
     add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
 
