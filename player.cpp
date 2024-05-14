@@ -29,6 +29,7 @@ void Player::check_and_move(int new_map_x, int new_map_y, int new_x, int new_z)
         x = new_x;
         z = new_z;
         hunger -= 3;
+        thirst--;
     }
 }
 

@@ -627,21 +627,18 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
     {
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
         {
-            player.thirst--;
             player.move(0, 1);
             player.direction=direction::down;
             *last_frame_press=1;
         }
         else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
         {
-            player.thirst--;
             player.direction=direction::up;
             player.move(0, -1);
             *last_frame_press=1;
         }
         if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
         {
-            player.thirst--;
             player.going_right=1;
             player.direction=direction::right;
             player.move(1, 0);
@@ -649,7 +646,6 @@ Uint64 move_interact(const Uint8 * keys, Uint64 last_time, int * last_frame_pres
         }
         else if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
         {
-            player.thirst--;
             player.going_right=0;
             player.direction=direction::left;
             player.move(-1, 0);
