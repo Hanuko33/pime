@@ -27,6 +27,8 @@
 #include <termios.h>
 #include "alchemist/game_time.h"
 
+/* #define OLDKB */
+
 SDL_Texture *map;
 int auto_explore;
 int active_hotbar=0;
@@ -421,8 +423,27 @@ void player_interact(int key)
                     break;
             }
             break;
+#ifdef OLDKB
+        case SDLK_s:
+            player.move(0, 1);
+            player.direction=direction::down;
+            break;
+        case SDLK_w:
+            player.move(0, -1);
+            player.direction=direction::up;
+            break;
+        case SDLK_a:
+            player.move(-1, 0);
+            player.direction=direction::left;
+            player.going_right=0;
+            break;
+        case SDLK_d:
+            player.move(1, 0);
+            player.direction=direction::right;
+            player.going_right=1;
+            break;
 
-
+#endif 
         case SDLK_g: // break same level
             switch (player.direction) {
                 case direction::down:
@@ -1086,6 +1107,7 @@ int main()
         }
 
         // keyboard handling for move
+#ifndef OLDKB
         if (player.hunger > 0 || rand() % 3)
         {
             const Uint8 *currentKeyState = SDL_GetKeyboardState(NULL);
@@ -1095,6 +1117,7 @@ int main()
                 last_time = tmp;
             }
         }
+#endif
         // printf("%d\n", last_frame_press);
 
 
