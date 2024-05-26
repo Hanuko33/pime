@@ -8,8 +8,6 @@ This is a game made with sdl2 and C++. On master branch there is version for God
 
 ## Early development stage
 
-#### (this list will be longer)
-
 ## Installation
 
 * [Installation instruction](install.md)
