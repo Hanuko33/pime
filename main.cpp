@@ -11,11 +11,8 @@
 #include "text.h"
 #include "tiles.h"
 #include "window.h"
-#include "music.h"
 #include <SDL2/SDL_keycode.h>
 //#include <SDL2/SDL2_framerate.h>
-#include "dungeon.h"
-#include "cave.h"
 #include "texture.h"
 #include "player.h"
 #include <sys/types.h>
@@ -892,10 +889,16 @@ void draw()
         }
 
         if (player.craftbar[i])
-		    if (i == active_hotbar) {
-			    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
-            } else 
-			    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        {
+            if (i == active_hotbar)
+    		    {
+    			    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+            }
+            else 
+            {
+    			    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            }
+        }
 
 		SDL_RenderDrawRect(renderer, &rect);
     
