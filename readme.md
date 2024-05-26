@@ -2,7 +2,7 @@
 
 ![SDL version](game-gui-sdl.png)
 
-This is a game made with sdl2 and C++. On master branch there is version for Godot.
+This is a game made with sdl2 and C++. On master branch there is version for Godot. [Python version](https://github.com/Hanuko33/pime_python)
 
 ### This project uses nerd-font: https://github.com/ryanoasis/nerd-fonts
 
