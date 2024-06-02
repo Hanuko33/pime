@@ -349,6 +349,7 @@ void player_interact(int key)
             status_code = 1;
             break;
         case SDLK_t: // break up
+            world_table[player.map_y][player.map_x]->table[player.z][player.y+1][player.x].tile=TILE_AIR;
             switch (player.direction) {
                 case direction::down:
                     if (player.z == CHUNK_SIZE-1)
@@ -723,10 +724,6 @@ void draw()
             int dy = 0;
             SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
 
-            /* for (int i = CHUNK_SIZE-1; i>0; i--) { */
-            /*     if (get_tile_at(player.map_x, player.map_y, x, i, z) != TILE_AIR) */
-            /*         heightmap[x][z] = i; */
-            /* } */
             if (get_tile_at(player.map_x, player.map_y, x, player.y, z) == TILE_AIR) 
             {
                 while (get_tile_at(player.map_x, player.map_y, x, player.y + dy, z) == TILE_AIR) 
@@ -740,7 +737,8 @@ void draw()
                 {
                     dy++;
                 }
-             } 
+             }
+             
             heightmap[x][z] = dy;
             if (player.y+dy < player.y)
             {

@@ -7,12 +7,12 @@
 void Player::check_and_move(int new_map_x, int new_map_y, int new_x, int new_z)
 {
     char moved = 0;
-    if (world_table[new_map_y][new_map_x]->table[new_z][y-1][new_x].tile == TILE_AIR) 
+    while (world_table[new_map_y][new_map_x]->table[new_z][y-1][new_x].tile == TILE_AIR) 
     {
         y--;
         moved = 1;
     } 
-    else if (world_table[new_map_y][new_map_x]->table[new_z][y][new_x].tile == TILE_AIR)
+    if (world_table[new_map_y][new_map_x]->table[new_z][y][new_x].tile == TILE_AIR)
     {
         moved = 1;
     }
