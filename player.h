@@ -25,7 +25,6 @@ class Player
 public:
     int map_y;
     int map_x;
-    int z;
     int y;
     int x;
 	int back_y;

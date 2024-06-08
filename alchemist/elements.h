@@ -91,8 +91,8 @@ class InventoryElement
             printf("missing craft function\n");
             return false; 
         }
-        void set_posittion(int _x, int _y, int _z) { x=_x; y=_y; z=_z; }
-        void get_posittion(int *_x, int *_y, int *_z) { *_x=x; *_y=y; *_z=z; }
+        void set_posittion(int _x, int _y) { x=_x; y=_y; }
+        void get_posittion(int *_x, int *_y) { *_x=x; *_y=y; }
 };
 
 

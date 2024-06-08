@@ -46,7 +46,7 @@ struct tile {
     int weight;
 };
     
-typedef struct tile chunk_table[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+typedef struct tile chunk_table[CHUNK_SIZE][CHUNK_SIZE];
 
 typedef struct {
     enum biomes biome;

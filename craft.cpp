@@ -22,7 +22,7 @@ InventoryElement * craft_axe_blade()
         AxeBlade * axe_blade=new AxeBlade(el);
         if (axe_blade->craft()) {
             axe_blade->show();
-            axe_blade->set_posittion(player.x, player.y,  player.z);
+            axe_blade->set_posittion(player.x, player.y);
             player.inventory->remove(el);
 
             player.hotbar[active_hotbar]=NULL;
@@ -42,7 +42,7 @@ InventoryElement * craft_axe_handle()
         if (axe_handle->craft())
         {
             axe_handle->show();
-            axe_handle->set_posittion(player.x, player.y,  player.z);
+            axe_handle->set_posittion(player.x, player.y);
             player.inventory->remove(el);
 
             player.hotbar[active_hotbar]=NULL;
@@ -78,7 +78,7 @@ InventoryElement * craft_axe()
         if (axe->craft())
         {
             axe->show();
-            axe->set_posittion(player.x, player.y,  player.z);
+            axe->set_posittion(player.x, player.y);
             player.inventory->remove(el1);
             player.inventory->remove(el2);
             return axe;
@@ -101,7 +101,7 @@ InventoryElement * craft_knife_blade()
         KnifeBlade * knife_blade=new KnifeBlade(el);
         if (knife_blade->craft()) {
             knife_blade->show();
-            knife_blade->set_posittion(player.x, player.y,  player.z);
+            knife_blade->set_posittion(player.x, player.y);
             player.inventory->remove(el);
 
             player.hotbar[active_hotbar]=NULL;
@@ -120,7 +120,7 @@ InventoryElement * craft_knife_handle()
         KnifeHandle * knife_handle=new KnifeHandle(el);
         if (knife_handle->craft()) {
             knife_handle->show();
-            knife_handle->set_posittion(player.x, player.y,  player.z);
+            knife_handle->set_posittion(player.x, player.y);
             player.inventory->remove(el);
 
             player.hotbar[active_hotbar]=NULL;
@@ -155,7 +155,7 @@ InventoryElement * craft_knife()
         Knife * knife=new Knife(el1, el2);
         if (knife->craft()) {
             knife->show();
-            knife->set_posittion(player.x, player.y,  player.z);
+            knife->set_posittion(player.x, player.y);
             player.inventory->remove(el1);
             player.inventory->remove(el2);
             return knife;

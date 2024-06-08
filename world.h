@@ -11,16 +11,16 @@ extern char traversable_tiles[TILE_MAX_NUM];
 
 extern chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
-enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z);
+enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y);
 enum game_tiles get_tile_at_ppos(Player *player);
 
 InventoryElement ** get_item_at_ppos(Player *player);
-InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z);
+InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y);
 
-struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y, int z);
+struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y);
 struct object ** get_object_at_ppos(Player * player);
 
-void set_item_at(InventoryElement * item, int chunk_x, int chunk_y, int x, int y, int z);
+void set_item_at(InventoryElement * item, int chunk_x, int chunk_y, int x, int y);
 void set_item_at_ppos(InventoryElement * item, Player* player);
 
 void generator();

@@ -48,174 +48,9 @@ const char * direction_names[4] =
 
 void save(char with_player)
 {
- /*   if (with_player)
-    {
-        int temp;
-        FILE *file;
-        char to_write[60];
-        
-        file = fopen("world/player.txt", "w");
-        sprintf(to_write, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", player.map_y, player.map_x, player.y, player.x, player.energy, player.back_x, player.back_y, game_time.days, game_time.hours, game_time.minutes, game_time.seconds, player.in);
-        fwrite(to_write, sizeof(to_write), 1, file);
-        fclose(file);
-    }
-    if (player.in == LOC_DUNGEON)
-    {
-        char filename[31];
-        sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
-        FILE *chunk = fopen(filename, "w");
-        fwrite(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
-        fclose(chunk);
-    }
-    else if (player.in == LOC_CAVE)
-    {
-        char filename[31];
-        sprintf(filename, "world/%9d-%9dcave", player.map_x, player.map_y);
-        FILE *chunk = fopen(filename, "w");
-        fwrite(cave_terrain_list, sizeof(cave_terrain_list), 1, chunk);
-        fclose(chunk);
-    }
-    else
-    {
-        char filename[26];
-        sprintf(filename, "world/%9d-%9d", player.map_x, player.map_y);
-        FILE *chunk = fopen(filename, "w");
-        fwrite(terrain_list, sizeof(terrain_list), 1, chunk);
-        fclose(chunk);
-    }*/
 }
 void load(char with_player)
 {
-/*    if (with_player)
-    {
-        int temp;
-        FILE *file;
-        
-        if (file = fopen("world/player.txt", "r"))
-        {
-            printf("loading player: ");
-            if (fscanf(file, "%d%d%d%d%d%d%d%d%d%d%d%d", 
-                   &player.map_y, &player.map_x, &player.y, &player.x, 
-                   &player.energy, 
-                   &player.back_x, &player.back_y, 
-                   &game_time.days, &game_time.hours, &game_time.minutes, &game_time.seconds, &player.in) == 12 )
-            {
-                if (player.in == LOC_DUNGEON) 
-                {
-                    screen_list=&dungeon_terrain_list;
-                    Mix_Pause(0);
-                    Mix_Resume(1);
-                }
-                else if (player.in == LOC_CAVE)
-                {
-                    screen_list=&cave_terrain_list;
-                    Mix_Pause(0);
-                    Mix_Resume(1);
-                }
-                else 
-                    screen_list = &terrain_list;
-                printf(" done\n");
-            }
-            else printf("failed\n");
-            fclose(file);
-        }
-    }
-    if (player.in == LOC_DUNGEON)
-    {
-        char filename[30];
-        sprintf(filename, "world/%9d-%9ddung", player.map_x, player.map_y);
-        FILE* chunk;
- 		
-        player.back_x = player.x;
-		player.back_y = player.y;       
-        
-        if (chunk = fopen(filename, "r"))
-        {
-            player.x=0;
-            player.y=0;
-            printf("loading: %s\n", filename);
-            fread(dungeon_terrain_list, sizeof(dungeon_terrain_list), 1, chunk);
-            fclose(chunk);
-			int stuck = 1;
-			while(stuck)
-			{
-				if (player.x<DUNGEON_SIZE-1)
-				{
-					player.x++;
-				}
-				else
-				{
-					player.x=1;
-                    if (player.y < DUNGEON_SIZE-2) player.y++;
-				}
-                if (dungeon_terrain_list[player.y][player.x] == TILE_DUNG_FLOOR || dungeon_terrain_list[player.y][player.x] == TILE_DUNG_DOOR) 
-                {
-                    stuck = 0;
-                    break;
-                }
-          	}
-        }
-        else
-        {
-            dungeon_generator();
-		}
-    }
-    else if (player.in == LOC_CAVE)
-    {
-        char filename[30];
-        sprintf(filename, "world/%9d-%9dcave", player.map_x, player.map_y);
-        FILE* chunk;
- 		
-        player.back_x = player.x;
-		player.back_y = player.y;       
-        
-        if (chunk = fopen(filename, "r"))
-        {
-            player.x=0;
-            player.y=0;
-            printf("loading: %s\n", filename);
-            fread(cave_terrain_list, sizeof(cave_terrain_list), 1, chunk);
-            fclose(chunk);
-			int stuck = 1;
-			while(stuck)
-			{
-				if (player.x<DUNGEON_SIZE-2)
-				{
-					player.x++;
-				}
-				else
-				{
-					player.x=0;
-                    if (player.y<DUNGEON_SIZE-2) player.y++;
-				}
-                if (cave_terrain_list[player.y][player.x] == TILE_CAVE_FLOOR || cave_terrain_list[player.y][player.x] == TILE_CAVE_DOOR) 
-                {
-                    stuck = 0;
-                    break;
-                }
-          	}
-        }
-        else
-        {
-            cave_generator();
-		}
-    }
-   else
-    {
-        char filename[26];
-        sprintf(filename, "world/%9d-%9d", player.map_x, player.map_y);
-        FILE* chunk;
-        if (chunk = fopen(filename, "r"))
-        {
-            printf("loading: %s\n", filename);
-            fread(terrain_list, sizeof(terrain_list), 1, chunk);
-            fclose(chunk);
-        }
-        else
-        {
-            generator();
-        }
-    }*/
 }
 
 void update_window_size()
@@ -244,7 +79,7 @@ void put_element()
 {
     InventoryElement * el = player.hotbar[active_hotbar];
     if (el) {
-        el->set_posittion(player.x, player.y, player.z);
+        el->set_posittion(player.x, player.y);
         set_item_at_ppos(el, &player);
         player.inventory->remove(el);
         player.hotbar[active_hotbar]=NULL;
@@ -284,7 +119,7 @@ void use_tile()
                     sprintf(status_line, "Tree mine");
                     status_code = 1;
                     Element * el = new Element(base_elements[ob->base_element_id]);
-                    el->set_posittion(player.x, player.y, player.z);
+                    el->set_posittion(player.x, player.y);
                     set_item_at_ppos(el, &player);
                     /* ob->type = OBJECT_NULL; */
                     free(ob);
@@ -304,38 +139,6 @@ void use_tile()
             }
         }
     }
-/*
-
-    if (get_tile_at_ppos(&player) == TILE_DUNG_DOOR)
-    {
-        save(0);
-        if (player.in == LOC_DUNGEON)
-        {
-            Mix_Pause(1); Mix_Resume(0);
-            player.in = LOC_WORLD; player.z = 0;
-        }
-        else
-        {
-            Mix_Pause(0); Mix_Resume(1);
-            player.in = LOC_DUNGEON; player.z = 1;
-        }
-        load(0); save(0);
-    }
-    if (get_tile_at_ppos(&player) == TILE_CAVE_DOOR)
-    {
-        save(0);
-        if (player.in == LOC_CAVE)
-        {
-            Mix_Pause(1); Mix_Resume(0);
-            player.in = LOC_WORLD; player.z = 0;
-        }
-        else
-        {
-            Mix_Pause(0); Mix_Resume(1);
-            player.in = LOC_CAVE; player.z = 2;
-        }
-        load(0); save(0);
-    }*/
 }
 
 void player_interact(int key)
@@ -347,79 +150,6 @@ void player_interact(int key)
         case SDLK_v:
             sprintf(status_line, "");
             status_code = 1;
-            break;
-        case SDLK_t: // break up
-            world_table[player.map_y][player.map_x]->table[player.z][player.y+1][player.x].tile=TILE_AIR;
-            switch (player.direction) {
-                case direction::down:
-                    if (player.z == CHUNK_SIZE-1)
-                    {
-                        if (!load_chunk(player.map_x, player.map_y+1)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
-
-                        world_table[player.map_y+1][player.map_x]->table[0][player.y+1][player.x].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.z+1][player.y+1][player.x].tile=TILE_AIR;
-                    }
-                    break;
-                case direction::up:
-                    if (player.z == 0)
-                    {
-                        if (!load_chunk(player.map_x, player.map_y-1)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
-
-                        world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.y+1][player.x].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.z-1][player.y+1][player.x].tile=TILE_AIR;
-                    }
-                    break;
-                case direction::right:
-                    if (player.x == CHUNK_SIZE-1)
-                    {
-                        if (!load_chunk(player.map_x+1, player.map_y)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
-
-                        world_table[player.map_y][player.map_x+1]->table[player.z][player.y+1][0].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.z][player.y+1][player.x+1].tile=TILE_AIR;
-                    }
-                    break;
-                case direction::left:
-                    if (player.x == 0)
-                    {
-                        if (!load_chunk(player.map_x-1, player.map_y)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
-
-                        world_table[player.map_y][player.map_x-1]->table[player.z][player.y+1][CHUNK_SIZE-1].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.z][player.y+1][player.x-1].tile=TILE_AIR;
-                    }
-                    break;
-            }
             break;
 #ifdef OLDKB
         case SDLK_s:
@@ -443,9 +173,10 @@ void player_interact(int key)
 
 #endif 
         case SDLK_g: // break same level
-            switch (player.direction) {
-                case direction::down:
-                    if (player.z == CHUNK_SIZE-1)
+            switch ((int)player.direction) 
+            {
+                case (int)direction::down:
+                    if (player.y == CHUNK_SIZE-1)
                     {
                         if (!load_chunk(player.map_x, player.map_y+1)) 
                         {
@@ -453,16 +184,15 @@ void player_interact(int key)
                             status_code=0;
                             return;
                         };
-
-                        world_table[player.map_y+1][player.map_x]->table[0][player.y][player.x].tile=TILE_AIR;
+                        world_table[player.map_y+1][player.map_x]->table[0][player.x].tile=TILE_AIR;
                     }
                     else
                     {
-                        world_table[player.map_y][player.map_x]->table[player.z+1][player.y][player.x].tile=TILE_AIR;
+                        world_table[player.map_y][player.map_x]->table[player.y+1][player.x].tile=TILE_AIR;
                     }
                     break;
-                case direction::up:
-                    if (player.z == 0)
+                case (int)direction::up:
+                    if (player.y == 0)
                     {
                         if (!load_chunk(player.map_x, player.map_y-1)) 
                         {
@@ -471,14 +201,15 @@ void player_interact(int key)
                             return;
                         };
 
-                        world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.y][player.x].tile=TILE_AIR;
+                        world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.x].tile=TILE_AIR;
                     }
                     else
                     {
-                        world_table[player.map_y][player.map_x]->table[player.z-1][player.y][player.x].tile=TILE_AIR;
+                        world_table[player.map_y][player.map_x]->table[player.y-1][player.x].tile=TILE_AIR;
                     }
                     break;
-                case direction::right:
+
+                case (int)direction::right:
                     if (player.x == CHUNK_SIZE-1)
                     {
                         if (!load_chunk(player.map_x+1, player.map_y)) 
@@ -488,14 +219,14 @@ void player_interact(int key)
                             return;
                         };
 
-                        world_table[player.map_y][player.map_x+1]->table[player.z][player.y][0].tile=TILE_AIR;
+                        world_table[player.map_y][player.map_x+1]->table[player.y][0].tile=TILE_AIR;
                     }
                     else
                     {
-                        world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x+1].tile=TILE_AIR;
+                        world_table[player.map_y][player.map_x]->table[player.y][player.x+1].tile=TILE_AIR;
                     }
                     break;
-                case direction::left:
+                case (int)direction::left:
                     if (player.x == 0)
                     {
                         if (!load_chunk(player.map_x-1, player.map_y)) 
@@ -505,22 +236,15 @@ void player_interact(int key)
                             return;
                         };
 
-                        world_table[player.map_y][player.map_x-1]->table[player.z][player.y][CHUNK_SIZE-1].tile=TILE_AIR;
+                        world_table[player.map_y][player.map_x-1]->table[player.y][CHUNK_SIZE-1].tile=TILE_AIR;
                     }
                     else
                     {
-                        world_table[player.map_y][player.map_x]->table[player.z][player.y][player.x-1].tile=TILE_AIR;
+                        world_table[player.map_y][player.map_x]->table[player.y][player.x-1].tile=TILE_AIR;
                     }
                     break;
-            }
             break;
-        case SDLK_b: // break under
-            if (player.y>1)
-            {
-                world_table[player.map_y][player.map_x]->table[player.z][player.y-1][player.x].tile=TILE_AIR;
-                player.move(0, 0);
-            }
-            break;
+        }
         case SDLK_r:
             player.hotbar[active_hotbar]=NULL;
             break;
@@ -567,20 +291,7 @@ void player_interact(int key)
         case SDLK_F11:
             update_window_size();
             break;
-/*        case SDLK_EQUALS:
-            if (player.hotbar[active_hotbar] == IT_pumpkin && player.inventory[IT_pumpkin] && player.hunger < 1000)
-            {
-                player.inventory[IT_pumpkin]--;
-                player.hunger+=75;
-            }
-            if (player.hotbar[active_hotbar] == IT_watermelon && player.inventory[IT_watermelon]) 
-            {
-                player.inventory[IT_watermelon]--;
-                player.hunger+=50;
-                player.thirst+=100;
-            }
-            break;
-  */    case SDLK_1: active_hotbar=0; break;
+        case SDLK_1: active_hotbar=0; break;
         case SDLK_2: active_hotbar=1; break;
         case SDLK_3: active_hotbar=2; break;
         case SDLK_4: active_hotbar=3; break;
@@ -715,44 +426,14 @@ void draw()
     }
 
     // render terrain
-    int heightmap[CHUNK_SIZE][CHUNK_SIZE];
-    for (int z=0; z < CHUNK_SIZE; z++)
+    for (int y=0; y < CHUNK_SIZE; y++)
     {
-        int y_size = z * tile_dungeon_size;
         for (int x=0; x < CHUNK_SIZE; x++)
         {
-            int dy = 0;
-            SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
-
-            if (get_tile_at(player.map_x, player.map_y, x, player.y, z) == TILE_AIR) 
-            {
-                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy, z) == TILE_AIR) 
-                {
-                    dy--;
-                }
-            }
-            else 
-            {
-                while (get_tile_at(player.map_x, player.map_y, x, player.y + dy +1 , z) != TILE_AIR) 
-                {
-                    dy++;
-                }
-             }
-             
-            heightmap[x][z] = dy;
-            if (player.y+dy < player.y)
-            {
-                enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, z);
-                SDL_Texture *texture = tiles_textures[tile];
-                SDL_RenderCopy(renderer, texture, NULL, &img_rect);
-            }
-            else if (next_to(player.x, player.z, x, z) == 1 && player.y+dy < player.y+1)
-            {
-                enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, player.y+dy, z);
-                SDL_Texture *texture = tiles_textures[tile];
-                SDL_RenderCopy(renderer, texture, NULL, &img_rect);
-                draw_rectangle(x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size, SDL_Color{255,255,255,100}, SDL_Color{255,255,255,100}, SDL_Color{255,255,255,100}, SDL_Color{255,255,255,100});
-            }
+            SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            enum game_tiles tile = get_tile_at(player.map_x, player.map_y, x, y);
+            SDL_Texture *texture = tiles_textures[tile];
+            SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
     }
     // render objects
@@ -761,15 +442,8 @@ void draw()
         struct object * o = world_table[player.map_y][player.map_x]->objects[i];
         if (o)
         {
-            if (o->y<=player.y)
-            {
-                SDL_Rect img_rect = {o->x * tile_dungeon_size, o->z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-                int dy = o->y - player.y;
-                if (heightmap[o->x][o->z]+1 == dy)
-                {
-                    SDL_RenderCopy(renderer, objects_textures[o->type], NULL, &img_rect);
-                }
-            }
+            SDL_Rect img_rect = {o->x * tile_dungeon_size, o->y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_RenderCopy(renderer, objects_textures[o->type], NULL, &img_rect);
         }
     }
     // render items
@@ -778,38 +452,15 @@ void draw()
         InventoryElement * o = world_table[player.map_y][player.map_x]->items[i];
         if (o) 
         {
-            int x, y, z;
-            o->get_posittion(&x, &y, &z);
-            if (y<=player.y)
-            {
-                SDL_Rect img_rect = {x * tile_dungeon_size, z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-                int dy = y - player.y;
-                if (heightmap[x][z]+1 == dy)
-                {
-                    SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
-                }
-            }
+            int x, y;
+            o->get_posittion(&x, &y);
+            SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
         }
     }
 
-    // render mask
-    for (int y=0; y < CHUNK_SIZE ; y++)
-    {
-        int y_size = y * tile_dungeon_size;
-        for (int x=0; x < CHUNK_SIZE; x++)
-        {
-            int dy = heightmap[x][y];
-            SDL_Rect img_rect = {x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size};
-            while (dy < -1)
-            {
-                draw_rectangle(x * tile_dungeon_size, y_size, tile_dungeon_size, tile_dungeon_size, SDL_Color{0,0,0,100}, SDL_Color{0,0,0,100}, SDL_Color{0,0,0,100}, SDL_Color{0,0,0,100});
-                dy++;
-            }
-        }
-    }
-    
     // render player
-   SDL_Rect img_rect = {player.x * tile_dungeon_size, player.z * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+    SDL_Rect img_rect = {player.x * tile_dungeon_size, player.y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
     if (player.going_right) SDL_RenderCopy(renderer, Texture.playerr, NULL, &img_rect);
     else SDL_RenderCopy(renderer, Texture.playerl, NULL, &img_rect);
 
@@ -842,16 +493,12 @@ void draw()
     write_text(tx, ty, text, player.thirst < 100 ? Red : White, 15,30);
     ty +=25; 
 
-        sprintf(text, "Player@(%d, %d, %d)->%d", 
+        sprintf(text, "Player@(%d, %d)", 
 			(player.x + player.map_x * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
-			player.y,
-			(player.z + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2),
-            get_tile_at(player.map_x, player.map_y, player.x, player.y-1, player.z) 
+			(player.y + player.map_y * CHUNK_SIZE) - (WORLD_SIZE*CHUNK_SIZE/2)
 			);
 	write_text(tx, ty+25, text, White,15,30);
 
-    //sprintf(text, "Time: %d:%d:%d:%d", game_time.days, game_time.hours, game_time.minutes, game_time.seconds);
-    //write_text(tx, ty+50, text, White,15,30);
             
     
     InventoryElement ** ip = get_item_at_ppos(&player);

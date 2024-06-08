@@ -50,17 +50,12 @@ void create_biome_sweet_tree(chunk * chunk)
 
 void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)  
 {
-    for (int z = 0; z < CHUNK_SIZE; z++) 
+    for (int y = 0; y < CHUNK_SIZE; y++) 
     {
         for (int x = 0; x < CHUNK_SIZE; x++) 
         {
-            int height = height_at(chunk_x, chunk_y, x, z);
-            //printf("%3d ", height);
-            for (int y = 0; y < CHUNK_SIZE; y++)
-            {
-                chunk->table[z][y][x].tile = (y < height-1) ? TILE_DIRT : (y == height-1 ? TILE_GRASS : TILE_AIR);
-                chunk->table[z][y][x].weight = 4 + rand() % 9;
-            }
+            chunk->table[y][x].tile = TILE_GRASS;
+            chunk->table[y][x].weight = 4 + rand() % 9;
         }
         //printf("\n");
     }
@@ -81,8 +76,7 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         }
 
         o->x = rand() % 16;
-        o->z = rand() % 16;
-        o->y = height_at(chunk_x, chunk_y, o->x, o->z);
+        o->y = rand() % 16;
 
         chunk->objects[i] = o;
     }
@@ -93,8 +87,8 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         int x = rand() % 16;
         int z = rand() % 16;
 
-        o->set_posittion(x, 0, x);
-        o->set_posittion(x, height_at(chunk_x, chunk_y, x, z), z);
+        o->set_posittion(x, 0);
+        o->set_posittion(x, height_at(chunk_x, chunk_y, x, z));
 
         chunk->items[i] = o;
     }
@@ -149,7 +143,7 @@ char traversable_tiles[TILE_MAX_NUM] =
     1,//0, //TILE_CAVE_WALL,
 };
 
-InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
+InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
 {
     for (int i = 0; i < 128; i++)
     {
@@ -157,9 +151,9 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
         if (el)
         {
             int el_x, el_y, el_z;
-            el->get_posittion(&el_x, &el_y, &el_z);
+            el->get_posittion(&el_x, &el_y);
 
-            if (el_x == x && el_y == y && el_z == z )
+            if (el_x == x && el_y == y)
             {
                 return &world_table[chunk_y][chunk_x]->items[i];
             }
@@ -168,14 +162,14 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y, int z)
     return NULL;
 }
 
-struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y, int z)
+struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y)
 {
     for (int i = 0; i < 128; i++)
     {
         struct object *ob = world_table[chunk_y][chunk_x]->objects[i];
         if (ob)
         {
-            if (ob->x == x && ob->y == y && ob->z == z)
+            if (ob->x == x && ob->y == y)
             {
                 return &world_table[chunk_y][chunk_x]->objects[i];
             }
@@ -187,15 +181,15 @@ struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y, int z)
 
 struct object ** get_object_at_ppos(Player * player)
 {
-    return get_object_at(player->map_x, player->map_y, player->x, player->y, player->z);
+    return get_object_at(player->map_x, player->map_y, player->x, player->y);
 }
 
 InventoryElement **get_item_at_ppos(Player * player)
 {
-    return get_item_at(player->map_x, player->map_y, player->x, player->y, player->z);
+    return get_item_at(player->map_x, player->map_y, player->x, player->y);
 }
 
-void set_item_at(InventoryElement *item, int chunk_x, int chunk_y, int x, int y, int z) 
+void set_item_at(InventoryElement *item, int chunk_x, int chunk_y, int x, int y) 
 {
     for (int i = 0; i < 128; i++)
     {
@@ -209,18 +203,18 @@ void set_item_at(InventoryElement *item, int chunk_x, int chunk_y, int x, int y,
 
 void set_item_at_ppos(InventoryElement *item, Player *player) 
 {
-    set_item_at(item, player->map_x, player->map_y, player->x, player->y, player->z);
+    set_item_at(item, player->map_x, player->map_y, player->x, player->y);
 }
 
 
-enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y, int z)
+enum game_tiles get_tile_at(int chunk_x, int chunk_y, int x, int y)
 {
-    return world_table[chunk_y][chunk_x]->table[z][y][x].tile;
+    return world_table[chunk_y][chunk_x]->table[y][x].tile;
 }
 
 enum game_tiles get_tile_at_ppos(Player *player)
 {
-    return get_tile_at(player->map_x, player->map_y, player->x, player->y, player->z);
+    return get_tile_at(player->map_x, player->map_y, player->x, player->y);
 }
 
 
