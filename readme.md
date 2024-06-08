@@ -1,4 +1,4 @@
-# Game\_gui (Pime - Piotr game)
+# Pime - the game
 
 ![SDL version](game-gui-sdl.png)
 
@@ -23,9 +23,7 @@ This is a game made with sdl2 and C++. On master branch there is version for God
 * c - crafting
 * i - inventory
 * v - clear statusline (text at bottom)
-* t - break terrain (up)
-* g - break terrain (same level)
-* b - break terrain (under)
+* g - break terrain (indev)
 * r - remove item from hotbar
 * semicolon (;) - show item info (sends to stdout)
 * f - eat
