@@ -170,7 +170,7 @@ void create_menus()
 	menu_help2->add("c - crafting", MENU_CANCEL);
 	menu_help2->add("i - inventory", MENU_CANCEL);
 	menu_help2->add("v - clear statusline", MENU_CANCEL);
-	menu_help2->add("t,g,b - terrain break", MENU_CANCEL);
+	menu_help2->add("g - terrain break", MENU_CANCEL);
     menu_help2->add("N E X T", MENU_HELP_3);
 	menu_help2->add("Cancel", MENU_CANCEL);
 
