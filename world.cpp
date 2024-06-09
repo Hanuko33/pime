@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "OpenSimplex/OpenSimplex2F.h"
+#include "texture.h"
 
 struct OpenSimplex2F_context *simplex_context;
 
@@ -59,26 +60,26 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         }
         //printf("\n");
     }
+    for (int i = 0; i < CHUNK_SIZE; i++)
+    {
+        for (int j=0; j < CHUNK_SIZE; j++)
+        {
+            struct object o;
+            o.base_element_id=0;
+            o.type=OBJECT_NULL;
+            chunk->objects[i][j] = o;
 
-    for (int i = 0; i < 128; i++)
-    {
-        chunk->objects[i] = NULL;
-    }
-    for (int i = 0; i < 19; i++)
-    {
-        struct object *o = (struct object *)malloc(sizeof(struct object));
-        o->type = OBJECT_TREE;
-            
-        o->base_element_id = rand() % BASE_ELEMENTS;
-        
-        while (!(base_elements[o->base_element_id]->form==Form_solid)) {
-            o->base_element_id = rand() % BASE_ELEMENTS;
+            if (rand() % 10 == 0)
+            {
+                chunk->objects[i][j].type = OBJECT_TREE;
+                chunk->objects[i][j].base_element_id = rand() % BASE_ELEMENTS;
+                while (base_elements[chunk->objects[i][j].base_element_id]->form != Form_solid)
+                {
+                    chunk->objects[i][j].base_element_id = rand() % BASE_ELEMENTS;
+                }
+                chunk->objects[i][j].texture = tree_textures[rand() % 3];
+            }
         }
-
-        o->x = rand() % 16;
-        o->y = rand() % 16;
-
-        chunk->objects[i] = o;
     }
     for (int i = 0; i < 4; i++)
     {
@@ -92,7 +93,6 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
 
         chunk->items[i] = o;
     }
-
     /*enum biomes random_biome = (enum biomes) (rand() % 4);
     chunk->biome = random_biome;
 
@@ -126,22 +126,16 @@ char traversable_tiles[TILE_MAX_NUM] =
 {   
     1, //TILE_STONE,
     1, //TILE_DIRT,
-//    1, //TILE_TREE,
-    1,//0 //TILE_DUNG_WALL,
-    1, //TILE_DUNG_FLOOR,
-    1, //TILE_DUNG_DOOR,
     1, //TILE_SAND,
     1, //TILE_SANDSTONE,
-//    1, //TILE_SWEET_TREE,
-//    1, //TILE_SWEET_BUSH,
-//    1, //TILE_SWEET_FLOWER,
+    1, //TILE_SWEET_TREE,
+    1, //TILE_SWEET_BUSH,
+    1, //TILE_SWEET_FLOWER,
     1, //TILE_GRASS,
     1, //TILE_SWEET_GRASS,
-    1,//0, //TILE_WATER,
-    1, //TILE_CAVE_DOOR,
-    1, //TILE_CAVE_FLOOR,
-    1,//0, //TILE_CAVE_WALL,
+    1, //TILE_WATER,
 };
+
 
 InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
 {
@@ -162,24 +156,12 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
     return NULL;
 }
 
-struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y)
+struct object * get_object_at(int chunk_x, int chunk_y, int x, int y)
 {
-    for (int i = 0; i < 128; i++)
-    {
-        struct object *ob = world_table[chunk_y][chunk_x]->objects[i];
-        if (ob)
-        {
-            if (ob->x == x && ob->y == y)
-            {
-                return &world_table[chunk_y][chunk_x]->objects[i];
-            }
-        }
-
-    }
-    return NULL;
+    return &world_table[chunk_y][chunk_x]->objects[x][y];
 }
 
-struct object ** get_object_at_ppos(Player * player)
+struct object * get_object_at_ppos(Player * player)
 {
     return get_object_at(player->map_x, player->map_y, player->x, player->y);
 }

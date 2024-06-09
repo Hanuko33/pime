@@ -24,7 +24,7 @@ extern SDL_Texture * liquid_textures[LIQUID_ELEMENTS];
 extern SDL_Texture * gas_textures[GAS_ELEMENTS];
 extern SDL_Texture * ing_textures[ING_ELEMENTS];
 extern SDL_Texture * prod_textures[PROD_ELEMENTS];
-extern SDL_Texture * objects_textures[OBJECT_MAX];
+extern SDL_Texture * tree_textures[3];
 extern SDL_Texture * up_mask;
 extern SDL_Texture * down_mask;
 extern struct textures Texture;

@@ -11,10 +11,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(pime 
 	window.cpp music.cpp text.cpp  
-	texture.cpp 
-    # dungeon.cpp 
-    # cave.cpp
-    main.cpp menu.cpp world.cpp player.cpp 
+	texture.cpp main.cpp menu.cpp
+    world.cpp player.cpp 
 	notifier.cpp craft.cpp 
 
     alchemist/elements.cpp

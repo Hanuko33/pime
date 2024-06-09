@@ -1,10 +1,11 @@
 #include "axe.h"
-#include <cstdlib>
 
 Axe::Axe(InventoryElement *el1, InventoryElement *el2): Product(el1, el2, PROD_AXE, Form_solid)
 {
 
 }
+
+// TODO add use() (for trees)
 
 bool Axe::check_ing()
 {

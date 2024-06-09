@@ -89,7 +89,6 @@ void put_element()
 
 void use_tile()
 {
-    struct object ** ob_pointer = get_object_at_ppos(&player);
     InventoryElement ** item_pointer = get_item_at_ppos(&player);
     if (item_pointer)
     {
@@ -107,38 +106,39 @@ void use_tile()
 
        status_code = 1; 
     }
-    else if (ob_pointer)
-    {
-        struct object * ob = *ob_pointer;
-        if (ob->type == OBJECT_TREE)
-        {
-            if (player.hotbar[active_hotbar])
-            {
-                if (player.hotbar[active_hotbar]->get_id() == PROD_AXE)
-                {
-                    sprintf(status_line, "Tree mine");
-                    status_code = 1;
-                    Element * el = new Element(base_elements[ob->base_element_id]);
-                    el->set_posittion(player.x, player.y);
-                    set_item_at_ppos(el, &player);
-                    /* ob->type = OBJECT_NULL; */
-                    free(ob);
-                    ob=NULL;
-                    *ob_pointer=NULL;
-                }
-                else
-                {
-                    sprintf(status_line, "Tree mine: NEED AXE");
-                    status_code = 0;
-                }
-            }
-            else
-            {
-                sprintf(status_line, "Tree mine: NEED AXE");
-                status_code = 0;
-            }
-        }
-    }
+    // TODO
+    /* else if (ob_pointer) */
+    /* { */
+    /*     struct object * ob = *ob_pointer; */
+    /*     if (ob->type == OBJECT_TREE) */
+    /*     { */
+    /*         if (player.hotbar[active_hotbar]) */
+    /*         { */
+    /*             if (player.hotbar[active_hotbar]->get_id() == PROD_AXE) */
+    /*             { */
+    /*                 sprintf(status_line, "Tree mine"); */
+    /*                 status_code = 1; */
+    /*                 Element * el = new Element(base_elements[ob->base_element_id]); */
+    /*                 el->set_posittion(player.x, player.y); */
+    /*                 set_item_at_ppos(el, &player); */
+    /*                 /1* ob->type = OBJECT_NULL; *1/ */
+    /*                 free(ob); */
+    /*                 ob=NULL; */
+    /*                 *ob_pointer=NULL; */
+    /*             } */
+    /*             else */
+    /*             { */
+    /*                 sprintf(status_line, "Tree mine: NEED AXE"); */
+    /*                 status_code = 0; */
+    /*             } */
+    /*         } */
+    /*         else */
+    /*         { */
+    /*             sprintf(status_line, "Tree mine: NEED AXE"); */
+    /*             status_code = 0; */
+    /*         } */
+    /*     } */
+    /* } */
 }
 
 void player_interact(int key)
@@ -437,13 +437,21 @@ void draw()
         }
     }
     // render objects
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < CHUNK_SIZE; i++)
     {
-        struct object * o = world_table[player.map_y][player.map_x]->objects[i];
-        if (o)
+        for (int j = 0; j < CHUNK_SIZE; j++)
         {
-            SDL_Rect img_rect = {o->x * tile_dungeon_size, o->y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-            SDL_RenderCopy(renderer, objects_textures[o->type], NULL, &img_rect);
+            if (world_table[player.map_y][player.map_x]->objects[i][j].type != OBJECT_NULL)
+            {
+                SDL_Rect img_rect = {i * tile_dungeon_size, j * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+                switch (world_table[player.map_y][player.map_x]->objects[i][j].type) {
+                    case OBJECT_NULL:
+                        break;
+                    case OBJECT_TREE:
+                        SDL_RenderCopy(renderer, world_table[player.map_y][player.map_x]->objects[i][j].texture, NULL, &img_rect);
+                        break;
+                }
+            }
         }
     }
     // render items

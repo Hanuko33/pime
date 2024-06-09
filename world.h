@@ -17,8 +17,8 @@ enum game_tiles get_tile_at_ppos(Player *player);
 InventoryElement ** get_item_at_ppos(Player *player);
 InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y);
 
-struct object ** get_object_at(int chunk_x, int chunk_y, int x, int y);
-struct object ** get_object_at_ppos(Player * player);
+struct object * get_object_at(int chunk_x, int chunk_y, int x, int y);
+struct object * get_object_at_ppos(Player * player);
 
 void set_item_at(InventoryElement * item, int chunk_x, int chunk_y, int x, int y);
 void set_item_at_ppos(InventoryElement * item, Player* player);

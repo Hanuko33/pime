@@ -1,7 +1,6 @@
 #include "texture.h"
 #include "alchemist/elements.h"
 #include "tiles.h"
-#include "object.h"
 #include "window.h"
 #include <SDL2/SDL_blendmode.h>
 
@@ -13,7 +12,7 @@ SDL_Texture * liquid_textures[LIQUID_ELEMENTS];
 SDL_Texture * gas_textures[GAS_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
-SDL_Texture * objects_textures[OBJECT_MAX];
+SDL_Texture * tree_textures[3];
 
 SDL_Texture* load_texture(const char * texture_name)
 {
@@ -75,11 +74,6 @@ void add_prod_texture(int id, const char * file)
 };
 
 
-void add_object_texture(enum object_types id, const char * file)
-{
-    objects_textures[id]=load_texture(file);
-};
-
 void load_textures()
 {
     Texture.playerr = load_texture("textures/player/playerr.png");
@@ -87,24 +81,18 @@ void load_textures()
     Texture.run_icon = load_texture("textures/gui/run_icon.png");
     Texture.sneak_icon = load_texture("textures/gui/sneak_icon.png");
 
-    add_tile_texture(TILE_AIR, "textures/game_tiles/world/air.png");
-    add_tile_texture(TILE_STONE, "textures/game_tiles/world/stone.png");
-    add_tile_texture(TILE_DIRT, "textures/game_tiles/world/dirt.png");
-//    add_tile_texture(TILE_TREE, "textures/game_tiles/world/tree.png");
-    add_tile_texture(TILE_DUNG_WALL,"textures/game_tiles/dungeons/dung_wall.png");
-    add_tile_texture(TILE_DUNG_FLOOR,"textures/game_tiles/dungeons/dung_floor.png");
-    add_tile_texture(TILE_DUNG_DOOR,"textures/game_tiles/dungeons/dung_door.png");
-    add_tile_texture(TILE_SAND,"textures/game_tiles/world/sand.png");
-    add_tile_texture(TILE_SANDSTONE,"textures/game_tiles/world/sandstone.png");
-//    add_tile_texture(TILE_SWEET_TREE, "textures/game_tiles/world/sweet_tree.png");
-//    add_tile_texture(TILE_SWEET_BUSH,"textures/game_tiles/world/sweet_bush.png");
-//    add_tile_texture(TILE_SWEET_FLOWER,"textures/game_tiles/world/sweet_flower.png");
-    add_tile_texture(TILE_GRASS,"textures/game_tiles/world/grass.png");
-    add_tile_texture(TILE_SWEET_GRASS,"textures/game_tiles/world/sweet_grass.png");
-    add_tile_texture(TILE_WATER,"textures/game_tiles/world/water.png");
-    add_tile_texture(TILE_CAVE_DOOR,"textures/game_tiles/cave/cave_door.png");
-    add_tile_texture(TILE_CAVE_FLOOR,"textures/game_tiles/cave/cave_floor.png");
-    add_tile_texture(TILE_CAVE_WALL,"textures/game_tiles/cave/cave_wall.png");
+    add_tile_texture(TILE_AIR, "textures/game_tiles/air.png");
+    add_tile_texture(TILE_STONE, "textures/game_tiles/stone.png");
+    add_tile_texture(TILE_DIRT, "textures/game_tiles/dirt.png");
+//    add_tile_texture(TILE_TREE, "textures/game_tiles/tree.png");
+    add_tile_texture(TILE_SAND,"textures/game_tiles/sand.png");
+    add_tile_texture(TILE_SANDSTONE,"textures/game_tiles/sandstone.png");
+//    add_tile_texture(TILE_SWEET_TREE, "textures/game_tiles/sweet_tree.png");
+//    add_tile_texture(TILE_SWEET_BUSH,"textures/game_tiles/sweet_bush.png");
+//    add_tile_texture(TILE_SWEET_FLOWER,"textures/game_tiles/sweet_flower.png");
+    add_tile_texture(TILE_GRASS,"textures/game_tiles/grass.png");
+    add_tile_texture(TILE_SWEET_GRASS,"textures/game_tiles/sweet_grass.png");
+    add_tile_texture(TILE_WATER,"textures/game_tiles/water.png");
 
     add_items_texture(ID_STONE, "textures/items/solid/stone.png");
     add_items_texture(ID_LOG, "textures/items/solid/log.png");
@@ -127,6 +115,7 @@ void load_textures()
     add_prod_texture(PROD_AXE, "textures/items/products/axe.png");
     add_prod_texture(PROD_KNIFE, "textures/items/products/knife.png");
 
-    add_object_texture(OBJECT_TREE, "textures/game_tiles/world/tree.png");
-
+    tree_textures[0] = load_texture("textures/objects/tree/tree.png");
+    tree_textures[1] = load_texture("textures/objects/tree/tree1.png");
+    tree_textures[2] = load_texture("textures/objects/tree/tree2.png");
 }

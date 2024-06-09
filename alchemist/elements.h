@@ -216,6 +216,7 @@ class Product : public InventoryElement
         bool craft();
         virtual bool check_ing() { return false; }
         void show(bool details=true);
+        // TODO add virtual use();
 #ifndef STUB_SDL     
         SDL_Texture * get_texture();
 #endif
