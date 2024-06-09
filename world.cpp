@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "OpenSimplex/OpenSimplex2F.h"
 #include "texture.h"
 
 struct OpenSimplex2F_context *simplex_context;
@@ -19,18 +18,7 @@ chunk * world_table[WORLD_SIZE][WORLD_SIZE];
 
 void generator()
 {
-    OpenSimplex2F(time(NULL), &simplex_context);
-
     load_chunk(WORLD_CENTER, WORLD_CENTER);
-}
-
-int height_at(int chunk_x, int chunk_y, int x, int y)
-{
-    return 1 + 
-        (OpenSimplex2F_noise2(simplex_context, 
-                (chunk_x * CHUNK_SIZE + x) / WORLD_SCALE, 
-                (chunk_y * CHUNK_SIZE + y) / WORLD_SCALE) + 1) *
-        (CHUNK_SIZE - 2) / 2.0;
 }
 
 void create_biome_forest(chunk * chunk)
@@ -89,7 +77,6 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         int z = rand() % 16;
 
         o->set_posittion(x, 0);
-        o->set_posittion(x, height_at(chunk_x, chunk_y, x, z));
 
         chunk->items[i] = o;
     }

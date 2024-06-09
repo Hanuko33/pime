@@ -696,8 +696,6 @@ int main()
     
     generator();
     
-	player.y = height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
-    
 	if (init_window()) return 1;
     if (load_font()) return 1;
 

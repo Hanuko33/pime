@@ -27,8 +27,6 @@ add_executable(pime
     alchemist/knife_blade.cpp
     alchemist/knife_handle.cpp
     alchemist/knife.cpp
-
-    OpenSimplex/OpenSimplex2F.c
 	)
 
 target_link_libraries(pime
