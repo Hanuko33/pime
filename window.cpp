@@ -71,7 +71,7 @@ int  init_window()
         SDL_Log("SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         return 1;
 	}
-    SDL_SetWindowTitle(main_window, "game_window");
+    SDL_SetWindowTitle(main_window, "pime");
     SDL_SetWindowPosition(main_window, 0,0);
     SDL_SetWindowSize(main_window, GAME_WINDOW+PANEL_WINDOW, GAME_WINDOW + STATUS_LINE);
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
@@ -84,6 +84,16 @@ int  init_window()
         printf("\nUnable to initialize sdl_image:  %s\n", IMG_GetError());
         return 1;
     }
+
+    SDL_Surface* icon = IMG_Load("textures/pime.png");
+    if (icon == NULL) {
+        printf("\nUnable to load image %s! SDL_image Error: %s\n", "textures/pime.png", IMG_GetError());
+        return 1;
+    }
+    SDL_SetWindowIcon(main_window, icon);
+    SDL_FreeSurface(icon);
+
+
     TTF_Init();
 
     
