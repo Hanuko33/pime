@@ -74,9 +74,9 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         int b = rand() % BASE_ELEMENTS;
         Element *o = new Element(base_elements[b]);
         int x = rand() % 16;
-        int z = rand() % 16;
+        int y = rand() % 16;
 
-        o->set_posittion(x, 0);
+        o->set_posittion(x, y);
 
         chunk->items[i] = o;
     }
