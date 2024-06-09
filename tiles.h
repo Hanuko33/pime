@@ -44,7 +44,7 @@ typedef struct tile chunk_table[CHUNK_SIZE][CHUNK_SIZE];
 typedef struct {
     enum biomes biome;
     chunk_table table;
-    // TODO: change objects and items arrays to lists
+    // TODO: change items arrays to lists
     struct object objects[CHUNK_SIZE][CHUNK_SIZE];
     InventoryElement * items[128];
 } chunk;
