@@ -694,12 +694,12 @@ int main()
     init_elements();
 	game_time=new Game_time;
     
-    generator();
     
 	if (init_window()) return 1;
     if (load_font()) return 1;
 
     load_textures();
+    generator();
     create_menus();
     map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WORLD_SIZE, WORLD_SIZE);
 
