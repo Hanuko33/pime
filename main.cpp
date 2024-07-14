@@ -106,39 +106,6 @@ void use_tile()
 
        status_code = 1; 
     }
-    // TODO
-    /* else if (ob_pointer) */
-    /* { */
-    /*     struct object * ob = *ob_pointer; */
-    /*     if (ob->type == OBJECT_TREE) */
-    /*     { */
-    /*         if (player.hotbar[active_hotbar]) */
-    /*         { */
-    /*             if (player.hotbar[active_hotbar]->get_id() == PROD_AXE) */
-    /*             { */
-    /*                 sprintf(status_line, "Tree mine"); */
-    /*                 status_code = 1; */
-    /*                 Element * el = new Element(base_elements[ob->base_element_id]); */
-    /*                 el->set_posittion(player.x, player.y); */
-    /*                 set_item_at_ppos(el, &player); */
-    /*                 /1* ob->type = OBJECT_NULL; *1/ */
-    /*                 free(ob); */
-    /*                 ob=NULL; */
-    /*                 *ob_pointer=NULL; */
-    /*             } */
-    /*             else */
-    /*             { */
-    /*                 sprintf(status_line, "Tree mine: NEED AXE"); */
-    /*                 status_code = 0; */
-    /*             } */
-    /*         } */
-    /*         else */
-    /*         { */
-    /*             sprintf(status_line, "Tree mine: NEED AXE"); */
-    /*             status_code = 0; */
-    /*         } */
-    /*     } */
-    /* } */
 }
 
 void player_interact(int key)
@@ -172,79 +139,79 @@ void player_interact(int key)
             break;
 
 #endif 
-        case SDLK_g: // break same level
-            switch ((int)player.direction) 
-            {
-                case (int)direction::down:
-                    if (player.y == CHUNK_SIZE-1)
-                    {
-                        if (!load_chunk(player.map_x, player.map_y+1)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
-                        world_table[player.map_y+1][player.map_x]->table[0][player.x].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.y+1][player.x].tile=TILE_AIR;
-                    }
-                    break;
-                case (int)direction::up:
-                    if (player.y == 0)
-                    {
-                        if (!load_chunk(player.map_x, player.map_y-1)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
+        // case SDLK_g: // break same level
+        //     switch ((int)player.direction) 
+        //     {
+        //         case (int)direction::down:
+        //             if (player.y == CHUNK_SIZE-1)
+        //             {
+        //                 if (!load_chunk(player.map_x, player.map_y+1)) 
+        //                 {
+        //                     sprintf(status_line, "ON EDGE OF WORLD!");
+        //                     status_code=0;
+        //                     return;
+        //                 };
+        //                 world_table[player.map_y+1][player.map_x]->table[0][player.x].tile=TILE_AIR;
+        //             }
+        //             else
+        //             {
+        //                 world_table[player.map_y][player.map_x]->table[player.y+1][player.x].tile=TILE_AIR;
+        //             }
+        //             break;
+        //         case (int)direction::up:
+        //             if (player.y == 0)
+        //             {
+        //                 if (!load_chunk(player.map_x, player.map_y-1)) 
+        //                 {
+        //                     sprintf(status_line, "ON EDGE OF WORLD!");
+        //                     status_code=0;
+        //                     return;
+        //                 };
 
-                        world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.x].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.y-1][player.x].tile=TILE_AIR;
-                    }
-                    break;
+        //                 world_table[player.map_y-1][player.map_x]->table[CHUNK_SIZE-1][player.x].tile=TILE_AIR;
+        //             }
+        //             else
+        //             {
+        //                 world_table[player.map_y][player.map_x]->table[player.y-1][player.x].tile=TILE_AIR;
+        //             }
+        //             break;
 
-                case (int)direction::right:
-                    if (player.x == CHUNK_SIZE-1)
-                    {
-                        if (!load_chunk(player.map_x+1, player.map_y)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
+        //         case (int)direction::right:
+        //             if (player.x == CHUNK_SIZE-1)
+        //             {
+        //                 if (!load_chunk(player.map_x+1, player.map_y)) 
+        //                 {
+        //                     sprintf(status_line, "ON EDGE OF WORLD!");
+        //                     status_code=0;
+        //                     return;
+        //                 };
 
-                        world_table[player.map_y][player.map_x+1]->table[player.y][0].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.y][player.x+1].tile=TILE_AIR;
-                    }
-                    break;
-                case (int)direction::left:
-                    if (player.x == 0)
-                    {
-                        if (!load_chunk(player.map_x-1, player.map_y)) 
-                        {
-                            sprintf(status_line, "ON EDGE OF WORLD!");
-                            status_code=0;
-                            return;
-                        };
+        //                 world_table[player.map_y][player.map_x+1]->table[player.y][0].tile=TILE_AIR;
+        //             }
+        //             else
+        //             {
+        //                 world_table[player.map_y][player.map_x]->table[player.y][player.x+1].tile=TILE_AIR;
+        //             }
+        //             break;
+        //         case (int)direction::left:
+        //             if (player.x == 0)
+        //             {
+        //                 if (!load_chunk(player.map_x-1, player.map_y)) 
+        //                 {
+        //                     sprintf(status_line, "ON EDGE OF WORLD!");
+        //                     status_code=0;
+        //                     return;
+        //                 };
 
-                        world_table[player.map_y][player.map_x-1]->table[player.y][CHUNK_SIZE-1].tile=TILE_AIR;
-                    }
-                    else
-                    {
-                        world_table[player.map_y][player.map_x]->table[player.y][player.x-1].tile=TILE_AIR;
-                    }
-                    break;
-            break;
-        }
+        //                 world_table[player.map_y][player.map_x-1]->table[player.y][CHUNK_SIZE-1].tile=TILE_AIR;
+        //             }
+        //             else
+        //             {
+        //                 world_table[player.map_y][player.map_x]->table[player.y][player.x-1].tile=TILE_AIR;
+        //             }
+        //             break;
+        //     break;
+        // }
         case SDLK_r:
             player.hotbar[active_hotbar]=NULL;
             break;
@@ -325,6 +292,7 @@ void player_interact(int key)
         case SDLK_RETURN:
         case SDLK_e:
             use_tile();
+            // TODO: item->use
             break;
     }
 }
@@ -636,31 +604,31 @@ void draw()
 
 void intro()
 {
-    /* int a; */
-    /* struct termios state, new_state; */
-    /* tcgetattr(0, &state); */
-    /* new_state=state; */
-    /* new_state.c_lflag &= ~(ECHO | ICANON |ECHOE| ISIG); */
-    /* new_state.c_cc[VMIN] = 1; */
-    /* tcsetattr(0, TCSANOW, &new_state); */
+     // int a; 
+     // struct termios state, new_state; 
+     // tcgetattr(0, &state); 
+     // new_state=state; 
+     // new_state.c_lflag &= ~(ECHO | ICANON |ECHOE| ISIG); 
+     // new_state.c_cc[VMIN] = 1; 
+     // tcsetattr(0, TCSANOW, &new_state); 
 
-    /* printf("Do you want music y/n? "); */
-    /* a=getchar(); */
-    /* if (a=='y') */
-    /* { */
-    /*     printf("\nInitializing music\n"); */
-    /*     if (init_music()) */ 
-    /*         printf("Failed to initialize music!\n"); ; */
-    /*     load_music(); */
+     // printf("Do you want music y/n? "); 
+     // a=getchar(); 
+     // if (a=='y') 
+     // { 
+     //     printf("\nInitializing music\n"); 
+     //     if (init_music()) 
+     //         printf("Failed to initialize music!\n"); ; 
+     //     load_music(); 
 
-    /*     Mix_PlayChannel(0, music.music_one, 99999); */ 
-    /*     Mix_PlayChannel(1, music.music_two, 99999); */
-    /*     Mix_Volume(0, 0); */
-    /*     Mix_Volume(1, 0); */
-    /*     Mix_Pause(1); */
-    /* } else printf("\nGame without music\n"); */
-    /* tcflush(0, TCIFLUSH); */
-    /* tcsetattr(0, TCSANOW, &state); */
+     //     Mix_PlayChannel(0, music.music_one, 99999); 
+     //     Mix_PlayChannel(1, music.music_two, 99999); 
+     //     Mix_Volume(0, 0); 
+     //     Mix_Volume(1, 0); 
+     //     Mix_Pause(1); 
+     // } else printf("\nGame without music\n"); 
+     // tcflush(0, TCIFLUSH); 
+     // tcsetattr(0, TCSANOW, &state); 
 }
 
 
@@ -677,15 +645,15 @@ int main()
         }
     }
     
-    ret = stat("world", &statbuf);
-    if (ret)
-    {
-#if defined(_WIN32)
-        mkdir("world");
-#else
-        mkdir("world", 0777);
-#endif
-    }
+    // ret = stat("world", &statbuf);
+    // if (ret)
+    // {
+// #if defined(_WIN32)
+    //     mkdir("world");
+// #else
+    //     mkdir("world", 0777);
+// #endif
+    // }
 
     srand (time(NULL));
     intro();

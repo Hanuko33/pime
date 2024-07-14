@@ -46,7 +46,7 @@ typedef struct {
     chunk_table table;
     // TODO: change items arrays to lists
     struct object objects[CHUNK_SIZE][CHUNK_SIZE];
-    InventoryElement * items[128];
+    InventoryElement * items[CHUNK_SIZE*CHUNK_SIZE];
 } chunk;
 
 

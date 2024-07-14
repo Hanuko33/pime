@@ -19,9 +19,6 @@ const char * Ingredient_name[]=
     "Axe_blade",
     "Axe_handle",
 
-    "Hammer_head",
-    "Hammer_handle",
-
     "Knife_blade",
     "Knife_handle",
 };
@@ -29,7 +26,6 @@ const char * Ingredient_name[]=
 const char * Product_name[]=
 {
     "Axe",
-    "Hammer",
     "Knife",
 };
 

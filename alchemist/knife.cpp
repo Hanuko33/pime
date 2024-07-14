@@ -15,6 +15,6 @@ bool Knife::check_ing()
             (id1 == ING_KNIFE_BLADE && id2 == ING_KNIFE_HANDLE) || 
             (id1 == ING_KNIFE_HANDLE && id2 == ING_KNIFE_BLADE)
        ) return true;
-    printf("wrong ingrediens\n");
+    printf("wrong ingredients\n");
     return false;
 }

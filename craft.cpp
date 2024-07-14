@@ -150,7 +150,7 @@ InventoryElement * craft_knife()
     }
     if (el1 && el2) 
     {
-        sprintf(status_line, "crafting: axe from %s and %s", el1->get_name(), el2->get_name());
+        sprintf(status_line, "crafting: knife from %s and %s", el1->get_name(), el2->get_name());
     
         Knife * knife=new Knife(el1, el2);
         if (knife->craft()) {

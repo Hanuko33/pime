@@ -147,9 +147,6 @@ enum Ingredient_id
     ING_AXE_BLADE,
     ING_AXE_HANDLE,
 
-    ING_HAMMER_HEAD,
-    ING_HAMMER_HANDLE,
-
     ING_KNIFE_BLADE,
     ING_KNIFE_HANDLE,
     
@@ -158,7 +155,6 @@ enum Ingredient_id
 enum Product_id
 {
     PROD_AXE,
-    PROD_HAMMER,
     PROD_KNIFE
 };
 

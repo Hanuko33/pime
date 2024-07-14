@@ -72,7 +72,7 @@ int  init_window()
         return 1;
 	}
     SDL_SetWindowTitle(main_window, "pime");
-    SDL_SetWindowPosition(main_window, 0,0);
+    SDL_SetWindowPosition(main_window, 100,100);
     SDL_SetWindowSize(main_window, GAME_WINDOW+PANEL_WINDOW, GAME_WINDOW + STATUS_LINE);
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -105,7 +105,7 @@ int  init_window()
 
 void clear_window()
 {
-     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+     SDL_SetRenderDrawColor(renderer, 10, 10, 50, 255);
     SDL_RenderClear(renderer);
 }
 
