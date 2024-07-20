@@ -69,7 +69,7 @@ void update_window_size()
     {
         tile_size = window_height/(CHUNK_SIZE);
     }
-    if (tile_size<48) tile_size = 48;
+    if (tile_size<32) tile_size = 32;
 
     SDL_SetWindowSize(main_window, (tile_size * CHUNK_SIZE) + PANEL_WINDOW, tile_size * CHUNK_SIZE + STATUS_LINE);
     SDL_GetWindowSize(main_window, &window_width, &window_height); 
@@ -589,8 +589,16 @@ void draw()
     SDL_UnlockTexture(map);
 
     SDL_Rect window_rec;
-    window_rec.w = WORLD_SIZE;
-    window_rec.h = WORLD_SIZE;
+    if (window_height > 650)
+    {
+        window_rec.w = WORLD_SIZE;
+        window_rec.h = WORLD_SIZE;
+    }
+    else
+    {
+        window_rec.w = 0;
+        window_rec.h = 0;
+    }
     window_rec.x = width + 10;
     window_rec.y = window_height - WORLD_SIZE - STATUS_LINE;
 
