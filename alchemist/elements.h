@@ -217,6 +217,11 @@ class Product : public InventoryElement
 #endif
 };
 
+enum being_types
+{
+    being_tree
+};
+
 class Being : public InventoryElement
 {
     public:
@@ -224,18 +229,22 @@ class Being : public InventoryElement
         unsigned int age;
         unsigned int max_age;
         bool alive;
+        enum being_types type;
+#ifndef STUB_SDL
+        SDL_Texture * get_texture();
+#endif
         virtual bool grow() {
             if (!alive) return false;
             age++;
-            if (age > max_age) alive=false;
+            if (age >= max_age) alive=false;
             return alive;
         }
         Being()
         {
-            alive=true;
-            age=0;
-            max_age=1 + rand() % 36000; //100 years
-            name=create_name(5);
+            alive = true;
+            max_age = 1 + rand() % 36000; //100 years
+            age = rand() % max_age;
+            name = create_name(5);
         }
         bool is_alive() { return alive; }
         const char * get_name() {return name; }

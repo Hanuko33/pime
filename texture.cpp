@@ -10,7 +10,7 @@ SDL_Texture * items_textures[SOLID_ELEMENTS+GAS_ELEMENTS+LIQUID_ELEMENTS];
 SDL_Texture * food_textures[FOOD_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
-SDL_Texture * tree_textures[3];
+SDL_Texture * being_textures[1];
 
 SDL_Texture* load_texture(const char * texture_name)
 {
@@ -103,7 +103,5 @@ void load_textures()
     add_prod_texture(PROD_AXE, "textures/items/products/axe.png");
     add_prod_texture(PROD_KNIFE, "textures/items/products/knife.png");
 
-    tree_textures[0] = load_texture("textures/objects/tree/tree.png");
-    tree_textures[1] = load_texture("textures/objects/tree/tree1.png");
-    tree_textures[2] = load_texture("textures/objects/tree/tree2.png");
+    being_textures[being_tree] = load_texture("textures/objects/tree/tree.png");
 }

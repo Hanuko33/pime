@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "alchemist/elements.h"
-#include "object.h"
 #include "text.h"
 #include "tiles.h"
 #include "window.h"
@@ -219,8 +218,21 @@ void player_interact(int key)
         {
             InventoryElement * el = player.hotbar[active_hotbar];
             if (el)
-            {
                 el->show(true);
+            InventoryElement ** at_ppos = get_item_at_ppos(&player);
+
+            if (at_ppos)
+            {
+                el = *at_ppos;
+                if (el)
+                    el->show(true);
+            }
+            Being ** b_at_ppos = get_being_at_ppos(&player);
+            if (b_at_ppos)
+            {
+                Being * b = *b_at_ppos;
+                if (b)
+                    b->show();
             }
         }
         break;
@@ -375,6 +387,18 @@ int next_to(int x1, int y1, int x2, int y2)
         return 1;
     return 0;
 }
+void update()
+{
+    for (int i = 0; i<CHUNK_SIZE*CHUNK_SIZE; i++) {
+        Being * b = world_table[player.map_y][player.map_x]->beings[i];
+
+        if (b)
+        {
+            b->tick();
+        }
+    }
+}
+
 void draw()
 {
     int game_size;
@@ -404,26 +428,8 @@ void draw()
             SDL_RenderCopy(renderer, texture, NULL, &img_rect);
         }
     }
-    // render objects
-    for (int i = 0; i < CHUNK_SIZE; i++)
-    {
-        for (int j = 0; j < CHUNK_SIZE; j++)
-        {
-            if (world_table[player.map_y][player.map_x]->objects[i][j].type != OBJECT_NULL)
-            {
-                SDL_Rect img_rect = {i * tile_dungeon_size, j * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
-                switch (world_table[player.map_y][player.map_x]->objects[i][j].type) {
-                    case OBJECT_NULL:
-                        break;
-                    case OBJECT_TREE:
-                        SDL_RenderCopy(renderer, world_table[player.map_y][player.map_x]->objects[i][j].texture, NULL, &img_rect);
-                        break;
-                }
-            }
-        }
-    }
     // render items
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++)
     {
         InventoryElement * o = world_table[player.map_y][player.map_x]->items[i];
         if (o) 
@@ -432,6 +438,18 @@ void draw()
             o->get_posittion(&x, &y);
             SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
+        }
+    }
+    // render beings
+    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++)
+    {
+        Being * b = world_table[player.map_y][player.map_x]->beings[i];
+        if (b)
+        {
+            int x,y;
+            b->get_posittion(&x, &y);
+            SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_RenderCopy(renderer, b->get_texture(), NULL, &img_rect);
         }
     }
 
@@ -699,6 +717,7 @@ int main()
         if (player.hunger < 0) player.hunger = 0;
         if (player.thirst < 0) player.thirst = 0;
         
+        update();
         draw();
 
         // keyboard handling for not move

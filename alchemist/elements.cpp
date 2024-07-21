@@ -139,6 +139,7 @@ BaseElement::BaseElement(int index)
     {
         form = Form_solid;
         density = 50 + rand() % 1000;
+        solid =new Solid;
         edible=new Edible;
         id=index % FOOD_ELEMENTS;
     }
@@ -159,6 +160,11 @@ void BaseElement::show(bool details)
         default: break;
     }
     if (edible) edible->show();
+}
+
+SDL_Texture * Being::get_texture()
+{
+    return being_textures[type];
 }
 
 Element::Element(BaseElement *b)

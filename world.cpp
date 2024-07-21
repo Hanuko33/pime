@@ -1,5 +1,4 @@
 #include "alchemist/elements.h"
-#include "object.h"
 #include "player.h"
 #include "world.h"
 //#include "cave.h"
@@ -49,42 +48,34 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         }
         //printf("\n");
     }
-    for (int i = 0; i < CHUNK_SIZE; i++)
-    {
-        for (int j=0; j < CHUNK_SIZE; j++)
-        {
-            struct object o;
-            o.base_element_id=0;
-            o.type=OBJECT_NULL;
-            chunk->objects[i][j] = o;
-
-            if (rand() % 10 == 0)
-            {
-                chunk->objects[i][j].type = OBJECT_TREE;
-                chunk->objects[i][j].base_element_id = rand() % BASE_ELEMENTS;
-                while (base_elements[chunk->objects[i][j].base_element_id]->form != Form_solid)
-                {
-                    chunk->objects[i][j].base_element_id = rand() % BASE_ELEMENTS;
-                }
-                chunk->objects[i][j].texture = tree_textures[rand() % 3];
-            }
-        }
-    }
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 8; i++)
     {
         int b = rand() % BASE_ELEMENTS;
         Element *o = new Element(base_elements[b]);
-        int x = rand() % 16;
-        int y = rand() % 16;
+        int x = rand() % CHUNK_SIZE;
+        int y = rand() % CHUNK_SIZE;
 
         o->set_posittion(x, y);
 
         chunk->items[i] = o;
     }
-    /*enum biomes random_biome = (enum biomes) (rand() % 4);
+    for (int i = 0; i < 32; i++)
+    {
+        Being * b = new Being();
+        int x = rand() % CHUNK_SIZE;
+        int y = rand() % CHUNK_SIZE;
+
+        b->set_posittion(x, y);
+        b->type=being_tree;
+
+        chunk->beings[i]=b;
+    }
+
+
+    enum biomes random_biome = (enum biomes) (rand() % 4);
     chunk->biome = random_biome;
 
-    switch (random_biome)
+    /*switch (random_biome)
     {
         case BIOME_FOREST: create_biome_forest(chunk); break;
         case BIOME_DESERT: create_biome_desert(chunk); break;
@@ -124,6 +115,29 @@ char traversable_tiles[TILE_MAX_NUM] =
     1, //TILE_WATER,
 };
 
+Being **get_being_at(int chunk_x, int chunk_y, int x, int y)
+{
+    for (int i = 0; i < 128; i++)
+    {
+        Being *b = world_table[chunk_y][chunk_x]->beings[i];
+        if (b)
+        {
+            int b_x, b_y;
+            b->get_posittion(&b_x, &b_y);
+
+            if (b_x == x && b_y == y)
+            {
+                return &world_table[chunk_y][chunk_x]->beings[i];
+            }
+        }
+    }
+    return NULL;
+}
+
+Being **get_being_at_ppos(Player * player)
+{
+    return get_being_at(player->map_x, player->map_y, player->x, player->y);
+}
 
 InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
 {
@@ -132,7 +146,7 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
         InventoryElement *el = world_table[chunk_y][chunk_x]->items[i];
         if (el)
         {
-            int el_x, el_y, el_z;
+            int el_x, el_y;
             el->get_posittion(&el_x, &el_y);
 
             if (el_x == x && el_y == y)
@@ -142,16 +156,6 @@ InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
         }
     }
     return NULL;
-}
-
-struct object * get_object_at(int chunk_x, int chunk_y, int x, int y)
-{
-    return &world_table[chunk_y][chunk_x]->objects[x][y];
-}
-
-struct object * get_object_at_ppos(Player * player)
-{
-    return get_object_at(player->map_x, player->map_y, player->x, player->y);
 }
 
 InventoryElement **get_item_at_ppos(Player * player)
