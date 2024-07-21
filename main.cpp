@@ -304,7 +304,9 @@ void player_interact(int key)
         case SDLK_RETURN:
         case SDLK_e:
             use_tile();
-            // TODO: item->use
+            InventoryElement * el = player.hotbar[active_hotbar];
+            if (el)
+                el->use(&player);
             break;
     }
 }

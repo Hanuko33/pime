@@ -76,7 +76,7 @@ class BaseElement
         BaseElement(int index); 
         void show(bool details=true);
 };        
-
+class Player;
 class InventoryElement
 {
 	int x, y, z;
@@ -85,6 +85,7 @@ class InventoryElement
         Form req_form;
         bool known;
         InventoryElement() { req_form = Form_none; known = true; }
+        virtual void use(Player * player) { }
         virtual void show(bool details=true) { }
         virtual bool tick() { return false;}
         virtual Form get_form() {return Form_none; }
@@ -115,7 +116,6 @@ class Element : public InventoryElement
         unsigned int width;
         unsigned int height;
         unsigned int volume; //lenght*width*height
-    
         Edible * get_edible()
         {
             return base->edible;
@@ -211,7 +211,6 @@ class Product : public InventoryElement
         bool craft();
         virtual bool check_ing() { return false; }
         void show(bool details=true);
-        // TODO add virtual use();
 #ifndef STUB_SDL     
         SDL_Texture * get_texture();
 #endif

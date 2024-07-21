@@ -6,7 +6,6 @@
 
 void Player::check_and_move(int new_map_x, int new_map_y, int new_x, int new_y)
 {
-    // TODO: collision with objects
     map_x = new_map_x;
     map_y = new_map_y;
     x = new_x;
