@@ -7,6 +7,7 @@ typedef void * SDL_Texture;
 #include <SDL2/SDL.h>
 #endif
 
+
 #include <cstdio>
 #include <cstdlib>
 #include "names.h"
@@ -52,20 +53,27 @@ enum Class_id
     Class_Plant,
 };
 
+enum Item_id
+{
+    ID_STONE,
+    ID_LOG,
+    ID_SAND,
+    ID_STICK,
+    ID_WATER,
+    ID_HELIUM
+};
+
 class BaseElement
 {
     public:
         const char * name;
-        int id; //texture id
+        int id; // texture id + what is like
         unsigned int density;
-        unsigned char transparency;
         Edible *edible;
         Form form;
         Solid *solid;
-        bool magic; // TODO
         
-        BaseElement(); 
-        void init();
+        BaseElement(int index); 
         void show(bool details=true);
 };        
 
@@ -126,15 +134,6 @@ class Element : public InventoryElement
         SDL_Texture * get_texture();
 #endif
 };
-
-enum Item_id
-{
-    ID_STONE,
-    ID_LOG,
-    ID_SAND,
-    ID_STICK
-};
-
 enum Food_id
 {
     ID_PUMPKIN,
@@ -293,11 +292,13 @@ public:
 
 };
 
-#define BASE_ELEMENTS 50
 #define SOLID_ELEMENTS 4
 #define FOOD_ELEMENTS 3
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
+
+#define BASE_ELEMENTS 9
+
 #define ING_ELEMENTS 4
 #define PROD_ELEMENTS 2
 

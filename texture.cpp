@@ -6,10 +6,8 @@
 
 struct textures Texture;
 SDL_Texture * tiles_textures[TILE_MAX_NUM];
-SDL_Texture * items_textures[SOLID_ELEMENTS];
+SDL_Texture * items_textures[SOLID_ELEMENTS+GAS_ELEMENTS+LIQUID_ELEMENTS];
 SDL_Texture * food_textures[FOOD_ELEMENTS];
-SDL_Texture * liquid_textures[LIQUID_ELEMENTS];
-SDL_Texture * gas_textures[GAS_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
 SDL_Texture * tree_textures[3];
@@ -53,16 +51,6 @@ void add_food_texture(int id, const char * file)
     food_textures[id]=load_texture(file);
 };
 
-void add_liquid_texture(int id, const char * file)
-{
-    liquid_textures[id]=load_texture(file);
-};
-
-void add_gas_texture(int id, const char * file)
-{
-    gas_textures[id]=load_texture(file);
-};
-
 void add_ing_texture(int id, const char * file)
 {
     ing_textures[id]=load_texture(file);
@@ -98,14 +86,14 @@ void load_textures()
     add_items_texture(ID_LOG, "textures/items/solid/log.png");
     add_items_texture(ID_SAND, "textures/items/solid/sand.png");
     add_items_texture(ID_STICK, "textures/items/solid/stick.png");
+    add_items_texture(ID_WATER, "textures/items/liquid/water.png");
+    add_items_texture(ID_HELIUM, "textures/items/gas/gas.png");
+
 
     add_food_texture(ID_PUMPKIN, "textures/items/food/pumpkin.png");
     add_food_texture(ID_WATERMELON, "textures/items/food/watermelon.png");
     add_food_texture(ID_CHERRY, "textures/items/food/cherry.png");
 
-    add_liquid_texture(0, "textures/items/liquid/water.png");
-
-    add_gas_texture(0, "textures/items/gas/gas.png");
 
     add_ing_texture(ING_AXE_BLADE, "textures/items/ingredients/axe_blade.png");
     add_ing_texture(ING_AXE_HANDLE, "textures/items/ingredients/axe_handle.png");

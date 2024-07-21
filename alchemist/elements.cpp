@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <cstdlib>
 
 #include "elements.h"
@@ -113,45 +114,35 @@ void Solid::show()
 
 }
 
-BaseElement::BaseElement()
+BaseElement::BaseElement(int index)
 {
-    transparency=rand() % 256;
-    solid=NULL;
-    init();
-}
+    solid = NULL;
+    edible = NULL;
+    id = index;
 
-void BaseElement::init()
-{
-    magic=false; // TODO
-    
-    int f = rand() % 100;
-
-    if (f < 60) { //60%
+    if (id < SOLID_ELEMENTS) { // generate solid
             form = Form_solid;
-            solid=new Solid;
-            density=50 + rand() % 2000;
-            id=rand() % SOLID_ELEMENTS;
+            solid = new Solid;
+            density = 50 + rand() % 2000;
     } else {
-        if (f < 90) { //30%
+        if (id < SOLID_ELEMENTS+LIQUID_ELEMENTS) { // generate liquid
             form = Form_liquid;
-            density=500 + rand() % 500;
-            id=rand() % LIQUID_ELEMENTS;
+            density = 500 + rand() % 500;
         } 
-        else { //10%
+        else { // generate gas
             form = Form_gas;
-            density=1;
-            id=rand() % GAS_ELEMENTS;
+            density = 1;
         }
     }
 
-    edible = NULL;
-    if (rand() % 100 < 30) // 30 % food
+    if (index >= SOLID_ELEMENTS+LIQUID_ELEMENTS+GAS_ELEMENTS) // generate food
     {
+        form = Form_solid;
+        density = 50 + rand() % 1000;
         edible=new Edible;
-        id=rand() % FOOD_ELEMENTS;
+        id=index % FOOD_ELEMENTS;
     }
     name = create_name(5 - form);
-    magic=false; //TODO
 }
 
 void BaseElement::show(bool details)
@@ -159,7 +150,6 @@ void BaseElement::show(bool details)
     printf("BaseElement name=%s form=%s\n", name, Form_name[form]); 
     if (!details) return;
     printf("   density = %u\n", density); //gęstość
-    printf("   transparency = %u\n", transparency); //przezroczystość
     printf("   form = %s\n", Form_name[form]);
     switch(form)
     {
@@ -200,13 +190,7 @@ SDL_Texture * Element::get_texture()
 {
     if (base->edible) return food_textures[base->id];
 
-    switch (base->form)
-    {
-        case Form_solid: return items_textures[base->id]; break;
-        case Form_liquid: return liquid_textures[base->id]; break;
-        case Form_gas: return gas_textures[base->id]; break;
-    }
-    return NULL;
+    return items_textures[base->id]; 
 }
 #endif
 Ingredient::Ingredient(InventoryElement * from, Ingredient_id i, Form f)
@@ -338,7 +322,7 @@ void init_elements()
 {
     for (int i=0; i < BASE_ELEMENTS; i++)
     {
-        base_elements[i] = new BaseElement;
+        base_elements[i] = new BaseElement(i);
     }
 }
 

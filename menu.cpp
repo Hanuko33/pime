@@ -2,7 +2,6 @@
 #include "window.h"
 #include "music.h"
 #include "alchemist/elements.h"
-#include "texture.h"
 #include "alchemist/axe.h"
 #include "alchemist/knife.h"
 #include "world.h"
