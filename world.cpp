@@ -44,7 +44,6 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         for (int x = 0; x < CHUNK_SIZE; x++) 
         {
             chunk->table[y][x].tile = TILE_GRASS;
-            chunk->table[y][x].weight = 4 + rand() % 9;
         }
         //printf("\n");
     }
