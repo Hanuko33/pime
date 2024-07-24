@@ -60,8 +60,26 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
     for (int i = 0; i < 32; i++)
     {
         Being * b = new Being();
+
         int x = rand() % CHUNK_SIZE;
         int y = rand() % CHUNK_SIZE;
+
+        for (int i = 0; i < 256; i++) {
+            if (chunk->beings[i])
+            {
+                int ox=0;
+                int oy=0;
+
+                chunk->beings[i]->get_posittion(&ox, &oy);
+
+                if (ox == x && oy == y)
+                {
+                    x = rand() % CHUNK_SIZE;
+                    y = rand() % CHUNK_SIZE;
+                }
+            }
+        
+        }
 
         b->set_posittion(x, y);
         switch (rand() % 3) {
