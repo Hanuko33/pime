@@ -38,7 +38,6 @@ void create_biome_sweet_tree(chunk * chunk)
 
 void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)  
 {
-    chunk->biome = BIOME_FOREST;
     for (int y = 0; y < CHUNK_SIZE; y++) 
     {
         for (int x = 0; x < CHUNK_SIZE; x++) 
