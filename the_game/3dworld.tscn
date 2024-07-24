@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cwvg72307ycu7"]
+[gd_scene load_steps=8 format=3 uid="uid://cwvg72307ycu7"]
 
 [ext_resource type="PackedScene" uid="uid://drmuk8ut21aja" path="res://player.tscn" id="1_i01nf"]
 [ext_resource type="Script" path="res://camera.gd" id="1_vpny3"]
@@ -16,6 +16,10 @@ sky = SubResource("Sky_1m5sj")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="BoxMesh" id="BoxMesh_q1tjp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4jgh7"]
+
 [node name="Node3D" type="Node3D"]
 
 [node name="FreeLookCamera" type="Camera3D" parent="."]
@@ -25,6 +29,7 @@ script = ExtResource("1_vpny3")
 [node name="Player" parent="." instance=ExtResource("1_i01nf")]
 mouse_sen = 0.2
 transform = Transform3D(1, -2.98023e-08, 1.49012e-08, 0, 1, 0, -2.98023e-08, 0, 1, 1.863, 60, 2.925)
+wall_min_slide_angle = 0.0
 
 [node name="Terrain" type="Terrain" parent="."]
 transform = Transform3D(1, -2.98023e-08, 1.49012e-08, 0, 1, 0, -2.98023e-08, 0, 1, 0, 0, 9.53674e-07)
@@ -41,3 +46,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
 
 [node name="Item2" type="Item" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 50, 0)
+
+[node name="GPlant" type="GPlant" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.8202, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, 0, 12.503, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("BoxMesh_q1tjp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_4jgh7")

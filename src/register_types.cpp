@@ -10,6 +10,7 @@
 #include "item.h"
 #include "ftree.h"
 #include "bush.h"
+#include "g_plant.h"
 // includes go here
 // DO NOT REMOVE THIS COMMENT
 
@@ -39,6 +40,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     ClassDB::register_class<Item>();
     ClassDB::register_class<FTree>();
     ClassDB::register_class<Bush>();
+    ClassDB::register_class<GPlant>();
     //     ClassDB::register_class<class_name>()
     //     DO NOT REMOVE THIS COMMENT TOO
     

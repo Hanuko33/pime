@@ -34,6 +34,9 @@ func _ready():
 	
 
 func foo():
+	position = $"../Player".position
+	rotation = $"../Player".rotation
+	_total_pitch = 0
 	make_current()
 	
 var boo = false;
