@@ -343,9 +343,15 @@ void PlayerCharacter::pick_up(Item *item, Item** hand) {
         //item->set_collision_mask_value(2, true);
         item->get_node<CollisionShape3D>("Collision")->set_disabled(true);
         if (hand == &right_hand)
-            item->set_position(Vector3(1, 0, -0.1));
+        {
+            item->set_position(Vector3(0.7, -0.4, -0.2));
+            item->set_rotation(get_rotation());
+        }
         else
-            item->set_position(Vector3(-1, 0, -0.1));
+        {
+            item->set_position(Vector3(-0.7, -0.4, -0.2));
+            item->set_rotation(get_rotation());
+        }
         *hand = item;
     }
 }
