@@ -20,23 +20,30 @@ void generator()
     load_chunk(WORLD_CENTER, WORLD_CENTER);
 }
 
+void create_biome_plains(chunk * chunk)
+{
+    for (int y = 0; y < CHUNK_SIZE; y++) 
+    {
+        for (int x = 0; x < CHUNK_SIZE; x++) 
+        {
+            chunk->table[y][x].tile = TILE_GRASS;
+        }
+        //printf("\n");
+    }
+    for (int i = 0; i < 16; i++)
+    {
+        int b = rand() % BASE_ELEMENTS;
+        Element *o = new Element(base_elements[b]);
+        int x = rand() % CHUNK_SIZE;
+        int y = rand() % CHUNK_SIZE;
+
+        o->set_posittion(x, y);
+
+        chunk->items[i] = o;
+    }
+}
+
 void create_biome_forest(chunk * chunk)
-{
-}
-
-void create_biome_desert(chunk * chunk)
-{
-}
-
-void create_biome_lake(chunk * chunk)
-{
-}
-
-void create_biome_sweet_tree(chunk * chunk)
-{
-}
-
-void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)  
 {
     for (int y = 0; y < CHUNK_SIZE; y++) 
     {
@@ -57,6 +64,8 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
 
         chunk->items[i] = o;
     }
+
+
     for (int i = 0; i < 32; i++)
     {
         Being * b = new Being();
@@ -97,18 +106,45 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
 
         chunk->beings[i]=b;
     }
+}
+
+void create_biome_desert(chunk * chunk)
+{
+    for (int y = 0; y < CHUNK_SIZE; y++) 
+    {
+        for (int x = 0; x < CHUNK_SIZE; x++) 
+        {
+            chunk->table[y][x].tile = TILE_SAND;
+        }
+        //printf("\n");
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        int b = rand() % BASE_ELEMENTS;
+        Element *o = new Element(base_elements[b]);
+        int x = rand() % CHUNK_SIZE;
+        int y = rand() % CHUNK_SIZE;
+
+        o->set_posittion(x, y);
+
+        chunk->items[i] = o;
+    }
 
 
-    enum biomes random_biome = (enum biomes) (rand() % 4);
+}
+
+void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)  
+{
+    enum biomes random_biome = (enum biomes) (rand() % 3);
     chunk->biome = random_biome;
 
-    /*switch (random_biome)
+    switch (random_biome)
     {
         case BIOME_FOREST: create_biome_forest(chunk); break;
         case BIOME_DESERT: create_biome_desert(chunk); break;
-        case BIOME_SWEET_TREE: create_biome_sweet_tree(chunk); break;
-        case BIOME_LAKE: create_biome_lake(chunk); break;
-    }*/
+        case BIOME_PLAINS: create_biome_plains(chunk); break;
+    }
 }
 
 char load_chunk(int x, int y)

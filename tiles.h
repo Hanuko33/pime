@@ -23,9 +23,8 @@ enum  game_tiles
 enum  biomes
 {
     BIOME_DESERT, // yellow
-    BIOME_FOREST, //  green
-    BIOME_SWEET_TREE,//brown
-    BIOME_LAKE //blue
+    BIOME_FOREST, // green with trees
+    BIOME_PLAINS, // green
 };
 
 

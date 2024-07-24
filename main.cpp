@@ -565,12 +565,8 @@ void draw()
                     case BIOME_FOREST:
                         pixels[y * WORLD_SIZE + x] = 0xff00ff00;
                         break;
-                    case BIOME_SWEET_TREE:
-                        pixels[y * WORLD_SIZE + x] = 0xff79510a;
-                        break;
-                    case BIOME_LAKE:
-                        pixels[y * WORLD_SIZE + x] = 0xff0000ff;
-                        break;
+                    case BIOME_PLAINS:
+                        pixels[y * WORLD_SIZE + x] = 0xff22ff22;
                 }
             }
             else
@@ -596,11 +592,8 @@ void draw()
         case BIOME_FOREST:
             sprintf(text, "biome: forest");
             break;
-        case BIOME_SWEET_TREE:
-            sprintf(text, "biome: sweet forest");
-            break;
-        case BIOME_LAKE:
-            sprintf(text, "biome: lake");
+        case BIOME_PLAINS:
+            sprintf(text, "biome: plain");
             break;
     }
    
