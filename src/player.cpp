@@ -1,5 +1,6 @@
 #include "player.h"
 
+#include <cstdio>
 #include <godot_cpp/classes/input.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/multiplayer_api.hpp>
@@ -13,6 +14,7 @@
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/viewport.hpp>
 #include <godot_cpp/classes/progress_bar.hpp>
+#include <godot_cpp/classes/control.hpp>
 
 #include "status_line.h"
 
@@ -55,12 +57,8 @@ PlayerCharacter::PlayerCharacter() {
     total_pitch = 0;
     mouse_sensitivity = 1;
 
-	energy=250;
 	back_x=0;
 	back_y=0;
-    health=1000;
-    hunger=50;
-    thirst=50;
     map_x = WORLD_CENTER;
     map_y = WORLD_CENTER;
     inventory = new InvList("inventory");
@@ -89,7 +87,7 @@ void PlayerCharacter::_ready() {
 
        if (!status_line_node) {
            UtilityFunctions::print("playercharacter: setting status line node");
-           status_line_node = get_node<LineEdit>("/root/Node3D/Player/UI/StatusLine");
+           status_line_node = get_node<LineEdit>("UI/StatusLine");
           }
     }
 }
@@ -98,14 +96,34 @@ void PlayerCharacter::_process(double delta) {
     if (get_multiplayer()->is_server()) {
          if (!Engine::get_singleton()->is_editor_hint()) {
 
-            move_direction = input_sync->move_direction;
+            move_direction = input_sync->move_direction.normalized();
+            Vector3 input = Vector3(move_direction.x, 0, move_direction.y).rotated(Vector3(0, 1, 0), get_rotation().y);
 
             Vector3 v = get_velocity();
-            v = Vector3(move_direction.x, 0, move_direction.y);
-            v.rotate(Vector3(0, 1, 0), get_rotation().y);
-            v.normalize();
-            v *= speed;
+            if (is_on_floor())
+            {
+                if (!move_direction.is_zero_approx())
+                {
+                    v.x = input.x * 5;
+                    v.z = input.z * 5;
+                    printf("RUCH\n");
+                }
+                else
+                {
+                    v.x = Math::lerp(v.x, 0, (float)delta * 7);
+                    v.z = Math::lerp(v.z, 0, (float)delta * 7);
+                    printf("STANIE\n");
+                }
+            }   
+            else
+            {
+                v.x = Math::lerp(v.x, input.x * 5, (float)delta * 4);
+                v.z = Math::lerp(v.z, input.z * 5, (float)delta * 4);
+                printf("POWIETRZE\n");
+            }
+            printf("vx = %f, vy = %f, mov_dirx = %f, mov_diry = %f", v.x, v.z, move_direction.x, move_direction.y);
             v.y = get_velocity().y;
+
             if (!is_on_floor()) {
                 v.y -= 10*delta;
             }
@@ -114,24 +132,9 @@ void PlayerCharacter::_process(double delta) {
             }
             set_velocity(v);
             move_and_slide();
-           /* Input* in = Input::get_singleton();
-            if (in->is_action_pressed("ui_accept")) {
-                UtilityFunctions::print("accept");
-            } else if (in->is_action_pressed("ui_left")) {
-                player_move(&player, -1, 0);
-            } else if (in->is_action_pressed("ui_right")) {
-                player_move(&player, 1, 0);
-            } else if (in->is_action_pressed("ui_up")) {
-                player_move(&player, 0, -1);
-            } else if (in->is_action_pressed("ui_down")) {
-                player_move(&player, 0, 1);
-            }*/
-
-           // UtilityFunctions::print(player.map_x, player.map_y);
-           // UtilityFunctions::print(get_position());
         }
-        get_node<ProgressBar>("UI/Stats/HungerBar")->set_value(hunger);
-        get_node<ProgressBar>("UI/Stats/ThirstBar")->set_value(thirst);
+        get_node<ProgressBar>("UI/Stats/HungerBar")->set_value(stats.hunger);
+        get_node<ProgressBar>("UI/Stats/ThirstBar")->set_value(stats.thirst);
 //        UtilityFunctions::print("hunger", hunger, "thirst", thirst);
     }
 }
@@ -156,14 +159,14 @@ void PlayerCharacter::_physics_process(double delta) {
     looking_norm = result["normal"];
 
     if (rand() % 100 < 2){
-        hunger++;
-        if (hunger > 100)
-            hunger = 100;
+        stats.hunger++;
+        if (stats.hunger > 100)
+            stats.hunger = 100;
     }
     if (rand() % 100 < 3) {
-        thirst++;
-        if (thirst > 100)
-            thirst = 100;
+        stats.thirst++;
+        if (stats.thirst > 100)
+            stats.thirst = 100;
     }
 }
 
@@ -275,20 +278,24 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             drop(&right_hand);
         }
     }
+	if (event->is_action_pressed("toggle_UI")) {
+		get_node<Control>("UI")->hide();
+
+	}
 }
 
 void PlayerCharacter::eat(Item *thing) {
-    if (Edible* stats = thing->element->get_edible()) {
-        if (!stats->poison) {
-            hunger -= stats->caloric;
-            thirst -= stats->irrigation;
-            if (hunger < 0)
-                hunger = 0;
-            if (thirst < 0)
-                thirst = 0;
+    if (Edible* s = thing->element->get_edible()) {
+        if (!s->poison) {
+            stats.hunger -= s->caloric;
+            stats.thirst -= s->irrigation;
+            if (stats.hunger < 0)
+                stats.hunger = 0;
+            if (stats.thirst < 0)
+                stats.thirst = 0;
         } else {
-            hunger += stats->caloric;
-            thirst += stats->irrigation;
+            stats.hunger += s->caloric;
+            stats.thirst += s->irrigation;
             UtilityFunctions::print("You vomit");
         }
         thing->queue_free();

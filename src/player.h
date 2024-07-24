@@ -8,6 +8,8 @@
 
 #include "player_input_sync.h"
 #include "alchemist/el_list.h"
+#include "alchemist/player_stats.h"
+
 #include "item.h"
 
 namespace godot {
@@ -61,14 +63,10 @@ public:
     char running;
     char sneaking;
     char going_right;
-    int energy;
-    int thirst;
-    int hunger;
-    int health;
     InvList * inventory; 
     InventoryElement * hotbar[10];
     int craftbar[10];
-
+    Player_stats stats;
     Item* left_hand;
     Item* right_hand;
 

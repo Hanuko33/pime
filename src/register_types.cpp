@@ -43,7 +43,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     //     DO NOT REMOVE THIS COMMENT TOO
     
 
-    sleep(3);
+    //sleep(3);
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {

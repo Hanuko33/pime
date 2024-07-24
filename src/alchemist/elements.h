@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <godot_cpp/variant/color.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
+#include <cstdlib>
+#include "names.h"
 
 extern bool fantasy_game;
 
@@ -11,7 +13,7 @@ class Edible
 {
     public:
     unsigned int irrigation;
-    unsigned int  poison;
+    unsigned int poison;
     unsigned int caloric;
 
     Edible();
@@ -41,17 +43,16 @@ enum Form
 extern const char * Form_name[];
 
 enum Class_id
-{
-    Class_Base=1,
-    Class_Element,
+{    
+    Class_Element=1,
     Class_Ingredient,
-    Class_Product
+    Class_Product,
+    Class_Plant,
 };
 
 class BaseElement
 {
-    public:
-    static const Class_id c_id=Class_Base;
+    public:    
         const char * name;
         int id; //texture id
         unsigned int density;
@@ -65,22 +66,27 @@ class BaseElement
         BaseElement(); 
         void init_real();
         void init_fantasy();
-        void show();
+        void show(bool details=true);
 };        
 
 class InventoryElement
 {
 	int x, y, z;
     public:
+        Class_id c_id;
         Form req_form;
         bool known;
         InventoryElement() { req_form = Form_none; known = true; }
-        virtual void show() {}
+        virtual void show(bool details=true) { }
+        virtual bool tick() { return false;}
         virtual Form get_form() {return Form_none; }
         virtual const char * get_name() {return NULL; }
         virtual const char * get_form_name() { return NULL; }
         virtual int get_id() {return -1; }
-        virtual bool craft() { return false; }
+        virtual bool craft() { 
+            printf("missing craft function\n");
+            return false; 
+        }
         void set_posittion(int _x, int _y, int _z) { x=_x; y=_y; z=_z; }
         void get_posittion(int *_x, int *_y, int *_z) { *_x=x; *_y=y; *_z=z; }
         virtual Edible* get_edible() {return nullptr;}
@@ -91,8 +97,7 @@ class InventoryElement
 class Element : public InventoryElement
 {
     BaseElement * base;
-    public:
-    static const Class_id c_id=Class_Element;
+    public:      
         unsigned int sharpness;
         unsigned int smoothness;
         unsigned int mass; //density*volume
@@ -101,9 +106,9 @@ class Element : public InventoryElement
         unsigned int height;
         unsigned int volume; //lenght*width*height
     
-        void show();
+        void show(bool details=true);
 
-        Element(BaseElement *b);
+        Element(BaseElement *b);        
         Form get_form() {return base->form; }
         const char * get_name() {
             if (!fantasy_game) return base->name;
@@ -158,8 +163,7 @@ extern const char * food_name[];
 class Ingredient : public InventoryElement
 {
     const char * name;
-    public:
-    static const Class_id c_id=Class_Ingredient;
+    public:    
         int quality; //[0..100] slaby..najlepszy
         int resilience; // [0..100] wytrzymały..słaby
         int usage; // [0..100] łatwy..trudny
@@ -173,15 +177,14 @@ class Ingredient : public InventoryElement
         int get_id() {return id; }
         bool craft();
         Ingredient(InventoryElement * from, Ingredient_id i, Form f);
-        void show();
+        void show(bool details=true);
 };
 
 class Product : public InventoryElement
 {
     const char * name;
     void init(Product_id i, int c, Form f);
-    public:
-    static const Class_id c_id=Class_Product;
+    public:    
         int quality; //[0..100] slaby..najlepszy
         int resilience; // [0..100] wytrzymały..słaby
         int usage; // [0..100] łatwy..trudny
@@ -201,27 +204,98 @@ class Product : public InventoryElement
        
         bool craft();
         virtual bool check_ing() { return false; }
-        void show();
+        void show(bool details=true);
 
 
 };
-class Being : public Element
+
+class Being : public InventoryElement
 {
     public:
+        const char * name;
         unsigned int age;
         unsigned int max_age;
-        void grow() {}
+        bool alive;
+        virtual bool grow() {
+            if (!alive) return false;
+            age++;
+            if (age > max_age) alive=false;
+            return alive;
+        }
+        Being()
+        {
+            alive=true;
+            age=0;
+            max_age=1 + rand() % 36000; //100 years
+            name=create_name(5);
+        }
+        bool is_alive() { return alive; }
+        const char * get_name() {return name; }
+        void show(bool details=true) {
+           printf("Being %s age=%d/%d alive=%d\n", name, age, max_age, alive);
+        }
+        bool tick() {
+            return grow();
+        }
+};
+
+enum Plant_phase
+{
+    Plant_seed=0,
+    Plant_seedling,
+    Plant_growing,
+    Plant_flowers,
+    Plant_fruits
+};
+
+extern const char * Plant_phase_name[];
+
+class Plant: public Being
+{    
+    Edible * edible;
+    unsigned int seedling_time;
+    unsigned int growing_time;
+    unsigned int flowers_time;
+    unsigned int fruits_time;
+public:
+    bool planted;
+    Plant_phase phase;
+    Plant();
+    void show(bool details=true) {
+       printf("Plant -> %d name=%s ", c_id, name);
+       Being::show(details);
+       if (details) {
+              printf("phase=%s planted=%d times=%d/%d/%d/%d\n",
+                     Plant_phase_name[phase], planted, seedling_time, growing_time, flowers_time, fruits_time);
+              edible->show();
+       }
+    }
+    void sow() {
+        planted=1;
+    }
+    void change_phase(Plant_phase p)
+    {
+        if (phase != p){
+            printf("%s growing: %s -> %s\n", name, Plant_phase_name[phase], Plant_phase_name[p]);
+        }
+        phase=p;
+    }
+    bool grow();
+
 };
 #define BASE_ELEMENTS 50
 #define SOLID_ELEMENTS 4
 #define FOOD_ELEMENTS 2
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
-#define ING_ELEMENTS 2
-#define PROD_ELEMENTS 1
+
+//#define ING_ELEMENTS 2
+//#define PROD_ELEMENTS 1
 
 extern BaseElement *base_elements[BASE_ELEMENTS];
 
 void init_elements();
+void show_base_elements(bool details);
+
 #endif
 

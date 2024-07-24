@@ -1,2 +1,2 @@
-char * get_name(int s);
+char * create_name(int s);
 

@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://cwvg72307ycu7"]
+[gd_scene load_steps=6 format=3 uid="uid://cwvg72307ycu7"]
 
 [ext_resource type="PackedScene" uid="uid://drmuk8ut21aja" path="res://player.tscn" id="1_i01nf"]
 [ext_resource type="Script" path="res://camera.gd" id="1_vpny3"]
-[ext_resource type="PackedScene" uid="uid://baxite7eykf50" path="res://rock.tscn" id="2_f1yfg"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i5q0q"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -19,39 +18,26 @@ glow_enabled = true
 
 [node name="Node3D" type="Node3D"]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_2b5nk")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
-shadow_enabled = true
-
-[node name="Terrain" type="Terrain" parent="."]
-
-[node name="Player" parent="." instance=ExtResource("1_i01nf")]
-mouse_sen = 0.2
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.863, 60, 2.925)
-
 [node name="FreeLookCamera" type="Camera3D" parent="."]
 transform = Transform3D(-0.731359, 0.504459, -0.45895, 0, 0.672954, 0.739684, 0.681993, 0.540974, -0.492171, -9.66489, 91.5309, -12.6951)
 script = ExtResource("1_vpny3")
 
-[node name="Item" parent="." instance=ExtResource("2_f1yfg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 16, 10)
+[node name="Player" parent="." instance=ExtResource("1_i01nf")]
+mouse_sen = 0.2
+transform = Transform3D(1, -2.98023e-08, 1.49012e-08, 0, 1, 0, -2.98023e-08, 0, 1, 1.863, 60, 2.925)
 
-[node name="Item2" parent="." instance=ExtResource("2_f1yfg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 16, 9)
+[node name="Terrain" type="Terrain" parent="."]
+transform = Transform3D(1, -2.98023e-08, 1.49012e-08, 0, 1, 0, -2.98023e-08, 0, 1, 0, 0, 9.53674e-07)
 
-[node name="ColorRect" type="ColorRect" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2.5
-offset_top = -2.5
-offset_right = 2.5
-offset_bottom = 2.5
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866024, -0.433016, 0.250001, 0, 0.499998, 0.866026, -0.500003, 0.749999, -0.43301, 0, 0, 9.53674e-07)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2b5nk")
+
+[node name="Item" type="Item" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+
+[node name="Item2" type="Item" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 50, 0)

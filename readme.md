@@ -1,5 +1,5 @@
 # Game\_gui 
-This is a game made with Godot
+This is a game made with Godot. On main branch there is SDL version.
 
 ## Build instructions
 
