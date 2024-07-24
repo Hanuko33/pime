@@ -10,7 +10,7 @@ SDL_Texture * items_textures[SOLID_ELEMENTS+GAS_ELEMENTS+LIQUID_ELEMENTS];
 SDL_Texture * food_textures[FOOD_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
-SDL_Texture * being_textures[1];
+SDL_Texture * being_textures[3];
 
 SDL_Texture* load_texture(const char * texture_name)
 {
@@ -84,6 +84,8 @@ void load_textures()
 
     add_items_texture(ID_STONE, "textures/items/solid/stone.png");
     add_items_texture(ID_LOG, "textures/items/solid/log.png");
+    add_items_texture(ID_LOG1, "textures/items/solid/log1.png");
+    add_items_texture(ID_LOG2, "textures/items/solid/log2.png");
     add_items_texture(ID_SAND, "textures/items/solid/sand.png");
     add_items_texture(ID_STICK, "textures/items/solid/stick.png");
     add_items_texture(ID_WATER, "textures/items/liquid/water.png");
@@ -103,5 +105,7 @@ void load_textures()
     add_prod_texture(PROD_AXE, "textures/items/products/axe.png");
     add_prod_texture(PROD_KNIFE, "textures/items/products/knife.png");
 
-    being_textures[being_tree] = load_texture("textures/objects/tree/tree.png");
+    being_textures[BEINGID_tree] = load_texture("textures/objects/tree/tree.png");
+    being_textures[BEINGID_tree1] = load_texture("textures/objects/tree/tree1.png");
+    being_textures[BEINGID_tree2] = load_texture("textures/objects/tree/tree2.png");
 }

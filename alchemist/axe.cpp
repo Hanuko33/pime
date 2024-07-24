@@ -19,15 +19,35 @@ void Axe::use(Player * player)
             b->get_posittion(&x, &y);
             if (player->x == x && player->y == y)
             {
-                if (b->type == being_tree)
+                if (b->type == BEINGID_tree || b->type == BEINGID_tree1 || b->type == BEINGID_tree2)
                 {
+                    
+                    switch (b->type) {
+                        case BEINGID_tree:
+                        {
+                            Element * el = new Element(base_elements[ID_LOG]);
+                            el->set_posittion(x, y);
+                            set_item_at_ppos(el, player);
+                            break;
+                        }
+                        case BEINGID_tree1:
+                        {
+                            Element * el = new Element(base_elements[ID_LOG1]);
+                            el->set_posittion(x, y);
+                            set_item_at_ppos(el, player);
+                            break;
+                        }
+                        case BEINGID_tree2:
+                        {
+                            Element * el = new Element(base_elements[ID_LOG2]);
+                            el->set_posittion(x, y);
+                            set_item_at_ppos(el, player);
+                            break;
+                        }
+                    }
                     free(b);
                     b=NULL;
                     world_table[player->map_y][player->map_x]->beings[i]=NULL;
-
-                    Element * el = new Element(base_elements[ID_LOG]);
-                    el->set_posittion(x, y);
-                    set_item_at_ppos(el, player);
                 }
                 // TODO    break when used too much
             }

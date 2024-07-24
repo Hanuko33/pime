@@ -65,7 +65,18 @@ void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)
         int y = rand() % CHUNK_SIZE;
 
         b->set_posittion(x, y);
-        b->type=being_tree;
+        switch (rand() % 3) {
+            case 0:
+                b->type=BEINGID_tree;
+                break;
+            case 1:
+                b->type=BEINGID_tree1;
+                break;
+            case 2:
+                b->type=BEINGID_tree2;
+                break;
+        
+        }
 
         chunk->beings[i]=b;
     }

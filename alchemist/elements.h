@@ -57,6 +57,8 @@ enum Item_id
 {
     ID_STONE,
     ID_LOG,
+    ID_LOG1,
+    ID_LOG2,
     ID_SAND,
     ID_STICK,
     ID_WATER,
@@ -218,7 +220,9 @@ class Product : public InventoryElement
 
 enum being_types
 {
-    being_tree
+    BEINGID_tree,
+    BEINGID_tree1,
+    BEINGID_tree2
 };
 
 class Being : public InventoryElement
@@ -300,12 +304,12 @@ public:
 
 };
 
-#define SOLID_ELEMENTS 4
+#define SOLID_ELEMENTS 6
 #define FOOD_ELEMENTS 3
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
 
-#define BASE_ELEMENTS 9
+#define BASE_ELEMENTS 11
 
 #define ING_ELEMENTS 4
 #define PROD_ELEMENTS 2
