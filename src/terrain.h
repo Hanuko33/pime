@@ -33,7 +33,7 @@ public:
     ChunkRenderer* chunks[WORLD_SIZE][WORLD_SIZE];
 
     void mine(Vector3 pos, Vector3 norm);
-    void place(Vector3 pos, Vector3 norm);
+    bool place(Vector3 pos, Vector3 norm, BaseElement* element);
 
     // game_gui properties
     struct OpenSimplex2F_context *simplex_context;

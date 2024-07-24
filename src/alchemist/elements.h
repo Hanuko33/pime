@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <godot_cpp/variant/color.hpp>
+#include <godot_cpp/classes/standard_material3d.hpp>
 
 extern bool fantasy_game;
 
@@ -59,6 +60,7 @@ class BaseElement
         Form form;
         Solid *solid;
         godot::Color color;
+        godot::Ref<godot::Material> godot_material;
         
         BaseElement(); 
         void init_real();
@@ -81,6 +83,8 @@ class InventoryElement
         virtual bool craft() { return false; }
         void set_posittion(int _x, int _y, int _z) { x=_x; y=_y; z=_z; }
         void get_posittion(int *_x, int *_y, int *_z) { *_x=x; *_y=y; *_z=z; }
+        virtual Edible* get_edible() {return nullptr;}
+        virtual BaseElement* get_base() {return nullptr;}
 };
 
 
@@ -107,6 +111,9 @@ class Element : public InventoryElement
         }
         const char * get_form_name() { return Form_name[base->form]; }
         int get_id() {return base->id; }
+
+        virtual Edible* get_edible() {return base->edible;}
+        virtual BaseElement* get_base() {return base;}
 };
 
 enum Item_id

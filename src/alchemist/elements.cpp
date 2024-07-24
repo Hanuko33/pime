@@ -114,6 +114,9 @@ BaseElement::BaseElement()
     else
         init_real();
     color = godot::Color((rand()%256)/255.0, (rand()%256)/255.0, (rand()%256)/255.0);
+    godot::Ref<godot::StandardMaterial3D> mat = memnew(godot::StandardMaterial3D);
+    mat->set_albedo(color);
+    godot_material = mat;
 }
 
 void BaseElement::init_fantasy()

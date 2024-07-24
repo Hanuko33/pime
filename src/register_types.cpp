@@ -9,6 +9,7 @@
 #include "chunk_renderer.h"
 #include "item.h"
 #include "ftree.h"
+#include "bush.h"
 // includes go here
 // DO NOT REMOVE THIS COMMENT
 
@@ -17,6 +18,7 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/godot.hpp>
+#include <unistd.h>
 
 using namespace godot;
 
@@ -36,8 +38,12 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     ClassDB::register_class<ChunkRenderer>();
     ClassDB::register_class<Item>();
     ClassDB::register_class<FTree>();
+    ClassDB::register_class<Bush>();
     //     ClassDB::register_class<class_name>()
     //     DO NOT REMOVE THIS COMMENT TOO
+    
+
+    sleep(3);
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {

@@ -38,6 +38,8 @@ public:
     Vector3 looking_pos;
     Vector3 looking_norm;
 
+    void eat(Item* thing);
+
     float speed;
     float total_pitch;
     void set_speed(float p_speed);

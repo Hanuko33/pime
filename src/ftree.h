@@ -1,13 +1,14 @@
 #ifndef FTREE_H
 #define FTREE_H
-#include <godot_cpp/classes/mesh_instance3d.hpp>
+#include <godot_cpp/classes/static_body3d.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/classes/input_event.hpp>
 #include "stozek.h"
 
 namespace godot {
-class FTree : public Node3D
+class FTree : public StaticBody3D
 {
-    GDCLASS(FTree, Node3D);
+    GDCLASS(FTree, StaticBody3D);
 public:
     FTree();
     int child;

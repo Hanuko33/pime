@@ -4,6 +4,7 @@
 #include "chunk_renderer.h"
 #include "notifier.h"
 #include "player.h"
+#include "bush.h"
 
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/rendering_device.hpp>
@@ -76,7 +77,9 @@ void Terrain::_ready() {
             printf("%d\n", y);
         }
 
-        FTree * tree= memnew(FTree);
+        BaseElement* el = new BaseElement;
+        el->edible = new Edible;
+        Bush * tree= memnew(Bush(el));
         Node3D *node=get_node<Node3D>("/root/Node3D");
         int h=height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
         tree->set_position(Vector3(0, h-0.7, 0));
@@ -186,6 +189,12 @@ void Terrain::mine(Vector3 in_pos, Vector3 in_norm) {
     int chunk_x = pos.x/CHUNK_SIZE;
     int z_pos = pos.z%CHUNK_SIZE;
     int x_pos = pos.x%CHUNK_SIZE;
+
+    if (world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile) {
+    Item* item = memnew(Item(world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile, Vector3(0.5, 0.5, 0.5)));
+    add_child(item);
+    item->set_position(in_pos);
+
     world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = nullptr;
     chunk->render_self();
     if (z_pos == 0 && chunks[chunk_z-1][chunk_x]) {
@@ -199,9 +208,14 @@ void Terrain::mine(Vector3 in_pos, Vector3 in_norm) {
     }
 
     UtilityFunctions::print(chunk->chunk_x, chunk->chunk_z);
+    }
+    else
+    {
+        UtilityFunctions::print("TRYING TO MINE AIR");
+    }
 }
 
-void Terrain::place(Vector3 in_pos, Vector3 in_norm) {
+bool Terrain::place(Vector3 in_pos, Vector3 in_norm, BaseElement* element) {
     Vector3 posf = in_pos;
     Vector3 normal = in_norm;
     posf += normal*0.5;
@@ -214,19 +228,24 @@ void Terrain::place(Vector3 in_pos, Vector3 in_norm) {
     ChunkRenderer* chunk = chunks[chunk_z][chunk_x];
     int z_pos = pos.z%CHUNK_SIZE;
     int x_pos = pos.x%CHUNK_SIZE;
-    world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = base_elements[0];
-    chunk->render_self();
-    if (z_pos == 0 && chunks[chunk_z-1][chunk_x]) {
-        chunks[chunk_z-1][chunk_x]->render_self();
-    }
-    if (x_pos == 0 && chunks[chunk_z][chunk_x-1]) {
-        chunks[chunk_z][chunk_x-1]->render_self();
-    } 
-    if (x_pos == 0 && z_pos == 0 && chunks[chunk_z-1][chunk_x-1]) {
-        chunks[chunk_z-1][chunk_x-1]->render_self();
-    }
 
-    UtilityFunctions::print("chunk x=", chunk->chunk_x, " chunk z=",chunk->chunk_z);
+    if (world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile == nullptr) {
+        world_table[chunk->chunk_z][chunk->chunk_x]->table[z_pos][pos.y][x_pos].tile = element;
+        chunk->render_self();
+        if (z_pos == 0 && chunks[chunk_z-1][chunk_x]) {
+            chunks[chunk_z-1][chunk_x]->render_self();
+        }
+        if (x_pos == 0 && chunks[chunk_z][chunk_x-1]) {
+            chunks[chunk_z][chunk_x-1]->render_self();
+        } 
+        if (x_pos == 0 && z_pos == 0 && chunks[chunk_z-1][chunk_x-1]) {
+            chunks[chunk_z-1][chunk_x-1]->render_self();
+        }
+
+        UtilityFunctions::print("chunk x=", chunk->chunk_x, " chunk z=",chunk->chunk_z);
+        return true;
+    }
+    return false;
 }
 
 void Terrain::generator()

@@ -4,12 +4,15 @@
 #include <godot_cpp/classes/input_event_key.hpp>
 #include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/cylinder_mesh.hpp>
+#include <godot_cpp/classes/static_body3d.hpp>
+#include <godot_cpp/classes/collision_shape3d.hpp>
+#include <godot_cpp/classes/box_shape3d.hpp>
 
 using namespace godot;
 
 FTree::FTree()
 {
-    child=0;
+    child=1;
 }
 
 void FTree::_bind_methods() {
@@ -23,6 +26,12 @@ void FTree::_ready()
     }
     else
     {
+        Ref<BoxShape3D> box = memnew(BoxShape3D);
+        box->set_size(Vector3(1, 1, 1));
+        CollisionShape3D* shape = memnew(CollisionShape3D);
+        add_child(shape);
+        shape->set_shape(box);
+
         set_process_mode(PROCESS_MODE_INHERIT);
         Stozek *s=memnew(Stozek(0, 0, 0, 0, 0, 0, Color(60.0/255, 50.0/255, 0,0)));
         add_child(s);

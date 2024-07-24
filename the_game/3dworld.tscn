@@ -30,20 +30,7 @@ shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("1_i01nf")]
 mouse_sen = 0.2
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 20, 11)
-
-[node name="UI" type="Control" parent="Player"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="StatusLine" type="LineEdit" parent="Player/UI"]
-layout_mode = 0
-offset_right = 67.0625
-offset_bottom = 31.0
-text = "status line"
-expand_to_text_length = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.863, 60, 2.925)
 
 [node name="FreeLookCamera" type="Camera3D" parent="."]
 transform = Transform3D(-0.731359, 0.504459, -0.45895, 0, 0.672954, 0.739684, 0.681993, 0.540974, -0.492171, -9.66489, 91.5309, -12.6951)

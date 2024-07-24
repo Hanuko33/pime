@@ -10,6 +10,7 @@
 #include "godot_cpp/classes/concave_polygon_shape3d.hpp"
 
 #include "terrain.h"
+#include "tiles.h"
 
 #pragma optimize false
 using namespace godot;
@@ -297,20 +298,20 @@ void ChunkRenderer::marching_cube(CubeCorner (&corners)[8], int (&weights)[8], P
         //colors.push_back(Color(corners[common][3]*20, 0, 0));
         //colors.push_back(Color(corners[common][3]*20, 0, 0));
         //colors.push_back(Color(corners[common][3]*20, 0, 0));
-        int x, y, z, cx, cz;
-        if (corners[color_corner].x < 16) {
+        volatile int x, y, z, cx, cz;
+        if (corners[color_corner].x < CHUNK_SIZE) {
             x = corners[color_corner].x;
             cx = chunk_x;
         } else {
             x = 0;
             cx =  chunk_x+1;
         }
-        if (corners[color_corner].y < 16) {
+        if (corners[color_corner].y < CHUNK_SIZE) {
             y = corners[color_corner].y;
         } else {
             y = 0;
-        }       
-        if (corners[color_corner].z < 16) {
+        }
+        if (corners[color_corner].z < CHUNK_SIZE) {
             z = corners[color_corner].z;
             cz = chunk_z;
         } else {
@@ -318,6 +319,7 @@ void ChunkRenderer::marching_cube(CubeCorner (&corners)[8], int (&weights)[8], P
             cz =  chunk_z+1;
         }
         BaseElement* el = terrain->world_table[cz][cx]->table[z][y][x].tile;
+
         //printf("id: %d %d %d %d %d\n", id, color_corner, corners[color_corner].z, corners[color_corner].y, corners[color_corner].x);
         Color color = el->color;
         colors.push_back(color);

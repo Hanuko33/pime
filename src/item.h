@@ -16,6 +16,8 @@ class Item : public RigidBody3D {
 
 public:
     Item();
+    Item(BaseElement* base_element);
+    Item(BaseElement* base_element, Vector3 size);
     ~Item();
 
     InventoryElement* element;

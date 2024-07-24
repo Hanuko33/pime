@@ -12,6 +12,7 @@
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/viewport.hpp>
+#include <godot_cpp/classes/progress_bar.hpp>
 
 #include "status_line.h"
 
@@ -23,6 +24,7 @@
 #include "player_input_sync.h"
 #include "alchemist/axe_blade.h"
 #include "status_line.h"
+#include "bush.h"
 
 using namespace godot;
 
@@ -128,6 +130,9 @@ void PlayerCharacter::_process(double delta) {
            // UtilityFunctions::print(player.map_x, player.map_y);
            // UtilityFunctions::print(get_position());
         }
+        get_node<ProgressBar>("UI/Stats/HungerBar")->set_value(hunger);
+        get_node<ProgressBar>("UI/Stats/ThirstBar")->set_value(thirst);
+//        UtilityFunctions::print("hunger", hunger, "thirst", thirst);
     }
 }
 
@@ -149,7 +154,17 @@ void PlayerCharacter::_physics_process(double delta) {
     looking_at = Object::cast_to<Node3D>(result["collider"]);
     looking_pos = result["position"];
     looking_norm = result["normal"];
-    
+
+    if (rand() % 100 < 2){
+        hunger++;
+        if (hunger > 100)
+            hunger = 100;
+    }
+    if (rand() % 100 < 3) {
+        thirst++;
+        if (thirst > 100)
+            thirst = 100;
+    }
 }
 
 void PlayerCharacter::_input(const Ref<InputEvent> &event) {
@@ -239,12 +254,47 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
                 pick_up(item, &left_hand);
             }
             Terrain* terrain = Object::cast_to<Terrain>(looking_at->get_parent()->get_parent());
-            if (terrain)
-                terrain->place(looking_pos, looking_norm);
+            if (terrain && right_hand)
+            {
+                terrain->place(looking_pos, looking_norm, right_hand->element->get_base());
+                right_hand->queue_free();
+                right_hand = nullptr;
+            }
+            else if (Bush* bush = Object::cast_to<Bush>(looking_at)) {
+                if (!right_hand)
+                    pick_up(bush->collect(), &right_hand);
+            }
         }
         else {
             UtilityFunctions::print("not item");
         }
+    }
+    if (event->is_action_pressed("eat")) {
+        if (right_hand) {
+            eat(right_hand);
+            drop(&right_hand);
+        }
+    }
+}
+
+void PlayerCharacter::eat(Item *thing) {
+    if (Edible* stats = thing->element->get_edible()) {
+        if (!stats->poison) {
+            hunger -= stats->caloric;
+            thirst -= stats->irrigation;
+            if (hunger < 0)
+                hunger = 0;
+            if (thirst < 0)
+                thirst = 0;
+        } else {
+            hunger += stats->caloric;
+            thirst += stats->irrigation;
+            UtilityFunctions::print("You vomit");
+        }
+        thing->queue_free();
+    }
+    else {
+        UtilityFunctions::print("Yuck, this can't be eaten");
     }
 }
 
