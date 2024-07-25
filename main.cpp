@@ -208,7 +208,6 @@ bool plant_with_seed(InventoryElement * el)
             return true;
         }
     }
-
     if (el->get_id() == ID_STRAWBERRY_SEEDS)
     {
         bool able=false;
@@ -229,7 +228,7 @@ bool plant_with_seed(InventoryElement * el)
                 sprintf(status_line, "Placing %s", p->name);
                 status_code=1;
                 able=true;
-                return true;
+                break;
             }
         }
         
