@@ -30,6 +30,7 @@ enum menu_actions
     MENU_GET_AXE,
     MENU_GET_KNIFE,
     MENU_GET_RANDOM_ELEMENT,
+    MENU_GET_RANDOM_EDIBLE,
 //must be the last     
     MENU_ITEM=0x1000,
 };

@@ -209,6 +209,7 @@ void create_menus()
     menu_dev->add("axe", MENU_GET_AXE);
     menu_dev->add("knife", MENU_GET_KNIFE);
     menu_dev->add("random element", MENU_GET_RANDOM_ELEMENT);
+    menu_dev->add("random edible", MENU_GET_RANDOM_EDIBLE);
     menu_dev->add("food/water +100", MENU_REGAIN);
 }
                 
@@ -371,6 +372,13 @@ int interact(enum menu_actions a)
         case MENU_GET_RANDOM_ELEMENT:
         {
             Element * el=new Element(base_elements[rand() % BASE_ELEMENTS]);
+            player.inventory->add(el);
+            player.hotbar[active_hotbar]=el;
+            break;
+        }
+        case MENU_GET_RANDOM_EDIBLE:
+        {
+            Element * el=new Element(base_elements[rand() % FOOD_ELEMENTS + NOT_FOOD_ELEMENTS]);
             player.inventory->add(el);
             player.hotbar[active_hotbar]=el;
             break;

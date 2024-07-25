@@ -234,6 +234,13 @@ void player_interact(int key)
                 if (b)
                     b->show();
             }
+            Plant ** p_at_ppos = get_plant_at_ppos(&player);
+            if (p_at_ppos)
+            {
+                Plant * p = *p_at_ppos;
+                if (p)
+                    p->show();
+            }
         }
         break;
         
@@ -303,10 +310,48 @@ void player_interact(int key)
 
         case SDLK_RETURN:
         case SDLK_e:
-            use_tile();
             InventoryElement * el = player.hotbar[active_hotbar];
             if (el)
-                el->use(&player);
+            {
+                if (el->use(&player))
+                {
+                    break;
+                }
+
+                if (el->get_id() == ID_STRAWBERRY_SEEDS)
+                {
+                    bool able=false;
+                    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                        if (!world_table[player.map_y][player.map_x]->plants[i])
+                        {
+                            Plant *p = new Plant();
+
+                            p->type = PLANTID_strawberry;
+
+                            p->set_posittion(player.x, player.y);
+                            
+                            p->phase=Plant_seed;
+
+                            world_table[player.map_y][player.map_x]->plants[i]=p;
+
+                            sprintf(status_line, "Placing %s", p->name);
+                            status_code=1;
+                            able=true;
+                            break;
+                        }
+                    }
+                    
+                    if (able)
+                    {
+                        player.inventory->remove(el);
+                        player.hotbar[active_hotbar]=NULL;
+                        free(el);
+                        el=NULL;
+                        break;
+                    }
+                }
+            }
+            use_tile();
             break;
     }
 }
@@ -399,6 +444,15 @@ void update()
             b->tick();
         }
     }
+
+    for (int i = 0; i<CHUNK_SIZE*CHUNK_SIZE; i++) {
+        Plant * p = world_table[player.map_y][player.map_x]->plants[i];
+
+        if (p)
+        {
+            p->tick();
+        }
+    }
 }
 
 void draw()
@@ -452,6 +506,19 @@ void draw()
             b->get_posittion(&x, &y);
             SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             SDL_RenderCopy(renderer, b->get_texture(), NULL, &img_rect);
+        }
+    }
+    // render plants
+    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++)
+    {
+        Plant * p = world_table[player.map_y][player.map_x]->plants[i];
+        if (p)
+        {
+            int x,y;
+            p->get_posittion(&x, &y);
+
+            SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_RenderCopy(renderer, p->get_texture(), NULL, &img_rect);
         }
     }
 
@@ -593,7 +660,7 @@ void draw()
             sprintf(text, "biome: forest");
             break;
         case BIOME_PLAINS:
-            sprintf(text, "biome: plain");
+            sprintf(text, "biome: plains");
             break;
     }
    

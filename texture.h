@@ -19,11 +19,11 @@ struct textures
 };
 
 extern SDL_Texture * tiles_textures[TILE_MAX_NUM];
-extern SDL_Texture * items_textures[SOLID_ELEMENTS+LIQUID_ELEMENTS+GAS_ELEMENTS];
-extern SDL_Texture * food_textures[FOOD_ELEMENTS];
+extern SDL_Texture * items_textures[BASE_ELEMENTS];
 extern SDL_Texture * ing_textures[ING_ELEMENTS];
 extern SDL_Texture * prod_textures[PROD_ELEMENTS];
 extern SDL_Texture * being_textures[3];
+extern SDL_Texture * plant_textures[1];
 extern SDL_Texture * up_mask;
 extern SDL_Texture * down_mask;
 extern struct textures Texture;

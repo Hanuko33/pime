@@ -8,7 +8,7 @@ class Axe : public Product
     public:
     Axe(InventoryElement *el1, InventoryElement *el2);
     bool check_ing();
-    virtual void use(Player * player);
+    virtual bool use(Player * player);
 };
 
 #endif

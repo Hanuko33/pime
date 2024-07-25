@@ -9,7 +9,7 @@ Axe::Axe(InventoryElement *el1, InventoryElement *el2): Product(el1, el2, PROD_A
 
 }
 
-void Axe::use(Player * player)
+bool Axe::use(Player * player)
 {
     for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
         Being * b = world_table[player->map_y][player->map_x]->beings[i];
@@ -48,11 +48,13 @@ void Axe::use(Player * player)
                     free(b);
                     b=NULL;
                     world_table[player->map_y][player->map_x]->beings[i]=NULL;
+                    return true;
                 }
                 // TODO    break when used too much
             }
         }
     }
+    return false;
 }
 
 bool Axe::check_ing()

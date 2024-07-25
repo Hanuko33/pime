@@ -18,6 +18,9 @@ enum game_tiles get_tile_at_ppos(Player *player);
 Being ** get_being_at_ppos(Player *player);
 Being ** get_being_at(int chunk_x, int chunk_y, int x, int y);
 
+Plant **get_plant_at(int chunk_x, int chunk_y, int x, int y);
+Plant **get_plant_at_ppos(Player * player);
+
 InventoryElement ** get_item_at_ppos(Player *player);
 InventoryElement ** get_item_at(int chunk_x, int chunk_y, int x, int y);
 

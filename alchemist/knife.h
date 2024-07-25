@@ -7,6 +7,7 @@ class Knife : public Product
 {
     public:
     Knife(InventoryElement *el1, InventoryElement *el2);
+    virtual bool use(Player * player);
     bool check_ing();
 };
 #endif

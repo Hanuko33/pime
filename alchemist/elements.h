@@ -55,21 +55,30 @@ enum Class_id
 
 enum Item_id
 {
+    // SOLID START HERE
     ID_STONE,
     ID_LOG,
     ID_LOG1,
     ID_LOG2,
     ID_SAND,
     ID_STICK,
+    ID_STRAWBERRY_SEEDS,
+    // LIQUID START HERE
     ID_WATER,
-    ID_HELIUM
+    // GAS START HERE
+    ID_HELIUM,
+    // FOOD START HERE
+    ID_PUMPKIN,
+    ID_WATERMELON,
+    ID_CHERRY,
+    ID_STRAWBERRY
 };
 
 class BaseElement
 {
     public:
         const char * name;
-        int id; // texture id + what is like
+        int id; // texture id 
         unsigned int density;
         Edible *edible;
         Form form;
@@ -87,7 +96,7 @@ class InventoryElement
         Form req_form;
         bool known;
         InventoryElement() { req_form = Form_none; known = true; }
-        virtual void use(Player * player) { }
+        virtual bool use(Player * player) { return false; }
         virtual void show(bool details=true) { }
         virtual bool tick() { return false;}
         virtual Form get_form() {return Form_none; }
@@ -135,12 +144,6 @@ class Element : public InventoryElement
 #ifndef STUB_SDL     
         SDL_Texture * get_texture();
 #endif
-};
-enum Food_id
-{
-    ID_PUMPKIN,
-    ID_WATERMELON,
-    ID_CHERRY
 };
 
 enum Ingredient_id
@@ -225,6 +228,11 @@ enum being_types
     BEINGID_tree2
 };
 
+enum plant_types
+{
+    PLANTID_strawberry
+};
+
 class Being : public InventoryElement
 {
     public:
@@ -279,6 +287,10 @@ class Plant: public Being
     unsigned int fruits_time;
 public:
     bool planted;
+    enum plant_types type;
+#ifndef STUB_SDL
+        SDL_Texture * get_texture();
+#endif
     Plant_phase phase;
     Plant();
     void show(bool details=true) {
@@ -304,10 +316,12 @@ public:
 
 };
 
-#define SOLID_ELEMENTS 6
-#define FOOD_ELEMENTS 3
+#define SOLID_ELEMENTS 7
+#define FOOD_ELEMENTS 4
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
+
+#define NOT_FOOD_ELEMENTS (SOLID_ELEMENTS+LIQUID_ELEMENTS+GAS_ELEMENTS)
 
 #define BASE_ELEMENTS (SOLID_ELEMENTS+FOOD_ELEMENTS+LIQUID_ELEMENTS+GAS_ELEMENTS)
 

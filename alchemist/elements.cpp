@@ -120,35 +120,30 @@ BaseElement::BaseElement(int index)
     edible = NULL;
     id = index;
 
-    if (id < SOLID_ELEMENTS) { // generate solid
-            form = Form_solid;
-            solid = new Solid;
-            density = 50 + rand() % 2000;
-    } else {
-        if (id < SOLID_ELEMENTS+LIQUID_ELEMENTS) { // generate liquid
-            form = Form_liquid;
-            density = 500 + rand() % 500;
-        } 
-        else { // generate gas
-            form = Form_gas;
-            density = 1;
-        }
+    form = Form_solid;
+    solid = new Solid;
+    density = 50 + rand() % 2000;
+    if (id >= SOLID_ELEMENTS) { // generate liquid
+        form = Form_liquid;
+        density = 500 + rand() % 500;
+    } 
+    if (id >= SOLID_ELEMENTS+LIQUID_ELEMENTS) { // generate gas
+        form = Form_gas;
+        density = 1;
     }
-
-    if (index >= SOLID_ELEMENTS+LIQUID_ELEMENTS+GAS_ELEMENTS) // generate food
+    if (id >= SOLID_ELEMENTS+LIQUID_ELEMENTS+GAS_ELEMENTS) // generate food
     {
         form = Form_solid;
         density = 50 + rand() % 1000;
         solid =new Solid;
         edible=new Edible;
-        id=index % FOOD_ELEMENTS;
     }
     name = create_name(5 - form);
 }
 
 void BaseElement::show(bool details)
 {
-    printf("BaseElement name=%s form=%s\n", name, Form_name[form]); 
+    printf("BaseElement name=%s form=%s id=%d\n", name, Form_name[form],id); 
     if (!details) return;
     printf("   density = %u\n", density); //gęstość
     printf("   form = %s\n", Form_name[form]);
@@ -165,6 +160,11 @@ void BaseElement::show(bool details)
 SDL_Texture * Being::get_texture()
 {
     return being_textures[type];
+}
+
+SDL_Texture * Plant::get_texture()
+{
+    return plant_textures[type];
 }
 
 Element::Element(BaseElement *b)
@@ -194,8 +194,6 @@ void Element::show(bool details)
 #ifndef STUB_SDL
 SDL_Texture * Element::get_texture()
 {
-    if (base->edible) return food_textures[base->id];
-
     return items_textures[base->id]; 
 }
 #endif
@@ -347,7 +345,7 @@ Plant::Plant()
     seedling_time=7 + rand() % 14;
     growing_time=seedling_time + rand() % 150;
     flowers_time=growing_time + rand() % 30;
-    fruits_time=flowers_time + rand() % 30;
+    fruits_time=flowers_time + rand() % 20;
     max_age=fruits_time + rand() % 100;
     phase = (Plant_phase) (rand() %  (Plant_fruits+1));
     switch (phase)

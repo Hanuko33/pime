@@ -6,10 +6,10 @@
 #include "tiles.h"
 #include "time.h"
 #include "notifier.h"
+#include <cstdlib>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "texture.h"
 
 struct OpenSimplex2F_context *simplex_context;
 
@@ -40,6 +40,18 @@ void create_biome_plains(chunk * chunk)
         o->set_posittion(x, y);
 
         chunk->items[i] = o;
+    }
+    for (int i = 0; i < 16; i++)
+    {
+        Plant *p = new Plant();
+        int x = rand() % CHUNK_SIZE;
+        int y = rand() % CHUNK_SIZE;
+
+        p->type = PLANTID_strawberry;
+
+        p->set_posittion(x, y);
+
+        chunk->plants[i] = p;
     }
 }
 
@@ -200,6 +212,30 @@ Being **get_being_at(int chunk_x, int chunk_y, int x, int y)
 Being **get_being_at_ppos(Player * player)
 {
     return get_being_at(player->map_x, player->map_y, player->x, player->y);
+}
+
+Plant **get_plant_at(int chunk_x, int chunk_y, int x, int y)
+{
+    for (int i = 0; i < 128; i++)
+    {
+        Being *p = world_table[chunk_y][chunk_x]->plants[i];
+        if (p)
+        {
+            int b_x, b_y;
+            p->get_posittion(&b_x, &b_y);
+
+            if (b_x == x && b_y == y)
+            {
+                return &world_table[chunk_y][chunk_x]->plants[i];
+            }
+        }
+    }
+    return NULL;
+}
+
+Plant **get_plant_at_ppos(Player * player)
+{
+    return get_plant_at(player->map_x, player->map_y, player->x, player->y);
 }
 
 InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)

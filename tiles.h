@@ -44,6 +44,7 @@ typedef struct {
     chunk_table table;
     InventoryElement * items[CHUNK_SIZE*CHUNK_SIZE];
     Being * beings[CHUNK_SIZE*CHUNK_SIZE];
+    Plant * plants[CHUNK_SIZE*CHUNK_SIZE];
 } chunk;
 
 
