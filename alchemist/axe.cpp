@@ -28,6 +28,9 @@ bool Axe::use(Player * player)
                             Element * el = new Element(base_elements[ID_LOG]);
                             el->set_posittion(x, y);
                             set_item_at_ppos(el, player);
+                            Element * el_seed = new Element(base_elements[ID_ACORN]);
+                            el_seed->set_posittion(x, y);
+                            set_item_at_ppos(el_seed, player);
                             break;
                         }
                         case PLANTID_tree1:
@@ -35,6 +38,9 @@ bool Axe::use(Player * player)
                             Element * el = new Element(base_elements[ID_LOG1]);
                             el->set_posittion(x, y);
                             set_item_at_ppos(el, player);
+                            Element * el_seed = new Element(base_elements[ID_ACORN1]);
+                            el_seed->set_posittion(x, y);
+                            set_item_at_ppos(el_seed, player);
                             break;
                         }
                         case PLANTID_tree2:
@@ -42,12 +48,15 @@ bool Axe::use(Player * player)
                             Element * el = new Element(base_elements[ID_LOG2]);
                             el->set_posittion(x, y);
                             set_item_at_ppos(el, player);
+                            Element * el_seed = new Element(base_elements[ID_ACORN2]);
+                            el_seed->set_posittion(x, y);
+                            set_item_at_ppos(el_seed, player);
                             break;
                         }
                     }
                     free(p);
                     p=NULL;
-                    world_table[player->map_y][player->map_x]->beings[i]=NULL;
+                    world_table[player->map_y][player->map_x]->plants[i]=NULL;
                     return true;
                 }
                 // TODO    break when used too much

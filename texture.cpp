@@ -87,6 +87,9 @@ void load_textures()
     add_items_texture(ID_SAND, "textures/items/solid/sand.png");
     add_items_texture(ID_STICK, "textures/items/solid/stick.png");
     add_items_texture(ID_STRAWBERRY_SEEDS, "textures/items/solid/strawberry_seeds.png");
+    add_items_texture(ID_ACORN, "textures/items/solid/acorn.png");
+    add_items_texture(ID_ACORN1, "textures/items/solid/acorn1.png");
+    add_items_texture(ID_ACORN2, "textures/items/solid/acorn2.png");
 
     // LIQUID START HERE
     add_items_texture(ID_WATER, "textures/items/liquid/water.png");

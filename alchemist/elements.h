@@ -63,6 +63,9 @@ enum Item_id
     ID_SAND,
     ID_STICK,
     ID_STRAWBERRY_SEEDS,
+    ID_ACORN,
+    ID_ACORN1,
+    ID_ACORN2,
     // LIQUID START HERE
     ID_WATER,
     // GAS START HERE
@@ -319,7 +322,7 @@ public:
 
 };
 
-#define SOLID_ELEMENTS 7
+#define SOLID_ELEMENTS 10
 #define FOOD_ELEMENTS 4
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
