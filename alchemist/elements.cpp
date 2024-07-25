@@ -164,7 +164,10 @@ SDL_Texture * Being::get_texture()
 
 SDL_Texture * Plant::get_texture()
 {
-    return plant_textures[type];
+    if (grown)
+        return grown_plant_textures[type];
+    else
+        return plant_textures[type];
 }
 
 Element::Element(BaseElement *b)
@@ -361,11 +364,12 @@ Plant::Plant()
 
 bool Plant::grow()
 {
-    if (!alive) return false;
-    if (!Being::grow()) return false;
-    if (age >= fruits_time) { change_phase(Plant_fruits); return alive; }
-    if (age >= flowers_time) { change_phase(Plant_flowers); return alive; }
-    if (age >= growing_time) { change_phase(Plant_growing); return alive; }
-    if (age >= seedling_time) { change_phase(Plant_seedling); return alive; }
-    return alive;
+    if (grown) return false;
+    age++;
+    if (age >= max_age) grown = true;
+    if (age >= fruits_time) { change_phase(Plant_fruits); return !grown; }
+    if (age >= flowers_time) { change_phase(Plant_flowers); return !grown; }
+    if (age >= growing_time) { change_phase(Plant_growing); return !grown; }
+    if (age >= seedling_time) { change_phase(Plant_seedling); return !grown; }
+    return !grown;
 }

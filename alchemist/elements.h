@@ -222,16 +222,18 @@ class Product : public InventoryElement
 };
 
 enum being_types
-{
-    BEINGID_tree,
-    BEINGID_tree1,
-    BEINGID_tree2
-};
+{};
+#define BEINGS 0
 
 enum plant_types
 {
-    PLANTID_strawberry
+    PLANTID_strawberry,
+    PLANTID_tree,
+    PLANTID_tree1,
+    PLANTID_tree2
 };
+
+#define PLANTS 4
 
 class Being : public InventoryElement
 {
@@ -287,6 +289,7 @@ class Plant: public Being
     unsigned int fruits_time;
 public:
     bool planted;
+    bool grown;
     enum plant_types type;
 #ifndef STUB_SDL
         SDL_Texture * get_texture();

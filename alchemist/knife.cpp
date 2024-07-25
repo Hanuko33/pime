@@ -23,7 +23,7 @@ bool Knife::use(Player * player)
                 switch (p->type) {
                     case PLANTID_strawberry:
                     {
-                        if (!p->alive)
+                        if (p->grown)
                         {
                             Element * el = new Element(base_elements[ID_STRAWBERRY]);
                             el->set_posittion(x, y);

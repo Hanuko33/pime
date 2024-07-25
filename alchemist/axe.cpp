@@ -12,32 +12,32 @@ Axe::Axe(InventoryElement *el1, InventoryElement *el2): Product(el1, el2, PROD_A
 bool Axe::use(Player * player)
 {
     for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
-        Being * b = world_table[player->map_y][player->map_x]->beings[i];
-        if (b)
+        Plant * p = world_table[player->map_y][player->map_x]->plants[i];
+        if (p)
         {
             int x,y;
-            b->get_posittion(&x, &y);
-            if (player->x == x && player->y == y)
+            p->get_posittion(&x, &y);
+            if (player->x == x && player->y == y && p->grown)
             {
-                if (b->type == BEINGID_tree || b->type == BEINGID_tree1 || b->type == BEINGID_tree2)
+                if (p->type == PLANTID_tree || p->type == PLANTID_tree1 || p->type == PLANTID_tree2)
                 {
                     
-                    switch (b->type) {
-                        case BEINGID_tree:
+                    switch (p->type) {
+                        case PLANTID_tree:
                         {
                             Element * el = new Element(base_elements[ID_LOG]);
                             el->set_posittion(x, y);
                             set_item_at_ppos(el, player);
                             break;
                         }
-                        case BEINGID_tree1:
+                        case PLANTID_tree1:
                         {
                             Element * el = new Element(base_elements[ID_LOG1]);
                             el->set_posittion(x, y);
                             set_item_at_ppos(el, player);
                             break;
                         }
-                        case BEINGID_tree2:
+                        case PLANTID_tree2:
                         {
                             Element * el = new Element(base_elements[ID_LOG2]);
                             el->set_posittion(x, y);
@@ -45,8 +45,8 @@ bool Axe::use(Player * player)
                             break;
                         }
                     }
-                    free(b);
-                    b=NULL;
+                    free(p);
+                    p=NULL;
                     world_table[player->map_y][player->map_x]->beings[i]=NULL;
                     return true;
                 }

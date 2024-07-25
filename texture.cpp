@@ -9,8 +9,9 @@ SDL_Texture * tiles_textures[TILE_MAX_NUM];
 SDL_Texture * items_textures[BASE_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
-SDL_Texture * being_textures[3];
-SDL_Texture * plant_textures[1];
+SDL_Texture * being_textures[BEINGS];
+SDL_Texture * plant_textures[PLANTS];
+SDL_Texture * grown_plant_textures[PLANTS];
 
 
 SDL_Texture* load_texture(const char * texture_name)
@@ -107,9 +108,16 @@ void load_textures()
     add_prod_texture(PROD_AXE, "textures/items/products/axe.png");
     add_prod_texture(PROD_KNIFE, "textures/items/products/knife.png");
 
-    being_textures[BEINGID_tree] = load_texture("textures/beings/tree/tree.png");
-    being_textures[BEINGID_tree1] = load_texture("textures/beings/tree/tree1.png");
-    being_textures[BEINGID_tree2] = load_texture("textures/beings/tree/tree2.png");
 
     plant_textures[PLANTID_strawberry] = load_texture("textures/plants/strawberry.png");
+
+    plant_textures[PLANTID_tree] = load_texture("textures/plants/tree/tree.png");
+    plant_textures[PLANTID_tree1] = load_texture("textures/plants/tree/tree1.png");
+    plant_textures[PLANTID_tree2] = load_texture("textures/plants/tree/tree2.png");
+
+    grown_plant_textures[PLANTID_strawberry] = load_texture("textures/plants/strawberry_grown.png");
+
+    grown_plant_textures[PLANTID_tree] = load_texture("textures/plants/tree/tree_grown.png");
+    grown_plant_textures[PLANTID_tree1] = load_texture("textures/plants/tree/tree1_grown.png");
+    grown_plant_textures[PLANTID_tree2] = load_texture("textures/plants/tree/tree2_grown.png");
 }
