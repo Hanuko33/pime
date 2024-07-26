@@ -109,136 +109,139 @@ void use_tile()
 
 bool plant_with_seed(InventoryElement * el)
 {
-    if (el->get_id() == ID_ACORN2)
-    {
-        bool able=false;
-        for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
-            if (!world_table[player.map_y][player.map_x]->plants[i])
+    if (get_tile_at_ppos(&player) == TILE_GRASS || get_tile_at_ppos(&player) == TILE_DIRT)
+        {
+        if (el->get_id() == ID_ACORN2)
+        {
+            bool able=false;
+            for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                if (!world_table[player.map_y][player.map_x]->plants[i])
+                {
+                    Plant *p = new Plant();
+
+                    p->type = PLANTID_tree2;
+
+                    p->set_posittion(player.x, player.y);
+                    
+                    p->phase=Plant_seed;
+                    p->grown=false;
+
+                    world_table[player.map_y][player.map_x]->plants[i]=p;
+
+                    sprintf(status_line, "Placing %s", p->name);
+                    status_code=1;
+                    able=true;
+                    break;
+                }
+            }
+            
+            if (able)
             {
-                Plant *p = new Plant();
-
-                p->type = PLANTID_tree2;
-
-                p->set_posittion(player.x, player.y);
-                
-                p->phase=Plant_seed;
-                p->grown=false;
-
-                world_table[player.map_y][player.map_x]->plants[i]=p;
-
-                sprintf(status_line, "Placing %s", p->name);
-                status_code=1;
-                able=true;
-                break;
+                player.inventory->remove(el);
+                player.hotbar[active_hotbar]=NULL;
+                free(el);
+                el=NULL;
+                return true;
             }
         }
-        
-        if (able)
+        if (el->get_id() == ID_ACORN1)
         {
-            player.inventory->remove(el);
-            player.hotbar[active_hotbar]=NULL;
-            free(el);
-            el=NULL;
-            return true;
-        }
-    }
-    if (el->get_id() == ID_ACORN1)
-    {
-        bool able=false;
-        for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
-            if (!world_table[player.map_y][player.map_x]->plants[i])
+            bool able=false;
+            for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                if (!world_table[player.map_y][player.map_x]->plants[i])
+                {
+                    Plant *p = new Plant();
+
+                    p->type = PLANTID_tree1;
+
+                    p->set_posittion(player.x, player.y);
+                    
+                    p->phase=Plant_seed;
+                    p->grown=false;
+
+                    world_table[player.map_y][player.map_x]->plants[i]=p;
+
+                    sprintf(status_line, "Placing %s", p->name);
+                    status_code=1;
+                    able=true;
+                    break;
+                }
+            }
+            
+            if (able)
             {
-                Plant *p = new Plant();
-
-                p->type = PLANTID_tree1;
-
-                p->set_posittion(player.x, player.y);
-                
-                p->phase=Plant_seed;
-                p->grown=false;
-
-                world_table[player.map_y][player.map_x]->plants[i]=p;
-
-                sprintf(status_line, "Placing %s", p->name);
-                status_code=1;
-                able=true;
-                break;
+                player.inventory->remove(el);
+                player.hotbar[active_hotbar]=NULL;
+                free(el);
+                el=NULL;
+                return true;
             }
         }
-        
-        if (able)
+        if (el->get_id() == ID_ACORN)
         {
-            player.inventory->remove(el);
-            player.hotbar[active_hotbar]=NULL;
-            free(el);
-            el=NULL;
-            return true;
-        }
-    }
-    if (el->get_id() == ID_ACORN)
-    {
-        bool able=false;
-        for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
-            if (!world_table[player.map_y][player.map_x]->plants[i])
+            bool able=false;
+            for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                if (!world_table[player.map_y][player.map_x]->plants[i])
+                {
+                    Plant *p = new Plant();
+
+                    p->type = PLANTID_tree;
+
+                    p->set_posittion(player.x, player.y);
+                    
+                    p->phase=Plant_seed;
+                    p->grown=false;
+
+                    world_table[player.map_y][player.map_x]->plants[i]=p;
+
+                    sprintf(status_line, "Placing %s", p->name);
+                    status_code=1;
+                    able=true;
+                    break;
+                }
+            }
+            
+            if (able)
             {
-                Plant *p = new Plant();
-
-                p->type = PLANTID_tree;
-
-                p->set_posittion(player.x, player.y);
-                
-                p->phase=Plant_seed;
-                p->grown=false;
-
-                world_table[player.map_y][player.map_x]->plants[i]=p;
-
-                sprintf(status_line, "Placing %s", p->name);
-                status_code=1;
-                able=true;
-                break;
+                player.inventory->remove(el);
+                player.hotbar[active_hotbar]=NULL;
+                free(el);
+                el=NULL;
+                return true;
             }
         }
-        
-        if (able)
+        if (el->get_id() == ID_STRAWBERRY_SEEDS)
         {
-            player.inventory->remove(el);
-            player.hotbar[active_hotbar]=NULL;
-            free(el);
-            el=NULL;
-            return true;
-        }
-    }
-    if (el->get_id() == ID_STRAWBERRY_SEEDS)
-    {
-        bool able=false;
-        for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
-            if (!world_table[player.map_y][player.map_x]->plants[i])
-            {
-                Plant *p = new Plant();
+            bool able=false;
+            for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                if (!world_table[player.map_y][player.map_x]->plants[i])
+                {
+                    Plant *p = new Plant();
 
-                p->type = PLANTID_strawberry;
+                    p->type = PLANTID_strawberry;
 
-                p->set_posittion(player.x, player.y);
-                
-                p->phase=Plant_seed;
-                p->grown=false;
+                    p->set_posittion(player.x, player.y);
+                    
+                    p->phase=Plant_seed;
+                    p->grown=false;
 
-                world_table[player.map_y][player.map_x]->plants[i]=p;
+                    world_table[player.map_y][player.map_x]->plants[i]=p;
 
-                sprintf(status_line, "Placing %s", p->name);
-                status_code=1;
-                able=true;
-                break;
+                    sprintf(status_line, "Placing %s", p->name);
+                    status_code=1;
+                    able=true;
+                    break;
+                }
             }
-        }
-        
-        if (able)
-        {
-            player.inventory->remove(el);
-            player.hotbar[active_hotbar]=NULL;
-            free(el);
-            el=NULL;
-            return true;
+            
+            if (able)
+            {
+                player.inventory->remove(el);
+                player.hotbar[active_hotbar]=NULL;
+                free(el);
+                el=NULL;
+                return true;
+            }
         }
     }
     return false;
