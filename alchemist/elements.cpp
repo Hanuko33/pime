@@ -4,6 +4,7 @@
 #include "elements.h"
 #include "names.h"
 #include "../texture.h"
+#include "../tiles.h"
 
 BaseElement *base_elements[BASE_ELEMENTS];
 
@@ -162,6 +163,15 @@ SDL_Texture * Being::get_texture()
     return being_textures[type];
 }
 
+SDL_Texture * Animal::get_texture()
+{
+    if (going_right)
+        return animalr_textures[type];
+    else
+        return animall_textures[type];
+    return animall_textures[type];
+}
+
 SDL_Texture * Plant::get_texture()
 {
     if (grown)
@@ -289,7 +299,6 @@ void Product::show(bool details)
 
     for (int i=0; i < ing_count; i++)
     {
-        ings[i]->show(details);
     }
 }
 
@@ -342,24 +351,56 @@ void show_base_elements(bool details)
 
 }
 
+void Animal::move()
+{
+    int _x, _y;
+
+    get_posittion(&_x, &_y);
+
+    switch (rand() % 4)
+    {
+        case 0: // up
+            _y--;
+            break;
+        case 1: // down
+            _y++;
+            break;
+        case 2: // left
+            going_right=false;
+            _x--;
+            break;
+        case 3: // right
+            going_right=true;
+            _x++;
+            break;
+    }
+
+    if (_x >= CHUNK_SIZE) _x=CHUNK_SIZE-1;
+    if (_y >= CHUNK_SIZE) _y=CHUNK_SIZE-1;
+    if (_y < 0) _y=0;
+    if (_y < 0) _y=0;
+    if (_x < 0) _x=0;
+
+    set_posittion(_x, _y);
+}
+
 Plant::Plant()
 {
     c_id=Class_Plant;
     seedling_time=7 + rand() % 14;
     growing_time=seedling_time + rand() % 150;
     flowers_time=growing_time + rand() % 30;
-    fruits_time=flowers_time + rand() % 20;
-    max_age=fruits_time + rand() % 100;
+    max_age=flowers_time + rand() % 100;
     phase = (Plant_phase) (rand() %  (Plant_fruits+1));
+    grown=false;
     switch (phase)
     {
-        case Plant_seed: age = 0; planted = false; break;
+        case Plant_seed: age = 1; planted = false; break;
         case Plant_seedling: age = seedling_time;  planted = true; break;
         case Plant_growing: age = growing_time; planted = true; break;
         case Plant_flowers: age = flowers_time; planted = true; break;
-        case Plant_fruits: age=fruits_time; planted = true; break;
+        case Plant_fruits: age = max_age; grown=true; planted = true; break;
     }
-    edible = new Edible;
 }
 
 bool Plant::grow()
@@ -367,7 +408,7 @@ bool Plant::grow()
     if (grown) return false;
     age++;
     if (age >= max_age) grown = true;
-    if (age >= fruits_time) { change_phase(Plant_fruits); return !grown; }
+    if (age >= max_age) { change_phase(Plant_fruits); return !grown; }
     if (age >= flowers_time) { change_phase(Plant_flowers); return !grown; }
     if (age >= growing_time) { change_phase(Plant_growing); return !grown; }
     if (age >= seedling_time) { change_phase(Plant_seedling); return !grown; }

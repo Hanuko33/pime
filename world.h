@@ -21,6 +21,9 @@ Being ** get_being_at(int chunk_x, int chunk_y, int x, int y);
 Plant **get_plant_at(int chunk_x, int chunk_y, int x, int y);
 Plant **get_plant_at_ppos(Player * player);
 
+Animal **get_animal_at_ppos(Player * player);
+Animal **get_animal_at(int chunk_x, int chunk_y, int x, int y);
+
 InventoryElement ** get_item_at_ppos(Player *player);
 InventoryElement ** get_item_at(int chunk_x, int chunk_y, int x, int y);
 

@@ -10,6 +10,8 @@ SDL_Texture * items_textures[BASE_ELEMENTS];
 SDL_Texture * ing_textures[ING_ELEMENTS];
 SDL_Texture * prod_textures[PROD_ELEMENTS];
 SDL_Texture * being_textures[BEINGS];
+SDL_Texture * animall_textures[ANIMALS];
+SDL_Texture * animalr_textures[ANIMALS];
 SDL_Texture * plant_textures[PLANTS];
 SDL_Texture * grown_plant_textures[PLANTS];
 
@@ -102,6 +104,7 @@ void load_textures()
     add_items_texture(ID_WATERMELON, "textures/items/food/watermelon.png");
     add_items_texture(ID_CHERRY, "textures/items/food/cherry.png");
     add_items_texture(ID_STRAWBERRY, "textures/items/food/strawberry.png");
+    add_items_texture(ID_RAW_HAM, "textures/items/food/raw_ham.png");
 
     add_ing_texture(ING_AXE_BLADE, "textures/items/ingredients/axe_blade.png");
     add_ing_texture(ING_AXE_HANDLE, "textures/items/ingredients/axe_handle.png");
@@ -123,4 +126,7 @@ void load_textures()
     grown_plant_textures[PLANTID_tree] = load_texture("textures/plants/tree/tree_grown.png");
     grown_plant_textures[PLANTID_tree1] = load_texture("textures/plants/tree/tree1_grown.png");
     grown_plant_textures[PLANTID_tree2] = load_texture("textures/plants/tree/tree2_grown.png");
+
+    animall_textures[ANIMALID_pig] = load_texture("textures/animals/pigl.png");
+    animalr_textures[ANIMALID_pig] = load_texture("textures/animals/pigr.png");
 }

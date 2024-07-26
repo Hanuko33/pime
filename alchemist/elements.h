@@ -74,7 +74,8 @@ enum Item_id
     ID_PUMPKIN,
     ID_WATERMELON,
     ID_CHERRY,
-    ID_STRAWBERRY
+    ID_STRAWBERRY,
+    ID_RAW_HAM
 };
 
 class BaseElement
@@ -272,6 +273,38 @@ class Being : public InventoryElement
         }
 };
 
+enum animal_types
+{
+    ANIMALID_pig
+};
+
+#define ANIMALS 1
+
+class Animal : public Being
+{
+    public:
+#ifndef STUB_SDL
+        SDL_Texture * get_texture();
+        bool going_right;
+#endif
+        enum animal_types type;
+        Animal()
+        {
+            alive = true;
+            max_age = 1 + rand() % 36000; // 100 years
+            age = rand() % max_age;
+            name = create_name(rand() % 2 + 2);
+        }
+        void move();
+        void show(bool details=true) {
+               printf("Animal %s age=%d/%d alive=%d\n", name, age, max_age, alive);
+        }
+        bool tick() {
+            move();
+            return grow();
+        }
+};
+
 enum Plant_phase
 {
     Plant_seed=0,
@@ -285,11 +318,9 @@ extern const char * Plant_phase_name[];
 
 class Plant: public Being
 {    
-    Edible * edible;
     unsigned int seedling_time;
     unsigned int growing_time;
     unsigned int flowers_time;
-    unsigned int fruits_time;
 public:
     bool planted;
     bool grown;
@@ -300,12 +331,10 @@ public:
     Plant_phase phase;
     Plant();
     void show(bool details=true) {
-       printf("Plant -> %d name=%s ", c_id, name);
-       Being::show(details);
+       printf("Plant -> %d name=%s age=%d/%d grown=%d\n", c_id, name, age, max_age, grown);
        if (details) {
               printf("phase=%s planted=%d times=%d/%d/%d/%d\n",
-                     Plant_phase_name[phase], planted, seedling_time, growing_time, flowers_time, fruits_time);
-              edible->show();
+                     Plant_phase_name[phase], planted, seedling_time, growing_time, flowers_time, max_age);
        }
     }
     void sow() {
@@ -323,7 +352,7 @@ public:
 };
 
 #define SOLID_ELEMENTS 10
-#define FOOD_ELEMENTS 4
+#define FOOD_ELEMENTS 5
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1
 

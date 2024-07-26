@@ -45,6 +45,7 @@ typedef struct {
     InventoryElement * items[CHUNK_SIZE*CHUNK_SIZE];
     Being * beings[CHUNK_SIZE*CHUNK_SIZE];
     Plant * plants[CHUNK_SIZE*CHUNK_SIZE];
+    Animal * animals[CHUNK_SIZE*CHUNK_SIZE];
 } chunk;
 
 

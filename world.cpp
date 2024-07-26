@@ -53,6 +53,18 @@ void create_biome_plains(chunk * chunk)
 
         chunk->plants[i] = p;
     }
+    for (int i = 0; i < 2; i++)
+    {
+        Animal *a = new Animal();
+        int x = rand() % CHUNK_SIZE;
+        int y = rand() % CHUNK_SIZE;
+
+        a->type = ANIMALID_pig;
+
+        a->set_posittion(x, y);
+
+        chunk->animals[i]=a;
+    }
 }
 
 void create_biome_forest(chunk * chunk)
@@ -214,11 +226,35 @@ Being **get_being_at_ppos(Player * player)
     return get_being_at(player->map_x, player->map_y, player->x, player->y);
 }
 
+Animal **get_animal_at(int chunk_x, int chunk_y, int x, int y)
+{
+    for (int i = 0; i < 128; i++)
+    {
+        Animal *a = world_table[chunk_y][chunk_x]->animals[i];
+        if (a)
+        {
+            int b_x, b_y;
+            a->get_posittion(&b_x, &b_y);
+
+            if (b_x == x && b_y == y)
+            {
+                return &world_table[chunk_y][chunk_x]->animals[i];
+            }
+        }
+    }
+    return NULL;
+}
+Animal **get_animal_at_ppos(Player * player)
+{
+    return get_animal_at(player->map_x, player->map_y, player->x, player->y);
+}
+
+
 Plant **get_plant_at(int chunk_x, int chunk_y, int x, int y)
 {
     for (int i = 0; i < 128; i++)
     {
-        Being *p = world_table[chunk_y][chunk_x]->plants[i];
+        Plant *p = world_table[chunk_y][chunk_x]->plants[i];
         if (p)
         {
             int b_x, b_y;

@@ -23,6 +23,12 @@
 #include <termios.h>
 #include "alchemist/game_time.h"
 
+// Normal speed
+#define UPDATE_DELAY 1000
+
+// TURBO
+// #define UPDATE_DELAY 0
+
 /* #define OLDKB */
 
 SDL_Texture *map;
@@ -125,6 +131,7 @@ bool plant_with_seed(InventoryElement * el)
                     
                     p->phase=Plant_seed;
                     p->grown=false;
+                    p->age=1;
 
                     world_table[player.map_y][player.map_x]->plants[i]=p;
 
@@ -158,6 +165,7 @@ bool plant_with_seed(InventoryElement * el)
                     
                     p->phase=Plant_seed;
                     p->grown=false;
+                    p->age=1;
 
                     world_table[player.map_y][player.map_x]->plants[i]=p;
 
@@ -191,6 +199,7 @@ bool plant_with_seed(InventoryElement * el)
                     
                     p->phase=Plant_seed;
                     p->grown=false;
+                    p->age=1;
 
                     world_table[player.map_y][player.map_x]->plants[i]=p;
 
@@ -224,6 +233,7 @@ bool plant_with_seed(InventoryElement * el)
                     
                     p->phase=Plant_seed;
                     p->grown=false;
+                    p->age=1;
 
                     world_table[player.map_y][player.map_x]->plants[i]=p;
 
@@ -381,6 +391,13 @@ void player_interact(int key)
                 Plant * p = *p_at_ppos;
                 if (p)
                     p->show();
+            }
+            Animal ** a_at_ppos = get_animal_at_ppos(&player);
+            if (a_at_ppos)
+            {
+                Animal * a = *a_at_ppos;
+                if (a)
+                    a->show();
             }
         }
         break;
@@ -562,6 +579,33 @@ void update()
             p->tick();
         }
     }
+
+    for (int i = 0; i<CHUNK_SIZE*CHUNK_SIZE; i++) {
+        Animal * a = world_table[player.map_y][player.map_x]->animals[i];
+
+        if (a)
+        {
+            a->tick();
+            if (!a->alive)
+            {
+                int x,y;
+                a->get_posittion(&x, &y);
+
+                Element * el;
+                switch (a->type)
+                {
+                    case ANIMALID_pig:
+                        el = new Element(base_elements[ID_RAW_HAM]);
+                }
+                el->set_posittion(x, y);
+                set_item_at(el, player.map_x, player.map_y, x, y);
+
+                free(a);
+                a=NULL;
+                world_table[player.map_y][player.map_x]->animals[i]=NULL;
+            }
+        }
+    }
 }
 
 void draw()
@@ -628,6 +672,20 @@ void draw()
 
             SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             SDL_RenderCopy(renderer, p->get_texture(), NULL, &img_rect);
+        }
+    }
+
+    // render animals
+    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++)
+    {
+        Animal * a = world_table[player.map_y][player.map_x]->animals[i];
+        if (a)
+        {
+            int x,y;
+            a->get_posittion(&x, &y);
+
+            SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_RenderCopy(renderer, a->get_texture(), NULL, &img_rect);
         }
     }
 
@@ -875,6 +933,7 @@ int main()
     int last_frame_press=0;
 
     Uint64 last_time = 0;
+    Uint64 last_update_time = 0;
    
     sprintf(status_line, "Welcome in game!");
     status_code = 1;
@@ -888,7 +947,11 @@ int main()
         if (player.hunger < 0) player.hunger = 0;
         if (player.thirst < 0) player.thirst = 0;
         
-        update();
+        if (SDL_GetTicks() - last_update_time > UPDATE_DELAY)
+        {
+            last_update_time = SDL_GetTicks();
+            update();
+        }
         draw();
 
         // keyboard handling for not move

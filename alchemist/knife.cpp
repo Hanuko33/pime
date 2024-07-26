@@ -42,6 +42,14 @@ bool Knife::use(Player * player)
                 }
             }
         }
+        Animal * a = world_table[player->map_y][player->map_x]->animals[i];
+        if (a)
+        {
+            int x,y;
+            a->get_posittion(&x, &y);
+            if (player->x == x && player->y == y)
+                a->alive=false;
+        }
     }
     return false;
 }

@@ -23,6 +23,8 @@ extern SDL_Texture * items_textures[BASE_ELEMENTS];
 extern SDL_Texture * ing_textures[ING_ELEMENTS];
 extern SDL_Texture * prod_textures[PROD_ELEMENTS];
 extern SDL_Texture * being_textures[BEINGS];
+extern SDL_Texture * animall_textures[ANIMALS];
+extern SDL_Texture * animalr_textures[ANIMALS];
 extern SDL_Texture * plant_textures[PLANTS];
 extern SDL_Texture * grown_plant_textures[PLANTS];
 extern SDL_Texture * up_mask;
