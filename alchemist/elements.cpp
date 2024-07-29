@@ -1,3 +1,4 @@
+#include <SDL2/SDL_render.h>
 #include <cstdio>
 #include <cstdlib>
 
@@ -37,6 +38,11 @@ const char * items_name[]=
     "Log",
     "Sand",
     "Stick",
+};
+
+const char * object_names[]=
+{
+        "wall"
 };
 
 const char * food_name[]=
@@ -156,6 +162,11 @@ void BaseElement::show(bool details)
         default: break;
     }
     if (edible) edible->show();
+}
+
+SDL_Texture * Object::get_texture()
+{
+    return object_textures[type];
 }
 
 SDL_Texture * Being::get_texture()

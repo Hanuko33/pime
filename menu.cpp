@@ -1,4 +1,6 @@
 #include "menu.h"
+#include "text.h"
+#include "tiles.h"
 #include "window.h"
 #include "music.h"
 #include "alchemist/elements.h"
@@ -6,6 +8,7 @@
 #include "alchemist/knife.h"
 #include "world.h"
 #include "craft.h"
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 
@@ -23,6 +26,7 @@ Menu *menu_inventory_categories;
 Menu *menu_inventory;
 Menu *menu_crafting;
 Menu *menu_dev;
+Menu *menu_build;
 
 void load(char with_player);
 void save(char with_player);
@@ -151,6 +155,7 @@ void create_menus()
     menu_main->add("Change music volume", MENU_MUSIC);
     menu_main->add("Cancel", MENU_CANCEL);
 
+
     menu_help = new Menu("Help 1", 9);
 	menu_help->add("; - show item info", MENU_CANCEL);
 	menu_help->add("f11 - resize", MENU_CANCEL);
@@ -202,8 +207,12 @@ void create_menus()
     menu_crafting->add("Knife blade (1 ing.)", MENU_CRAFT_KNIFE_BLADE);
     menu_crafting->add("Knife handle (1 ing.)", MENU_CRAFT_KNIFE_HANDLE);
     menu_crafting->add("Knife (2 ing.)", MENU_CRAFT_KNIFE);
+
     
     menu_crafting->add("Cancel", MENU_CANCEL);
+    
+    menu_build = new Menu("build", 1);
+    menu_build->add("Wall (1 ing.)", MENU_BUILD_WALL);
 
     menu_dev = new Menu("dev options", 4);
     menu_dev->add("axe", MENU_GET_AXE);
@@ -253,56 +262,62 @@ void Menu::go_up()
 int menu_interact(int key)
 {
     switch (key)
-    {
-       case SDLK_ESCAPE:
-       {
-            if (current_menu) current_menu=NULL; else current_menu=menu_main;
-            return 1;
-       }
-       case SDLK_l:
-       {
-           if (current_menu) current_menu=NULL; else current_menu=menu_dev;
-           return 1;
-       }
-       case SDLK_c:
-       { 
-           if (!current_menu) current_menu=menu_crafting; else if (current_menu ==  menu_crafting) current_menu=NULL;
-           return 1;
-       }
+    {	
+	case SDLK_b:
+	{
+	    if (!current_menu) current_menu=menu_build; else if (current_menu ==  menu_build) current_menu=NULL;
+
+	    return 1;
+	}
+	case SDLK_ESCAPE:
+	{
+		if (current_menu) current_menu=NULL; else current_menu=menu_main;
+		return 1;
+	}
+	case SDLK_l:
+	{
+	    if (current_menu) current_menu=NULL; else current_menu=menu_dev;
+	    return 1;
+	}
+	case SDLK_c:
+	{ 
+	    if (!current_menu) current_menu=menu_crafting; else if (current_menu ==  menu_crafting) current_menu=NULL;
+	    return 1;
+	}
         case SDLK_i:
-       {
-			player.inventory->show();
-            if (!current_menu) current_menu=menu_inventory_categories; 
-			else if (current_menu == menu_inventory_categories) current_menu=NULL;
-            return 1;
-       }
+	{
+			    player.inventory->show();
+		if (!current_menu) current_menu=menu_inventory_categories; 
+			    else if (current_menu == menu_inventory_categories) current_menu=NULL;
+		return 1;
+	}
 
-       case SDLK_DOWN:
-       case SDLK_s:
-       {
-            if (current_menu)  current_menu->go_down();
-            break;
-       }
-       case SDLK_w:
-       case SDLK_UP:
-       {
-            if (current_menu)  current_menu->go_up();
-            break;
-       }
+	case SDLK_DOWN:
+	case SDLK_s:
+	{
+		if (current_menu)  current_menu->go_down();
+		break;
+	}
+	case SDLK_w:
+	case SDLK_UP:
+	{
+		if (current_menu)  current_menu->go_up();
+		break;
+	}
 
-       case SDLK_RETURN:
-       case SDLK_e:
-       {
-            if (current_menu) 
-            {
-                if (interact(current_menu->actions[current_menu->menu_pos])) 
-                {
-                    current_menu=NULL;
-                    return 1;
-                }
-            }
-            break;
-       }
+	case SDLK_RETURN:
+	case SDLK_e:
+	{
+		if (current_menu) 
+		{
+		    if (interact(current_menu->actions[current_menu->menu_pos])) 
+		    {
+			current_menu=NULL;
+			return 1;
+		    }
+		}
+		break;
+	}
     }
     return  current_menu ? 1 : 0;
 }
@@ -332,6 +347,7 @@ int craft(menu_actions a)
         case MENU_CRAFT_AXE_BLADE: el = craft_axe_blade(); break;
         case MENU_CRAFT_AXE_HANDLE: el = craft_axe_handle(); break;
         case MENU_CRAFT_AXE: el = craft_axe(); break;
+
     }
     if (el) {
         set_item_at_ppos(el, &player);
@@ -347,6 +363,37 @@ int interact(enum menu_actions a)
     if (a & MENU_ITEM) return handle_item(a & ~MENU_ITEM);
     switch(a)
     {
+	case MENU_BUILD_WALL:
+	{
+	    sprintf(status_line, "Starting building");
+	    if (player.hotbar[active_hotbar] && player.hotbar[active_hotbar]->get_form() == Form_solid)
+	    {
+		Object * ob = new Object();
+		ob->base = ((Element *)(player.hotbar[active_hotbar]))->get_base();
+
+		player.inventory->remove(player.hotbar[active_hotbar]);
+		player.hotbar[active_hotbar]=NULL;
+
+		ob->type = OBJECT_wall;
+		ob->set_posittion(player.x, player.y);
+
+		for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++)
+		{
+		    if (!world_table[player.map_y][player.map_x]->objects[i])
+		    {
+			world_table[player.map_y][player.map_x]->objects[i] = ob;
+			break;
+		    }
+		}
+
+		status_code = 1;
+	    }
+	    else {
+		status_code = 0;
+	    }
+	    break;
+	}
+
         case MENU_GET_AXE:
         {
             Element * el1=new Element(base_elements[0]);

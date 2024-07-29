@@ -399,6 +399,13 @@ void player_interact(int key)
                 if (a)
                     a->show();
             }
+            Object ** o_at_ppos = get_object_at_ppos(&player);
+            if (o_at_ppos)
+            {
+                Object * o = *o_at_ppos;
+                if (o)
+                    o->show();
+            }
         }
         break;
         
@@ -686,6 +693,18 @@ void draw()
 
             SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
             SDL_RenderCopy(renderer, a->get_texture(), NULL, &img_rect);
+        }
+    }
+    // render objects
+    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+        Object * o = world_table[player.map_y][player.map_x]->objects[i];
+        if (o)
+        {
+            int x,y;
+            o->get_posittion(&x, &y);
+            
+            SDL_Rect img_rect = {x * tile_dungeon_size, y * tile_dungeon_size, tile_dungeon_size, tile_dungeon_size};
+            SDL_RenderCopy(renderer, o->get_texture(), NULL, &img_rect);
         }
     }
 

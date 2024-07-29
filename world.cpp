@@ -258,6 +258,30 @@ Animal **get_animal_at_ppos(Player * player)
     return get_animal_at(player->map_x, player->map_y, player->x, player->y);
 }
 
+Object **get_object_at(int chunk_x, int chunk_y, int x, int y)
+{
+    for (int i = 0; i < 128; i++)
+    {
+        Object * o = world_table[chunk_y][chunk_x]->objects[i];
+        if (o)
+        {
+            int b_x, b_y;
+            o->get_posittion(&b_x, &b_y);
+
+            if (b_x == x && b_y == y)
+            {
+                return &world_table[chunk_y][chunk_x]->objects[i];
+            }
+        }
+    }
+    return NULL;
+}
+
+Object **get_object_at_ppos(Player * player)
+{
+    return get_object_at(player->map_x, player->map_y, player->x, player->y);
+}
+
 
 Plant **get_plant_at(int chunk_x, int chunk_y, int x, int y)
 {
@@ -282,6 +306,7 @@ Plant **get_plant_at_ppos(Player * player)
 {
     return get_plant_at(player->map_x, player->map_y, player->x, player->y);
 }
+
 
 InventoryElement **get_item_at(int chunk_x, int chunk_y, int x, int y)
 {

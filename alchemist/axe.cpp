@@ -1,4 +1,5 @@
 #include "axe.h"
+#include <cstddef>
 #include <cstdio>
 #include "../player.h"
 #include "../world.h"
@@ -60,6 +61,24 @@ bool Axe::use(Player * player)
                     return true;
                 }
                 // TODO    break when used too much
+            }
+        }
+
+        Object * o = world_table[player->map_y][player->map_x]->objects[i];
+        if (o && o->type == OBJECT_wall)
+        {
+            int x,y;
+            o->get_posittion(&x, &y);
+            if (player->x == x && player->y == y)
+            {
+                Element * el = new Element(o->base);
+                el->set_posittion(player->x, player->y);
+                set_item_at_ppos(el, player);
+
+                free(o);
+                o=NULL;
+                world_table[player->map_y][player->map_x]->objects[i]=NULL;
+                return true;
             }
         }
     }

@@ -119,6 +119,34 @@ class InventoryElement
         void get_posittion(int *_x, int *_y) { *_x=x; *_y=y; }
 };
 
+enum object_types
+{
+    OBJECT_wall,
+};
+
+extern const char * object_names[];
+
+#define OBJECTS 1
+
+class Object : public InventoryElement
+{
+public:
+    BaseElement * base;
+    enum object_types type;
+    void * information;
+    Form get_form() {return Form_solid; }
+    const char * get_form_name() { return Form_name[Form_solid]; }
+    const char * get_name() {
+        return object_names[type];
+    }
+    void show() {
+        printf("Object type: %s", get_name());
+        base->show();
+    }
+#ifndef STUB_SDL     
+    SDL_Texture * get_texture();
+#endif
+};
 
 class Element : public InventoryElement
 {
@@ -131,6 +159,10 @@ class Element : public InventoryElement
         unsigned int width;
         unsigned int height;
         unsigned int volume; //lenght*width*height
+        BaseElement * get_base()
+        {
+            return base;
+        }
         Edible * get_edible()
         {
             return base->edible;

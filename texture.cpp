@@ -14,7 +14,7 @@ SDL_Texture * animall_textures[ANIMALS];
 SDL_Texture * animalr_textures[ANIMALS];
 SDL_Texture * plant_textures[PLANTS];
 SDL_Texture * grown_plant_textures[PLANTS];
-
+SDL_Texture * object_textures[OBJECTS];
 
 SDL_Texture* load_texture(const char * texture_name)
 {
@@ -129,4 +129,6 @@ void load_textures()
 
     animall_textures[ANIMALID_pig] = load_texture("textures/animals/pigl.png");
     animalr_textures[ANIMALID_pig] = load_texture("textures/animals/pigr.png");
+
+    object_textures[OBJECT_wall] = load_texture("textures/objects/wall.png");
 }
