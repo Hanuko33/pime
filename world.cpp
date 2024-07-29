@@ -30,40 +30,49 @@ void create_biome_plains(chunk * chunk)
         }
         //printf("\n");
     }
-    for (int i = 0; i < 16; i++)
+    if (rand() % 2)
     {
-        int b = rand() % BASE_ELEMENTS;
-        Element *o = new Element(base_elements[b]);
-        int x = rand() % CHUNK_SIZE;
-        int y = rand() % CHUNK_SIZE;
+        for (int i = 0; i < 16; i++)
+        {
+            int b = rand() % BASE_ELEMENTS;
+            Element *o = new Element(base_elements[b]);
+            int x = rand() % CHUNK_SIZE;
+            int y = rand() % CHUNK_SIZE;
 
-        o->set_posittion(x, y);
+            o->set_posittion(x, y);
 
-        chunk->items[i] = o;
+            chunk->items[i] = o;
+        }
     }
-    for (int i = 0; i < 16; i++)
+    if (rand() % 2)
     {
-        Plant *p = new Plant();
-        int x = rand() % CHUNK_SIZE;
-        int y = rand() % CHUNK_SIZE;
+        for (int i = 0; i < 16; i++)
+        {
+            Plant *p = new Plant();
+            int x = rand() % CHUNK_SIZE;
+            int y = rand() % CHUNK_SIZE;
 
-        p->type = PLANTID_strawberry;
+            p->type = PLANTID_strawberry;
 
-        p->set_posittion(x, y);
+            p->set_posittion(x, y);
 
-        chunk->plants[i] = p;
+            chunk->plants[i] = p;
+        }
     }
-    for (int i = 0; i < 2; i++)
+    if (rand() % 2)
     {
-        Animal *a = new Animal();
-        int x = rand() % CHUNK_SIZE;
-        int y = rand() % CHUNK_SIZE;
+        for (int i = 0; i < 2; i++)
+        {
+            Animal *a = new Animal();
+            int x = rand() % CHUNK_SIZE;
+            int y = rand() % CHUNK_SIZE;
 
-        a->type = ANIMALID_pig;
+            a->type = ANIMALID_pig;
 
-        a->set_posittion(x, y);
+            a->set_posittion(x, y);
 
-        chunk->animals[i]=a;
+            chunk->animals[i]=a;
+        }
     }
 }
 
@@ -160,7 +169,7 @@ void create_biome_desert(chunk * chunk)
 
 void generate_chunk(chunk *chunk, int chunk_x, int chunk_y)  
 {
-    enum biomes random_biome = (enum biomes) (rand() % 3);
+    enum biomes random_biome = (enum biomes) (rand() % BIOMES);
     chunk->biome = random_biome;
 
     switch (random_biome)

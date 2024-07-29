@@ -26,6 +26,7 @@ enum  biomes
     BIOME_FOREST, // green with trees
     BIOME_PLAINS, // green
 };
+#define BIOMES 3
 
 
 #define CHUNK_SIZE 16
