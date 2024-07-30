@@ -50,6 +50,7 @@ enum Class_id
     Class_Plant,
 };
 
+
 class BaseElement
 {
     public:    
@@ -57,6 +58,7 @@ class BaseElement
         int id; //texture id
         unsigned int density;
         unsigned char transparency;
+        BaseElement* seed;
         Edible *edible;
         Form form;
         Solid *solid;
@@ -92,7 +94,6 @@ class InventoryElement
         virtual Edible* get_edible() {return nullptr;}
         virtual BaseElement* get_base() {return nullptr;}
 };
-
 
 class Element : public InventoryElement
 {

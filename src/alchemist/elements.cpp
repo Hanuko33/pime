@@ -116,7 +116,9 @@ void Solid::show()
 BaseElement::BaseElement()
 {    
     transparency=rand() % 256;
+    seed=NULL;
     solid=NULL;
+    edible=NULL;
     if (fantasy_game) 
         init_fantasy();
     else

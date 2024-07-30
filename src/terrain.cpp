@@ -25,6 +25,7 @@
 #include "status_line.h"
 #include "tiles.h"
 #include "ftree.h"
+#include "g_plant.h"
 
 
 using namespace godot;
@@ -92,6 +93,14 @@ void Terrain::_ready() {
         int h=height_at(WORLD_CENTER, WORLD_CENTER, 0, 0);
         tree->set_position(Vector3(0, h-0.7, 0));
         node->call_deferred("add_child", tree);
+
+        BaseElement* base = new BaseElement;
+        base->edible = new Edible;
+        BaseElement* seed = new BaseElement;
+        seed->seed=base;
+        GPlant* plant = memnew(GPlant(base, seed));
+        plant->set_position(Vector3(0, 13.5, 0));
+        node->call_deferred("add_child", plant);
 
 
    /*        RenderingDevice* rd = RenderingServer::get_singleton()->create_local_rendering_device();

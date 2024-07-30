@@ -16,6 +16,7 @@
 #include <godot_cpp/classes/progress_bar.hpp>
 #include <godot_cpp/classes/control.hpp>
 
+#include "godot_cpp/core/memory.hpp"
 #include "status_line.h"
 
 #include "alchemist/axe.h"
@@ -27,6 +28,7 @@
 #include "alchemist/axe_blade.h"
 #include "status_line.h"
 #include "bush.h"
+#include "g_plant.h"
 
 using namespace godot;
 
@@ -259,13 +261,25 @@ void PlayerCharacter::_input(const Ref<InputEvent> &event) {
             Terrain* terrain = Object::cast_to<Terrain>(looking_at->get_parent()->get_parent());
             if (terrain && right_hand)
             {
-                terrain->place(looking_pos, looking_norm, right_hand->element->get_base());
+                if (BaseElement * seed = right_hand->element->get_base()->seed)
+                {
+                    GPlant * plant = memnew(GPlant(seed, right_hand->element->get_base()));
+                    get_parent()->add_child(plant);
+                    plant->set_position(looking_pos + Vector3(0,0.6,0));
+                }
+                else
+                {
+                    terrain->place(looking_pos, looking_norm, right_hand->element->get_base());
+                }
                 right_hand->queue_free();
                 right_hand = nullptr;
             }
             else if (Bush* bush = Object::cast_to<Bush>(looking_at)) {
                 if (!right_hand)
                     pick_up(bush->collect(), &right_hand);
+            }
+            else if (GPlant* plant = Object::cast_to<GPlant>(looking_at)) {
+                plant->collect();
             }
         }
         else {
