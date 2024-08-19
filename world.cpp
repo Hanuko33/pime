@@ -61,6 +61,36 @@ void create_biome_plains(chunk * chunk)
     }
     if (rand() % 2)
     {
+        for (int i = 0; i < 16; i++)
+        {
+            Plant *p = new Plant();
+            int x = rand() % CHUNK_SIZE;
+            int y = rand() % CHUNK_SIZE;
+
+            p->type = PLANTID_watermelon;
+
+            p->set_posittion(x, y);
+
+            chunk->plants[i] = p;
+        }
+    }
+    if (rand() % 2)
+    {
+        for (int i = 0; i < 16; i++)
+        {
+            Plant *p = new Plant();
+            int x = rand() % CHUNK_SIZE;
+            int y = rand() % CHUNK_SIZE;
+
+            p->type = PLANTID_pumpkin;
+
+            p->set_posittion(x, y);
+
+            chunk->plants[i] = p;
+        }
+    }
+    if (rand() % 2)
+    {
         for (int i = 0; i < 2; i++)
         {
             Animal *a = new Animal();

@@ -66,6 +66,8 @@ enum Item_id
     ID_ACORN,
     ID_ACORN1,
     ID_ACORN2,
+    ID_PUMPKIN_SEEDS,
+    ID_WATERMELON_SEEDS,
     // LIQUID START HERE
     ID_WATER,
     // GAS START HERE
@@ -266,10 +268,12 @@ enum plant_types
     PLANTID_strawberry,
     PLANTID_tree,
     PLANTID_tree1,
-    PLANTID_tree2
+    PLANTID_tree2,
+    PLANTID_pumpkin,
+    PLANTID_watermelon,
 };
 
-#define PLANTS 4
+#define PLANTS 6
 
 class Being : public InventoryElement
 {
@@ -383,7 +387,7 @@ public:
 
 };
 
-#define SOLID_ELEMENTS 10
+#define SOLID_ELEMENTS 12
 #define FOOD_ELEMENTS 5
 #define LIQUID_ELEMENTS 1
 #define GAS_ELEMENTS 1

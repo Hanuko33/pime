@@ -92,6 +92,8 @@ void load_textures()
     add_items_texture(ID_ACORN, "textures/items/solid/acorn.png");
     add_items_texture(ID_ACORN1, "textures/items/solid/acorn1.png");
     add_items_texture(ID_ACORN2, "textures/items/solid/acorn2.png");
+    add_items_texture(ID_PUMPKIN_SEEDS, "textures/items/solid/pumpkin_seeds.png");
+    add_items_texture(ID_WATERMELON_SEEDS, "textures/items/solid/watermelon_seeds.png");
 
     // LIQUID START HERE
     add_items_texture(ID_WATER, "textures/items/liquid/water.png");
@@ -116,12 +118,16 @@ void load_textures()
 
 
     plant_textures[PLANTID_strawberry] = load_texture("textures/plants/strawberry.png");
+    plant_textures[PLANTID_pumpkin] = load_texture("textures/plants/pumpkin.png");
+    plant_textures[PLANTID_watermelon] = load_texture("textures/plants/watermelon.png");
 
     plant_textures[PLANTID_tree] = load_texture("textures/plants/tree/tree.png");
     plant_textures[PLANTID_tree1] = load_texture("textures/plants/tree/tree1.png");
     plant_textures[PLANTID_tree2] = load_texture("textures/plants/tree/tree2.png");
 
     grown_plant_textures[PLANTID_strawberry] = load_texture("textures/plants/strawberry_grown.png");
+    grown_plant_textures[PLANTID_pumpkin] = load_texture("textures/plants/pumpkin_grown.png");
+    grown_plant_textures[PLANTID_watermelon] = load_texture("textures/plants/watermelon_grown.png");
 
     grown_plant_textures[PLANTID_tree] = load_texture("textures/plants/tree/tree_grown.png");
     grown_plant_textures[PLANTID_tree1] = load_texture("textures/plants/tree/tree1_grown.png");

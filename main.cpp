@@ -111,6 +111,39 @@ void use_tile()
 
        status_code = 1; 
     }
+
+    for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++)
+    {
+        Plant * p = world_table[player.map_y][player.map_x]->plants[i];
+        if (p)
+        {
+            int x,y;
+            p->get_posittion(&x, &y);
+            if ((player.x == x && player.y == y) && ((p->type == PLANTID_watermelon) || (p->type == PLANTID_pumpkin)))
+            {
+                Element * el;
+                Element * el2;
+                switch (p->type) {
+                    case PLANTID_watermelon:
+                        el = new Element(base_elements[ID_WATERMELON]);
+                        el2 = new Element(base_elements[ID_WATERMELON_SEEDS]);
+                        break;
+                    case PLANTID_pumpkin:
+                        el = new Element(base_elements[ID_PUMPKIN]);
+                        el2 = new Element(base_elements[ID_PUMPKIN_SEEDS]);
+                        break;
+                }
+
+                el->set_posittion(x, y);
+                set_item_at_ppos(el, &player);
+                el2->set_posittion(x, y);
+                set_item_at_ppos(el2, &player);
+
+                free(world_table[player.map_y][player.map_x]->plants[i]);
+                world_table[player.map_y][player.map_x]->plants[i] = NULL;
+            }
+        }
+    }
 }
 
 bool plant_with_seed(InventoryElement * el)
@@ -194,6 +227,74 @@ bool plant_with_seed(InventoryElement * el)
                     Plant *p = new Plant();
 
                     p->type = PLANTID_tree;
+
+                    p->set_posittion(player.x, player.y);
+                    
+                    p->phase=Plant_seed;
+                    p->grown=false;
+                    p->age=1;
+
+                    world_table[player.map_y][player.map_x]->plants[i]=p;
+
+                    sprintf(status_line, "Placing %s", p->name);
+                    status_code=1;
+                    able=true;
+                    break;
+                }
+            }
+            
+            if (able)
+            {
+                player.inventory->remove(el);
+                player.hotbar[active_hotbar]=NULL;
+                free(el);
+                el=NULL;
+                return true;
+            }
+        }
+        if (el->get_id() == ID_PUMPKIN_SEEDS)
+        {
+            bool able=false;
+            for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                if (!world_table[player.map_y][player.map_x]->plants[i])
+                {
+                    Plant *p = new Plant();
+
+                    p->type = PLANTID_pumpkin;
+
+                    p->set_posittion(player.x, player.y);
+                    
+                    p->phase=Plant_seed;
+                    p->grown=false;
+                    p->age=1;
+
+                    world_table[player.map_y][player.map_x]->plants[i]=p;
+
+                    sprintf(status_line, "Placing %s", p->name);
+                    status_code=1;
+                    able=true;
+                    break;
+                }
+            }
+            
+            if (able)
+            {
+                player.inventory->remove(el);
+                player.hotbar[active_hotbar]=NULL;
+                free(el);
+                el=NULL;
+                return true;
+            }
+        }
+        if (el->get_id() == ID_WATERMELON_SEEDS)
+        {
+            bool able=false;
+            for (int i = 0; i < CHUNK_SIZE*CHUNK_SIZE; i++) {
+                if (!world_table[player.map_y][player.map_x]->plants[i])
+                {
+                    Plant *p = new Plant();
+
+                    p->type = PLANTID_watermelon;
 
                     p->set_posittion(player.x, player.y);
                     
