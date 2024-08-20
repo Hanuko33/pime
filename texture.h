@@ -10,6 +10,15 @@
 
 #include "tiles.h"
 
+enum object_textures_enum 
+{
+        TEXTURE_stone_wall,
+        TEXTURE_log_wall,
+        TEXTURE_log1_wall,
+        TEXTURE_log2_wall,
+        TEXTURE_wall_max
+};
+
 struct textures
 {
         SDL_Texture* playerr;
@@ -27,7 +36,7 @@ extern SDL_Texture * animall_textures[ANIMALS];
 extern SDL_Texture * animalr_textures[ANIMALS];
 extern SDL_Texture * plant_textures[PLANTS];
 extern SDL_Texture * grown_plant_textures[PLANTS];
-extern SDL_Texture * object_textures[OBJECTS];
+extern SDL_Texture * object_textures[TEXTURE_wall_max];
 extern SDL_Texture * up_mask;
 extern SDL_Texture * down_mask;
 extern struct textures Texture;

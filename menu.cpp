@@ -371,6 +371,13 @@ int interact(enum menu_actions a)
 		Object * ob = new Object();
 		ob->base = ((Element *)(player.hotbar[active_hotbar]))->get_base();
 
+		if (!(ob->base->id == ID_LOG || ob->base->id == ID_LOG1 || ob->base->id == ID_LOG2 || ob->base->id == ID_STONE))
+		{
+		    status_code = 0;
+		    free(ob);
+		    break;
+		}
+
 		player.inventory->remove(player.hotbar[active_hotbar]);
 		player.hotbar[active_hotbar]=NULL;
 

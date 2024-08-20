@@ -14,7 +14,7 @@ SDL_Texture * animall_textures[ANIMALS];
 SDL_Texture * animalr_textures[ANIMALS];
 SDL_Texture * plant_textures[PLANTS];
 SDL_Texture * grown_plant_textures[PLANTS];
-SDL_Texture * object_textures[OBJECTS];
+SDL_Texture * object_textures[TEXTURE_wall_max];
 
 SDL_Texture* load_texture(const char * texture_name)
 {
@@ -136,5 +136,8 @@ void load_textures()
     animall_textures[ANIMALID_pig] = load_texture("textures/animals/pigl.png");
     animalr_textures[ANIMALID_pig] = load_texture("textures/animals/pigr.png");
 
-    object_textures[OBJECT_wall] = load_texture("textures/objects/wall.png");
+    object_textures[TEXTURE_stone_wall] = load_texture("textures/objects/stone_wall.png");
+    object_textures[TEXTURE_log_wall] = load_texture("textures/objects/log_wall.png");
+    object_textures[TEXTURE_log1_wall] = load_texture("textures/objects/log1_wall.png");
+    object_textures[TEXTURE_log2_wall] = load_texture("textures/objects/log2_wall.png");
 }

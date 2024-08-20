@@ -42,7 +42,7 @@ const char * items_name[]=
 
 const char * object_names[]=
 {
-        "wall"
+    "wall"
 };
 
 const char * food_name[]=
@@ -166,7 +166,25 @@ void BaseElement::show(bool details)
 
 SDL_Texture * Object::get_texture()
 {
-    return object_textures[type];
+    if (type == OBJECT_wall)
+    {
+        switch (base->id)
+        {
+            case ID_STONE:
+                return object_textures[TEXTURE_stone_wall];
+                break;
+            case ID_LOG:
+                return object_textures[TEXTURE_log_wall];
+                break;
+            case ID_LOG1:
+                return object_textures[TEXTURE_log1_wall];
+                break;
+            case ID_LOG2:
+                return object_textures[TEXTURE_log2_wall];
+                break;
+        }
+    }
+    return NULL;
 }
 
 SDL_Texture * Being::get_texture()
