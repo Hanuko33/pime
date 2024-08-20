@@ -360,6 +360,7 @@ class Plant: public Being
 public:
     bool planted;
     bool grown;
+    int water;
     enum plant_types type;
 #ifndef STUB_SDL
         SDL_Texture * get_texture();
@@ -369,8 +370,8 @@ public:
     void show(bool details=true) {
        printf("Plant -> %d name=%s age=%d/%d grown=%d\n", c_id, name, age, max_age, grown);
        if (details) {
-              printf("phase=%s planted=%d times=%d/%d/%d/%d\n",
-                     Plant_phase_name[phase], planted, seedling_time, growing_time, flowers_time, max_age);
+              printf("phase=%s planted=%d times=%d/%d/%d/%d water=%d\n",
+                     Plant_phase_name[phase], planted, seedling_time, growing_time, flowers_time, max_age, water);
        }
     }
     void sow() {

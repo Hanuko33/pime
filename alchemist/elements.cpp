@@ -404,6 +404,7 @@ Plant::Plant()
     max_age=flowers_time + rand() % 100;
     phase = (Plant_phase) (rand() %  (Plant_fruits+1));
     grown=false;
+    water=rand() % 100; 
     switch (phase)
     {
         case Plant_seed: age = 1; planted = false; break;
@@ -417,6 +418,8 @@ Plant::Plant()
 bool Plant::grow()
 {
     if (grown) return false;
+    if (!water) return !grown;
+    water--;
     age++;
     if (age >= max_age) grown = true;
     if (age >= max_age) { change_phase(Plant_fruits); return !grown; }

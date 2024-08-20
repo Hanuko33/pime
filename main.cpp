@@ -119,7 +119,7 @@ void use_tile()
         {
             int x,y;
             p->get_posittion(&x, &y);
-            if ((player.x == x && player.y == y) && ((p->type == PLANTID_watermelon) || (p->type == PLANTID_pumpkin)))
+            if ((player.x == x && player.y == y) && ((p->type == PLANTID_watermelon) || (p->type == PLANTID_pumpkin)) && (p->grown))
             {
                 Element * el;
                 Element * el2;
@@ -583,7 +583,20 @@ void player_interact(int key)
                     break;
                 if (plant_with_seed(el))
                     break;
-
+                if (((Element *)(el))->get_base()->id == ID_WATER)
+                {
+                    if (Plant ** pp = get_plant_at_ppos(&player))
+                    {
+                        if (Plant * p = *pp)
+                        {
+                            p->water += 100;
+                            player.inventory->remove(el);
+                            player.hotbar[active_hotbar]=NULL;
+                            free(el);
+                            break;
+                        }
+                    }
+                }
             }
             use_tile();
             break;
